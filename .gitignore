@@ -1,0 +1,27 @@
+# Ignore all Markdown files
+*.md
+
+# But do not ignore README.md
+!README.md
+
+# Node.js standard ignores
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# Next.js / NestJS build output (for later)
+.next/
+dist/
+out/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

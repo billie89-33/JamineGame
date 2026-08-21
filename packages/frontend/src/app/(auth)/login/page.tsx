@@ -1,67 +1,19 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth, User } from '@/contexts/AuthContext';
-import { API_URL } from '@/lib/config';
-
-// Best Practice: กำหนด Interface ให้ชัดเจนว่า API จะตอบกลับมาเป็นรูปร่างแบบไหน
-interface LoginResponse {
-  message: string;
-  user?: User;
-  error?: string;
-  statusCode?: number;
-}
+import { useLogin } from '@/features/auth';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { login } = useAuth();
-  
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  
+  // เรียกใช้ Custom Hook ตัวเก่งของเรา (โค้ดบรรทัดเดียวจบ!)
+  const { executeLogin, isLoading, error } = useLogin();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-        // สำคัญมาก! ต้องมี credentials: 'include' เพื่อให้เบราว์เซอร์ยอมรับ HTTP-Only Cookie ข้ามโดเมน
-        credentials: 'include',
-      });
-      
-      const data: LoginResponse = await response.json();
-
-      if (!response.ok) {
-        // จัดการ Error ตาม Best Practice ของ TS
-        throw new Error(data.message || 'รหัสผ่านไม่ถูกต้อง');
-      }
-
-      if (data.user) {
-        // บันทึก State ลง Context
-        login(data.user);
-        
-        // เด้งกลับไปหน้าแรกหลังจากล็อกอินเสร็จ
-        router.push('/');
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await executeLogin({ username, password });
   };
 
   return (

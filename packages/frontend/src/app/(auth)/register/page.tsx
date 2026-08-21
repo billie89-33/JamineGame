@@ -1,67 +1,28 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { API_URL } from '@/lib/config';
-
-interface RegisterResponse {
-  message: string;
-  userId?: string;
-  error?: string;
-  statusCode?: number;
-}
+import { useRegister } from '@/features/auth';
 
 export default function RegisterPage() {
-  const router = useRouter();
-
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirm, setConfirm] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  
+  // เรียกใช้ Custom Hook สำหรับสมัครสมาชิก
+  const { executeRegister, isLoading, error, setError } = useRegister();
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
 
-    // Client-side validation for confirm password
+    // Client-side validation
     if (password !== confirm) {
       setError('รหัสผ่านไม่ตรงกัน');
-      setIsLoading(false);
       return;
     }
 
-    try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password, confirm }),
-      });
-      
-      const data: RegisterResponse = await response.json();
-
-      if (!response.ok) {
-        // จัดการ Error ตาม Best Practice ของ TS (เช่น ซ้ำ, หรือ Validate ไม่ผ่าน)
-        throw new Error(data.message || 'ไม่สามารถสมัครสมาชิกได้');
-      }
-
-      alert('สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ');
-      router.push('/login');
-      
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await executeRegister({ username, email, password, confirm });
   };
 
   return (

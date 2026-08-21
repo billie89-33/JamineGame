@@ -2,29 +2,63 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth, User } from '@/contexts/AuthContext';
+import { API_URL } from '@/lib/config';
+
+// Best Practice: กำหนด Interface ให้ชัดเจนว่า API จะตอบกลับมาเป็นรูปร่างแบบไหน
+interface LoginResponse {
+  message: string;
+  user?: User;
+  error?: string;
+  statusCode?: number;
+}
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const router = useRouter();
+  const { login } = useAuth();
+  
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     try {
-      // TODO: Call NestJS API here
-      console.log('Logging in with:', { username, password });
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+        // สำคัญมาก! ต้องมี credentials: 'include' เพื่อให้เบราว์เซอร์ยอมรับ HTTP-Only Cookie ข้ามโดเมน
+        credentials: 'include',
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Temporary mock success
-      alert('Login clicked! (Backend API not connected yet)');
+      const data: LoginResponse = await response.json();
+
+      if (!response.ok) {
+        // จัดการ Error ตาม Best Practice ของ TS
+        throw new Error(data.message || 'รหัสผ่านไม่ถูกต้อง');
+      }
+
+      if (data.user) {
+        // บันทึก State ลง Context
+        login(data.user);
+        
+        // เด้งกลับไปหน้าแรกหลังจากล็อกอินเสร็จ
+        router.push('/');
+      }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+      }
     } finally {
       setIsLoading(false);
     }

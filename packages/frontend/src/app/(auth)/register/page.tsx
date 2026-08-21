@@ -2,38 +2,63 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-// TODO: import { RegisterDto } from '@shared/dto';
+import { useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/config';
+
+interface RegisterResponse {
+  message: string;
+  userId?: string;
+  error?: string;
+  statusCode?: number;
+}
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const router = useRouter();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirm, setConfirm] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     // Client-side validation for confirm password
     if (password !== confirm) {
-      setError('Passwords do not match');
+      setError('รหัสผ่านไม่ตรงกัน');
       setIsLoading(false);
       return;
     }
 
     try {
-      // TODO: Call NestJS API here
-      console.log('Registering with:', { username, email, password, confirm });
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, confirm }),
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data: RegisterResponse = await response.json();
+
+      if (!response.ok) {
+        // จัดการ Error ตาม Best Practice ของ TS (เช่น ซ้ำ, หรือ Validate ไม่ผ่าน)
+        throw new Error(data.message || 'ไม่สามารถสมัครสมาชิกได้');
+      }
+
+      alert('สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ');
+      router.push('/login');
       
-      alert('Registration clicked! (Backend API not connected yet)');
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+      }
     } finally {
       setIsLoading(false);
     }

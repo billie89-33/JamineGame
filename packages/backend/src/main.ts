@@ -6,12 +6,16 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
+  const isProduction = process.env.NODE_ENV === 'production';
+
   // 1. Security Headers
   app.use(helmet());
 
   // 2. Enable CORS
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: isProduction 
+      ? process.env.FRONTEND_URL // บน Production ให้รับเฉพาะ Vercel
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'], // บน Dev ให้รับ Localhost
     credentials: true,
   });
 

@@ -1,1 +1,14 @@
-{ "name": "my-jamine-project", "private": true, "workspaces": ["packages/*"], "scripts": { "dev:frontend": "npm run dev -w frontend", "dev:backend": "npm run start:dev -w backend", "install:all": "npm install" } }
+﻿{
+    "name":  "my-jamine-project",
+    "private":  true,
+    "workspaces":  [
+                       "packages/*"
+                   ],
+    "scripts":  {
+                    "dev:frontend":  "npm run dev -w frontend",
+                    "dev:backend":  "npm run start:dev -w backend",
+                    "install:all":  "npm install",
+                    "build:backend":  "cd packages/backend \u0026\u0026 npx prisma generate \u0026\u0026 cd ../../ \u0026\u0026 npm run build -w backend",
+                    "start:backend":  "npm run start:prod -w backend"
+                }
+}

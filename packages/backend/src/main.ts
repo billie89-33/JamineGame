@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +32,17 @@ async function bootstrap() {
       transform: true, // แปลง Type ให้อัตโนมัติ (เช่น String เป็น Number)
     }),
   );
+
+  
+  // === ตั้งค่า Swagger ===
+  const config = new DocumentBuilder()
+    .setTitle('Gameverse API')
+    .setDescription('คู่มือ API สำหรับโปรเจกต์ Gameverse')
+    .setVersion('1.0')
+    .addCookieAuth('access_token')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3001);
 }

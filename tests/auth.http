@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:3001
+
+### 1. สมัครสมาชิก (Register)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "tester01",
+  "email": "tester01@mail.com",
+  "password": "password123",
+  "confirm": "password123"
+}
+
+###
+
+### 2. เข้าสู่ระบบ (Login)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "tester01",
+  "password": "password123"
+}
+
+###
+
+### 3. ออกจากระบบ (Logout)
+POST {{baseUrl}}/auth/logout

@@ -1,11 +1,25 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isGamesOpen, setIsGamesOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close dropdown if clicked outside of it
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsGamesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="w-full sticky top-0 z-50">
@@ -30,7 +44,7 @@ export const Navbar = () => {
           <Link href="/" className="text-[#1a241b] drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:text-[#B05B27] transition-colors">หน้าแรก</Link>
           <Link href="/news" className="hover:text-[#1a241b] transition-colors">ข่าวเกม</Link>
           
-          <div className="relative py-2">
+          <div className="relative py-2" ref={dropdownRef}>
             <button 
               className="flex items-center gap-1 hover:text-[#1a241b] transition-colors"
               onClick={() => setIsGamesOpen(!isGamesOpen)}

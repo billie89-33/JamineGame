@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, Kanit } from "next/font/google";
 import { Navbar, Footer } from "@/components/common";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfitFont = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const kanitFont = Kanit({
+  variable: "--font-kanit",
+  weight: ["300", "400", "500", "700"],
+  subsets: ["thai", "latin"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${outfitFont.variable} ${kanitFont.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-[#0b0f0c] text-white relative font-sans">
         
         {/* Background Glow Effects (Global) */}

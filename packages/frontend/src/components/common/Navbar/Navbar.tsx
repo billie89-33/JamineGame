@@ -67,14 +67,26 @@ export const Navbar = () => {
           <Link href="/about" className="hover:text-[#1a241b] transition-colors">เกี่ยวกับเรา</Link>
         </div>
 
-        {/* Right Side: Search + User */}
+        {/* Right Side: Search + Auth */}
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center bg-[#e8d7a5] border border-[#d4c38d] rounded-full px-4 py-2 shadow-inner">
+          <div className="hidden md:flex items-center bg-[#e8d7a5] border border-[#d4c38d] rounded-full px-4 py-2 shadow-inner cursor-pointer hover:bg-[#e0cba0] transition-colors">
             <span className="text-sm text-[#5d6b5e]">Search games...</span>
             <span className="ml-4 text-[#1a241b]">🔍</span>
           </div>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1a241b] to-[#2e3b2c] shadow-[0_0_15px_rgba(250,214,97,0.4)] border border-[#f7ebc6] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-            <span className="text-[#f7ebc6]">👤</span>
+          
+          <div className="hidden md:flex items-center gap-2">
+            <Link 
+              href="/login" 
+              className="px-4 py-2 text-sm font-bold text-[#1a241b] hover:text-[#B05B27] transition-colors"
+            >
+              SIGN IN
+            </Link>
+            <Link 
+              href="/register" 
+              className="px-4 py-2 text-sm font-bold bg-[#1a241b] text-[#f7ebc6] rounded-full hover:bg-[#B05B27] shadow-[0_0_15px_rgba(250,214,97,0.4)] transition-all hover:scale-105"
+            >
+              SIGN UP
+            </Link>
           </div>
         </div>
       </nav>
@@ -124,6 +136,24 @@ export const Navbar = () => {
           </div>
           
           <Link href="/about" className="px-6 py-4 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>เกี่ยวกับเรา</Link>
+          
+          {/* Mobile Auth Buttons */}
+          <div className="mt-auto px-6 py-8 flex flex-col gap-3">
+            <Link 
+              href="/login" 
+              className="w-full py-3 text-center font-bold text-[#1a241b] border-2 border-[#1a241b] rounded-xl hover:bg-[#e8d7a5] transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              SIGN IN
+            </Link>
+            <Link 
+              href="/register" 
+              className="w-full py-3 text-center font-bold bg-[#1a241b] text-[#f7ebc6] rounded-xl hover:bg-[#B05B27] transition-colors shadow-lg"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              SIGN UP
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -1,0 +1,120 @@
+"use client";
+
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, List, ListOrdered } from 'lucide-react';
+import { useCallback } from 'react';
+
+interface TipTapEditorProps {
+  content: string;
+  onChange: (html: string) => void;
+  onImageUpload?: (file: File) => Promise<string>;
+}
+
+export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorProps) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Image,
+      Link.configure({ openOnClick: false }),
+      Placeholder.configure({ placeholder: 'เริ่มเขียนเนื้อหาบทความที่นี่...' }),
+    ],
+    content,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert max-w-none min-h-[300px] outline-none text-[#f7ebc6] p-4 bg-[#121813] border border-[#202d21] rounded-b-xl',
+      },
+    },
+  });
+
+  const addImage = useCallback(async () => {
+    if (!onImageUpload) {
+      const url = window.prompt('URL รูปภาพ:');
+      if (url && editor) {
+        editor.chain().focus().setImage({ src: url }).run();
+      }
+      return;
+    }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file && editor) {
+        try {
+          const url = await onImageUpload(file);
+          editor.chain().focus().setImage({ src: url }).run();
+        } catch (err) {
+          console.error('Image upload failed', err);
+          alert('อัปโหลดรูปไม่สำเร็จ');
+        }
+      }
+    };
+    input.click();
+  }, [editor, onImageUpload]);
+
+  const setLink = useCallback(() => {
+    if (!editor) return;
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL:', previousUrl);
+    
+    if (url === null) return; // cancelled
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
+
+  if (!editor) return null;
+
+  const ToolbarButton = ({ onClick, isActive, children }: any) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`p-2 rounded hover:bg-[#202d21] transition-colors ${isActive ? 'bg-[#202d21] text-lime-400' : 'text-[#f7ebc6]'}`}
+    >
+      {children}
+    </button>
+  );
+
+  return (
+    <div className="w-full flex flex-col rounded-xl border border-[#202d21] overflow-hidden">
+      <div className="flex flex-wrap items-center gap-1 p-2 bg-[#1a241b] border-b border-[#202d21]">
+        <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')}>
+          <Bold size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')}>
+          <Italic size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })}>
+          <Heading1 size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor.isActive('heading', { level: 3 })}>
+          <Heading2 size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')}>
+          <List size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')}>
+          <ListOrdered size={18} />
+        </ToolbarButton>
+        <div className="w-px h-6 bg-[#202d21] mx-1" />
+        <ToolbarButton onClick={setLink} isActive={editor.isActive('link')}>
+          <LinkIcon size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={addImage}>
+          <ImageIcon size={18} />
+        </ToolbarButton>
+      </div>
+      <EditorContent editor={editor} />
+    </div>
+  );
+}

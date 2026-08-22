@@ -44,5 +44,16 @@ export const authApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Logout failed');
+  },
+
+  me: async (): Promise<AuthResponse> => {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Not authenticated');
+    return result;
   }
 };

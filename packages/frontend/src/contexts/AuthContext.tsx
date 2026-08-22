@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { API_URL } from "@/lib/config";
 
+import { authApi } from "@/features/auth/auth.api";
+
 // กำหนดรูปร่างของข้อมูล User
 export interface User {
   id: string;
@@ -24,26 +26,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // สมมติฐาน: ถ้ามีการรีเฟรชหน้าเว็บ เราอาจจะต้องมี API /auth/me ดึงข้อมูลจาก Cookie คืนมา 
-  // (เดี๋ยวเราค่อยไปสร้าง API นี้ทีหลัง ตอนนี้เอาแบบเบสิกก่อน)
   useEffect(() => {
-    // อ่านข้อมูล User จาก LocalStorage ชั่วคราวไปก่อน (ถ้ามี API /me ค่อยเปลี่ยน)
-    const storedUser = localStorage.getItem("gameverse_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const fetchUser = async () => {
+      try {
+        const response = await authApi.me();
+        if (response.user) {
+          setUser(response.user);
+        }
+      } catch (error) {
+        console.log("No active session");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUser();
   }, []);
 
   const login = (userData: User) => {
     setUser(userData);
-    localStorage.setItem("gameverse_user", JSON.stringify(userData));
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
-    localStorage.removeItem("gameverse_user");
-    // TODO: ยิง API ไปหาหลังบ้านเพื่อสั่ง clearCookie
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (

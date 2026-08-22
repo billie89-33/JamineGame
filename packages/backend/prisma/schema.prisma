@@ -23,6 +23,24 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  articles  Article[] // Relation to Article
+}
+
+model Article {
+  id            String   @id @default(uuid())
+  title         String
+  excerpt       String
+  content       String   @db.Text
+  coverImage    String?
+  category      String
+  tags          String[] // Prisma supports string arrays in PostgreSQL
+  authorId      String
+  author        User     @relation(fields: [authorId], references: [id])
+  publishedAt   DateTime @default(now())
+  readTime      String?
+  commentsCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

@@ -1,8 +1,9 @@
-﻿import { Controller, Post, Body, Res, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body, Res, Req, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { LoginDto, RegisterDto } from '@shared/dto';
-import type { Response } from 'express';
+import { LoginDto, RegisterDto } from './dto/auth.dto';
+import type { Response, Request } from 'express';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -49,5 +50,19 @@ export class AuthController {
     });
 
     return { message: 'ออกจากระบบสำเร็จ' };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
+  getProfile(@Req() req: Request) {
+    const user = (req as any).user;
+    return {
+      message: 'ดึงข้อมูลโปรไฟล์สำเร็จ',
+      user: {
+        id: user.sub,
+        username: user.username,
+        role: user.role,
+      }
+    };
   }
 }

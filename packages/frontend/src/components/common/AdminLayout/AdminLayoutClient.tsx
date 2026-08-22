@@ -2,14 +2,40 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const { logout, user } = useAuth();
+  const router = useRouter();
+  const { logout, user, isLoading } = useAuth();
+
+  React.useEffect(() => {
+    // 🚧 DEV BYPASS: ปลดล็อคให้เข้าดู UI ได้เลยตอนเขียนโค้ด (ถ้าขึ้น Production จะกลับมาล็อคปกติ)
+    if (process.env.NODE_ENV === 'development') {
+      return;
+    }
+
+    if (!isLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.role !== 'ADMIN') {
+        alert('Access Denied: Admin only');
+        router.push('/');
+      }
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading && process.env.NODE_ENV !== 'development') {
+    return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">LOADING...</div>;
+  }
+
+  // ป้องกันการ render ถ้าไม่ใช่ Admin (ยกเว้นโหมด Dev)
+  if ((!user || user.role !== 'ADMIN') && process.env.NODE_ENV !== 'development') {
+    return null;
+  }
 
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },

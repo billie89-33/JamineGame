@@ -28,7 +28,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none min-h-[300px] outline-none text-[#f7ebc6] p-4 bg-[#121813] border border-[#202d21] rounded-b-xl',
+        class: 'prose max-w-none min-h-[300px] outline-none text-[#1a241b] p-4 bg-[#e8d7a5] border-t-0 border border-[#d4c38d] rounded-b-xl',
       },
     },
   });
@@ -79,15 +79,15 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
     <button
       type="button"
       onClick={onClick}
-      className={`p-2 rounded hover:bg-[#202d21] transition-colors ${isActive ? 'bg-[#202d21] text-lime-400' : 'text-[#f7ebc6]'}`}
+      className={`p-2 rounded-lg font-bold transition-colors ${isActive ? 'bg-[#1a241b] text-[#f7ebc6]' : 'text-[#1a241b] hover:bg-[#d4c38d]'}`}
     >
       {children}
     </button>
   );
 
   return (
-    <div className="w-full flex flex-col rounded-xl border border-[#202d21] overflow-hidden">
-      <div className="flex flex-wrap items-center gap-1 p-2 bg-[#1a241b] border-b border-[#202d21]">
+    <div className="w-full flex flex-col rounded-xl overflow-hidden shadow-sm">
+      <div className="flex flex-wrap items-center gap-1 p-2 bg-[#f7ebc6] border border-[#d4c38d] rounded-t-xl">
         <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')}>
           <Bold size={18} />
         </ToolbarButton>
@@ -106,7 +106,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
         <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')}>
           <ListOrdered size={18} />
         </ToolbarButton>
-        <div className="w-px h-6 bg-[#202d21] mx-1" />
+        <div className="w-px h-6 bg-[#d4c38d] mx-1" />
         <ToolbarButton onClick={setLink} isActive={editor.isActive('link')}>
           <LinkIcon size={18} />
         </ToolbarButton>

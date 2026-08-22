@@ -63,18 +63,18 @@ export function AdminArticleForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-4xl mx-auto bg-[#f7ebc6] p-8 rounded-3xl border border-[#d4c38d] shadow-[0_15px_40px_-10px_rgba(250,214,97,0.3)]">
       {/* Cover Image Upload */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#f7ebc6] font-bold">Cover Image</label>
+        <label className="text-[#1a241b] font-black text-lg">COVER IMAGE</label>
         <input 
           type="file" 
           accept="image/*" 
           onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
-          className="text-sm text-[#f7ebc6] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#1a241b] file:text-lime-400 hover:file:bg-[#202d21]"
+          className="text-sm text-[#1a241b] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#1a241b] file:text-[#f7ebc6] hover:file:bg-[#2e3b2c] cursor-pointer"
         />
         {(coverFile || formData.coverImage) && (
-          <div className="w-full h-48 mt-2 rounded-xl border border-[#202d21] overflow-hidden bg-[#121813]">
+          <div className="w-full h-64 mt-2 rounded-xl border border-[#d4c38d] overflow-hidden bg-[#e8d7a5]">
             {coverFile ? (
               <img src={URL.createObjectURL(coverFile)} alt="Cover preview" className="w-full h-full object-cover" />
             ) : formData.coverImage ? (
@@ -85,61 +85,73 @@ export function AdminArticleForm() {
       </div>
 
       {/* Title */}
-      <input 
-        type="text" 
-        placeholder="หัวข้อบทความ (Title)" 
-        required
-        value={formData.title}
-        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-        className="w-full p-4 rounded-xl bg-[#121813] border border-[#202d21] text-2xl text-[#f7ebc6] placeholder:text-gray-600 outline-none focus:border-lime-400"
-      />
-
-      {/* Category & Excerpt */}
-      <div className="flex flex-col md:flex-row gap-6">
-        <select 
-          value={formData.category}
-          onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-          className="p-4 rounded-xl bg-[#121813] border border-[#202d21] text-[#f7ebc6] outline-none focus:border-lime-400"
-        >
-          <option value="REVIEWS">REVIEWS</option>
-          <option value="ESPORTS">ESPORTS</option>
-          <option value="HARDWARE">HARDWARE</option>
-          <option value="INDIE">INDIE</option>
-        </select>
-        
+      <div className="flex flex-col gap-2">
+        <label className="text-[#1a241b] font-black text-lg">ARTICLE TITLE</label>
         <input 
           type="text" 
-          placeholder="คำโปรยย่อหน้าสั้นๆ (Excerpt)"
+          placeholder="หัวข้อบทความ (Title)" 
           required
-          value={formData.excerpt}
-          onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-          className="flex-1 p-4 rounded-xl bg-[#121813] border border-[#202d21] text-[#f7ebc6] outline-none focus:border-lime-400"
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-2xl font-bold text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
         />
       </div>
 
-      {/* Tags */}
-      <div className="flex flex-col gap-2 p-4 rounded-xl bg-[#121813] border border-[#202d21]">
-        <div className="flex flex-wrap gap-2 mb-2">
-          {formData.tags.map(tag => (
-            <span key={tag} className="px-3 py-1 bg-[#1a241b] text-lime-400 rounded-full text-sm flex items-center gap-2">
-              #{tag}
-              <button type="button" onClick={() => removeTag(tag)} className="text-gray-400 hover:text-red-400">&times;</button>
-            </span>
-          ))}
+      {/* Category & Excerpt */}
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col gap-2 w-full md:w-1/3">
+          <label className="text-[#1a241b] font-black text-lg">CATEGORY</label>
+          <select 
+            value={formData.category}
+            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] font-bold outline-none focus:border-[#1a241b] transition-colors appearance-none"
+          >
+            <option value="REVIEWS">REVIEWS</option>
+            <option value="ESPORTS">ESPORTS</option>
+            <option value="HARDWARE">HARDWARE</option>
+            <option value="INDIE">INDIE</option>
+          </select>
         </div>
-        <input 
-          type="text" 
-          placeholder="พิมพ์ Tag แล้วกด Enter..."
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={handleTagAdd}
-          className="bg-transparent border-none outline-none text-[#f7ebc6] w-full"
-        />
+        
+        <div className="flex flex-col gap-2 w-full md:w-2/3">
+          <label className="text-[#1a241b] font-black text-lg">EXCERPT</label>
+          <input 
+            type="text" 
+            placeholder="คำโปรยย่อหน้าสั้นๆ (Excerpt)"
+            required
+            value={formData.excerpt}
+            onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+          />
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[#1a241b] font-black text-lg">TAGS</label>
+        <div className="flex flex-col gap-2 p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d]">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.tags.map(tag => (
+              <span key={tag} className="px-3 py-1 bg-[#1a241b] text-[#f7ebc6] font-bold rounded-full text-sm flex items-center gap-2">
+                #{tag}
+                <button type="button" onClick={() => removeTag(tag)} className="text-[#f7ebc6]/70 hover:text-red-400 transition-colors">&times;</button>
+              </span>
+            ))}
+          </div>
+          <input 
+            type="text" 
+            placeholder="พิมพ์ Tag แล้วกด Enter..."
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagAdd}
+            className="bg-transparent border-none outline-none text-[#1a241b] placeholder:text-[#8a7f5f] font-medium w-full"
+          />
+        </div>
       </div>
 
       {/* Content Editor */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#f7ebc6] font-bold">เนื้อหาบทความ</label>
+        <label className="text-[#1a241b] font-black text-lg">CONTENT</label>
         <TipTapEditor 
           content={formData.content} 
           onChange={(html) => setFormData(prev => ({ ...prev, content: html }))}
@@ -151,9 +163,9 @@ export function AdminArticleForm() {
       <button 
         type="submit" 
         disabled={isLoading}
-        className="w-full py-4 mt-4 bg-lime-400 text-[#0b0f0c] font-bold text-xl rounded-xl hover:bg-lime-500 transition-colors disabled:opacity-50"
+        className="w-full py-4 mt-6 bg-[#1a241b] text-[#f7ebc6] font-black text-xl rounded-xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? 'กำลังบันทึก...' : 'PUBLISH ARTICLE'}
+        {isLoading ? 'PUBLISHING...' : 'PUBLISH ARTICLE'}
       </button>
     </form>
   );

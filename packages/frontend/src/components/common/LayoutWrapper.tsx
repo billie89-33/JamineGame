@@ -11,7 +11,9 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!isAdmin && <Navbar />}
-      <div className="flex-1 flex flex-col h-full w-full">{children}</div>
+      <div className="flex-1">
+        {children}
+      </div>
       {!isAdmin && <Footer />}
     </>
   );

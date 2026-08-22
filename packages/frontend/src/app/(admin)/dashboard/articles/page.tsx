@@ -1,0 +1,110 @@
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { articlesApi } from '@/features/articles/articles.api';
+import { ArticleResponseDto } from '@shared/dto';
+import { Plus, Edit2, Trash2, Search } from 'lucide-react';
+
+export default function AdminArticlesPage() {
+  const [articles, setArticles] = useState<ArticleResponseDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const data = await articlesApi.getArticles();
+      setArticles(data);
+    } catch (error) {
+      console.error("Failed to fetch articles", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full flex flex-col gap-6 font-sans">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#f7ebc6] p-6 rounded-2xl border border-[#d4c38d] shadow-sm">
+        <div>
+          <h1 className="text-3xl font-black text-[#1a241b] uppercase tracking-wider">Articles</h1>
+          <p className="text-[#1a241b]/70 font-medium mt-1">Manage all your gameverse content</p>
+        </div>
+        <Link 
+          href="/dashboard/articles/create"
+          className="flex items-center gap-2 bg-[#1a241b] text-[#f7ebc6] px-6 py-3 rounded-xl font-bold hover:bg-[#2e3b2c] transition-colors"
+        >
+          <Plus size={20} />
+          WRITE NEW
+        </Link>
+      </div>
+
+      <div className="bg-[#f7ebc6] rounded-2xl border border-[#d4c38d] p-6 overflow-hidden">
+        <div className="flex items-center gap-3 bg-[#e8d7a5] px-4 py-3 rounded-xl mb-6 border border-[#d4c38d]">
+          <Search size={20} className="text-[#1a241b]/50" />
+          <input 
+            type="text" 
+            placeholder="Search articles..." 
+            className="bg-transparent border-none outline-none text-[#1a241b] font-medium w-full placeholder:text-[#1a241b]/50"
+          />
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-10 font-bold text-[#1a241b]">LOADING ARTICLES...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b-2 border-[#d4c38d] text-[#1a241b] text-sm uppercase tracking-wider">
+                  <th className="pb-4 font-black">Title</th>
+                  <th className="pb-4 font-black">Category</th>
+                  <th className="pb-4 font-black">Author</th>
+                  <th className="pb-4 font-black">Date</th>
+                  <th className="pb-4 font-black text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {articles.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-10 text-center font-medium text-[#1a241b]/60">
+                      No articles found. Start writing!
+                    </td>
+                  </tr>
+                ) : (
+                  articles.map((article) => (
+                    <tr key={article.id} className="border-b border-[#d4c38d] last:border-0 hover:bg-[#e8d7a5]/50 transition-colors">
+                      <td className="py-4">
+                        <p className="font-bold text-[#1a241b]">{article.title}</p>
+                      </td>
+                      <td className="py-4">
+                        <span className="bg-[#1a241b] text-[#f7ebc6] px-3 py-1 rounded-full text-xs font-bold">
+                          {article.category}
+                        </span>
+                      </td>
+                      <td className="py-4 font-medium text-[#1a241b]">{article.author?.username || 'Unknown'}</td>
+                      <td className="py-4 text-[#1a241b]/80 text-sm">
+                        {new Date(article.createdAt).toLocaleDateString('th-TH')}
+                      </td>
+                      <td className="py-4">
+                        <div className="flex justify-end gap-2">
+                          <button className="p-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] hover:bg-[#d4c38d] transition-colors" title="Edit">
+                            <Edit2 size={16} />
+                          </button>
+                          <button className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Delete">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

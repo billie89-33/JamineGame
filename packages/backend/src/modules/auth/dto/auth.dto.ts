@@ -1,32 +1,35 @@
-import { LoginDto as SharedLoginDto, RegisterDto as SharedRegisterDto } from '@shared/dto';
+import {
+  LoginDto as SharedLoginDto,
+  RegisterDto as SharedRegisterDto,
+} from '@shared/dto';
 import { IsString, IsEmail, MinLength, IsNotEmpty } from 'class-validator';
 
 export class LoginDto extends SharedLoginDto {
   @IsString()
   @IsNotEmpty()
-  username!: string;
+  declare username: string;
 
   @IsString()
   @IsNotEmpty()
-  password!: string;
+  declare password: string;
 }
 
 export class RegisterDto extends SharedRegisterDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
-  username!: string;
+  declare username: string;
 
   @IsEmail()
   @IsNotEmpty()
-  email!: string;
+  declare email: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
-  password!: string;
+  declare password: string;
 
   @IsString()
   @IsNotEmpty()
-  confirm!: string;
+  declare confirm: string;
 }

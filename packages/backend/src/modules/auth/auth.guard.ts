@@ -13,17 +13,18 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    
+
     // ดึง token จาก cookie 'access_token'
     const token = request.cookies?.access_token;
-    
+
     if (!token) {
       throw new UnauthorizedException('Please log in.');
     }
-    
+
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET || 'local_super_secret_gameverse_key_1150!',
+        secret:
+          process.env.JWT_SECRET || 'local_super_secret_gameverse_key_1150!',
       });
       // แปะข้อมูล payload ลงใน request.user เพื่อให้ Controller นำไปใช้ต่อ
       request['user'] = payload;

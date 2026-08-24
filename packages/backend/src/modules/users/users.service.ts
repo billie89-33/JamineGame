@@ -10,7 +10,7 @@ export class UsersService {
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }
-  
+
   async findByUsername(username: string) {
     return this.prisma.user.findUnique({ where: { username } });
   }
@@ -21,7 +21,8 @@ export class UsersService {
     if (existingEmail) throw new ConflictException('อีเมลนี้ถูกใช้งานแล้ว');
 
     const existingUsername = await this.findByUsername(data.username);
-    if (existingUsername) throw new ConflictException('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว');
+    if (existingUsername)
+      throw new ConflictException('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว');
 
     // 2. Hash the password
     const saltRounds = 10;

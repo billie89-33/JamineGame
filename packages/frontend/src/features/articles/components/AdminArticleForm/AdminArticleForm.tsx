@@ -8,21 +8,28 @@ import { useRouter } from 'next/navigation';
 
 export function AdminArticleForm() {
   const router = useRouter();
-  const [formData, setFormData] = useState<CreateArticleDto>({
+  const [formData, setFormData] = useState<Omit<CreateArticleDto, 'tags'>>({
     title: '',
     excerpt: '',
     content: '',
     category: 'REVIEWS',
-    tags: [],
     coverImage: '',
   });
-  const [tagInput, setTagInput] = useState('');
+  const [tagsInput, setTagsInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
   const handleImageUpload = async (file: File) => {
     const res = await articlesApi.uploadImage(file);
     return res.url;
+  };
+
+  const processTags = (tagsString: string) => {
+    if (!tagsString) return [];
+    return tagsString
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag !== "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +44,8 @@ export function AdminArticleForm() {
       await articlesApi.createArticle({
         ...formData,
         coverImage: finalCoverImage,
-      });
+        tags: processTags(tagsInput),
+      } as CreateArticleDto);
 
       alert('สร้างบทความสำเร็จ!');
       router.push('/dashboard/articles'); // หรือพากลับไปหน้าจัดการ
@@ -46,20 +54,6 @@ export function AdminArticleForm() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleTagAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && tagInput.trim() !== '') {
-      e.preventDefault();
-      if (!formData.tags.includes(tagInput.trim())) {
-        setFormData(prev => ({ ...prev, tags: [...prev.tags, tagInput.trim()] }));
-      }
-      setTagInput('');
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tagToRemove) }));
   };
 
   return (
@@ -129,24 +123,13 @@ export function AdminArticleForm() {
       {/* Tags */}
       <div className="flex flex-col gap-2">
         <label className="text-[#1a241b] font-black text-lg">TAGS</label>
-        <div className="flex flex-col gap-2 p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d]">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.tags.map(tag => (
-              <span key={tag} className="px-3 py-1 bg-[#1a241b] text-[#f7ebc6] font-bold rounded-full text-sm flex items-center gap-2">
-                #{tag}
-                <button type="button" onClick={() => removeTag(tag)} className="text-[#f7ebc6]/70 hover:text-red-400 transition-colors">&times;</button>
-              </span>
-            ))}
-          </div>
-          <input 
-            type="text" 
-            placeholder="พิมพ์ Tag แล้วกด Enter..."
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={handleTagAdd}
-            className="bg-transparent border-none outline-none text-[#1a241b] placeholder:text-[#8a7f5f] font-medium w-full"
-          />
-        </div>
+        <input 
+          type="text" 
+          placeholder="ใส่แท็กคั่นด้วยคอมม่า (เช่น esport, review, dota2)"
+          value={tagsInput}
+          onChange={(e) => setTagsInput(e.target.value)}
+          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+        />
       </div>
 
       {/* Content Editor */}

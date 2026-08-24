@@ -11,9 +11,9 @@ export class ArticlesService {
       orderBy: { publishedAt: 'desc' },
       include: {
         author: {
-          select: { username: true }
-        }
-      }
+          select: { username: true },
+        },
+      },
     });
   }
 
@@ -22,9 +22,9 @@ export class ArticlesService {
       where: { id },
       include: {
         author: {
-          select: { username: true }
-        }
-      }
+          select: { username: true },
+        },
+      },
     });
     if (!article) {
       throw new NotFoundException('Article not found');
@@ -37,7 +37,7 @@ export class ArticlesService {
       data: {
         ...data,
         authorId: userId,
-      }
+      },
     });
   }
 }

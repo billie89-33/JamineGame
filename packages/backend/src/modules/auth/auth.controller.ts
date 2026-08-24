@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, Res, Req, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Res,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
@@ -21,9 +31,12 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.login(loginDto);
-    
+
     const isProduction = process.env.NODE_ENV === 'production';
 
     // เซ็ต Cookie ด้วยเงื่อนไข Dev vs Prod
@@ -41,7 +54,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
     const isProduction = process.env.NODE_ENV === 'production';
-    
+
     // ลบ Cookie ทิ้ง
     res.clearCookie('access_token', {
       httpOnly: true,
@@ -62,7 +75,7 @@ export class AuthController {
         id: user.sub,
         username: user.username,
         role: user.role,
-      }
+      },
     };
   }
 }

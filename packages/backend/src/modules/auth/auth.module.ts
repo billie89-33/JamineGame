@@ -9,7 +9,8 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     JwtModule.register({
       global: true, // ทำให้ JWT ใช้ได้กับทุก Guard โดยไม่ต้อง Import ซ้ำ
-      secret: process.env.JWT_SECRET || 'local_super_secret_gameverse_key_1150!',
+      secret:
+        process.env.JWT_SECRET || 'local_super_secret_gameverse_key_1150!',
       signOptions: { expiresIn: '1d' }, // หมดอายุใน 1 วัน
     }),
   ],

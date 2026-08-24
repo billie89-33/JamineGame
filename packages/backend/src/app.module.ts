@@ -8,7 +8,13 @@ import { ArticlesModule } from './modules/articles/articles.module';
 import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, ArticlesModule, UploadModule],
+  imports: [
+    PrismaModule,
+    UsersModule,
+    AuthModule,
+    ArticlesModule,
+    UploadModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

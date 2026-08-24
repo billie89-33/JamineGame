@@ -14,7 +14,6 @@ const kanitFont = Kanit({
   subsets: ["thai", "latin"],
 });
 
-import { LayoutWrapper } from "@/components/common/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Gameverse - Gaming News",
@@ -34,9 +33,7 @@ export default function RootLayout({
           <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#1a241b]/40 rounded-full blur-[150px] mix-blend-screen pointer-events-none -z-10"></div>
           <div className="fixed bottom-1/4 right-0 w-[500px] h-[500px] bg-[#2e3b2c]/40 rounded-full blur-[120px] mix-blend-screen pointer-events-none -z-10"></div>
           
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
+          {children}
         </AuthProvider>
       </body>
     </html>

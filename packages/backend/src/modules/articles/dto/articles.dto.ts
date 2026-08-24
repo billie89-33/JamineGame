@@ -1,29 +1,35 @@
 import { CreateArticleDto as SharedCreateArticleDto } from '@shared/dto';
-import { IsString, IsNotEmpty, IsOptional, IsArray, ArrayMinSize } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsArray,
+  ArrayMinSize,
+} from 'class-validator';
 
 export class CreateArticleDto extends SharedCreateArticleDto {
   @IsString()
   @IsNotEmpty()
-  title!: string;
+  declare title: string;
 
   @IsString()
   @IsNotEmpty()
-  excerpt!: string;
+  declare excerpt: string;
 
   @IsString()
   @IsNotEmpty()
-  content!: string;
+  declare content: string;
 
   @IsString()
   @IsOptional()
-  coverImage?: string;
+  declare coverImage?: string;
 
   @IsString()
   @IsNotEmpty()
-  category!: string;
+  declare category: string;
 
   @IsArray()
   @IsString({ each: true })
   @ArrayMinSize(1)
-  tags!: string[];
+  declare tags: string[];
 }

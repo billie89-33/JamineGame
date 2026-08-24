@@ -21,4 +21,7 @@ export class ArticleResponseDto {
   commentsCount!: number;
   createdAt!: Date | string;
   updatedAt!: Date | string;
+  author?: {
+    username: string;
+  };
 }

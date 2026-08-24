@@ -7,7 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   const isProduction = process.env.NODE_ENV === 'production';
 
   // 0. Cookie Parser
@@ -18,7 +18,7 @@ async function bootstrap() {
 
   // 2. Enable CORS
   app.enableCors({
-    origin: isProduction 
+    origin: isProduction
       ? (process.env.FRONTEND_URL as string) // บน Production ให้รับเฉพาะ Vercel
       : ['http://localhost:3000', 'http://127.0.0.1:3000'], // บน Dev ให้รับ Localhost
     credentials: true,
@@ -33,7 +33,6 @@ async function bootstrap() {
     }),
   );
 
-  
   // === ตั้งค่า Swagger ===
   const config = new DocumentBuilder()
     .setTitle('Gameverse API')

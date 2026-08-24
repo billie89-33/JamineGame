@@ -124,3 +124,56 @@ backend/
    - วิธีที่ 1: ใช้ NestJS จัดการ Auth ทั้งหมดผ่าน JWT แล้วให้ Next.js ส่ง HTTP-Only Cookies (เหมาะกับการเก็บ Logic ไว้ที่เดียว)
    - วิธีที่ 2: ใช้ Supabase Auth (Client) บน Next.js เลย แล้วส่ง JWT Access Token มาให้ NestJS ตรวจสอบความถูกต้องผ่าน Guard
 4. **Validation**: ติดตั้ง `zod` หรือ `class-validator` ใน NestJS DTO เพื่อกรองข้อมูลที่ถูกส่งมาจาก Next.js เสมอ
+---
+
+## 5. 🚀 Feature Development Workflow Pattern (มาตรฐานการสร้างฟีเจอร์)
+
+ขั้นตอนการทำงานมาตรฐาน (Standard Operating Procedure) เมื่อต้องการสร้าง 1 Feature ใหม่ในโปรเจกต์ เพื่อให้การพัฒนาเป็นระบบ คลีน และจบงานได้อย่างสมบูรณ์
+
+### Step 1: 🎨 สร้าง UI & Frontend Skeleton
+เริ่มต้นจากฝั่งที่ User มองเห็น เพื่อกำหนดขอบเขตและ Data ที่จำเป็นต้องใช้
+1. สร้าง UI Component หรือหน้า Page ในโฟลเดอร์ฝั่ง rontend
+2. วางโครง Mock Data ชั่วคราว (ถ้าจำเป็น) เพื่อจัด Layout
+3. ออกแบบว่า UI นี้ต้องการรับ-ส่ง Data รูปแบบไหน (ใช้เป็นแกนในการไปทำ API)
+
+### Step 2: 🗄️ จัดการ Database Schema (Prisma)
+เมื่อรู้แล้วว่า UI ต้องการข้อมูลอะไร ให้กลับมาทำโครงสร้างหลังบ้าน
+1. ไปที่ ackend/prisma/schema.prisma
+2. เพิ่มหรืออัปเดต Model ให้สอดคล้องกับ Requirement
+3. รันคำสั่ง 
+px prisma format และ 
+px prisma generate
+4. รัน Migration (เช่น 
+px prisma migrate dev --name add_new_feature)
+
+### Step 3: ⚙️ สร้าง Backend API (NestJS)
+สร้างท่อส่งข้อมูลเพื่อเชื่อม Database กับ UI
+1. ใช้ CLI สร้าง Module (หรือสร้างไฟล์เอง): Controller, Service, Module
+2. สร้างและแชร์ DTO (Data Transfer Object) ในโฟลเดอร์ @shared/dto เพื่อให้ Type ตรงกันทั้งหน้าบ้าน-หลังบ้าน (อย่าลืมรัน build ฝั่ง shared)
+3. เขียน Logic ใน Service และเปิด Endpoint ใน Controller
+
+### Step 4: ⚡ ทดสอบ API ด้วยไฟล์ .http (REST Client)
+ก่อนเอาไปต่อหน้าบ้าน ต้องเทสหลังบ้านให้ชัวร์ก่อน
+1. ไปที่ไฟล์ pi.http ที่ Root ของโปรเจกต์
+2. เขียน Request เส้นใหม่ที่เพิ่งสร้างขึ้นมา
+3. กดยิงทดสอบ (เช็คเรื่อง Auth Token, Error Handling และ Data ที่คืนกลับมา)
+
+### Step 5: 🔗 เชื่อม Frontend เข้ากับ Backend API
+เอาหน้าบ้านที่สร้างไว้ใน Step 1 มาต่อกับของจริง
+1. สร้างไฟล์ API Client (เช่น eature.api.ts ในฝั่ง Frontend)
+2. เรียกใช้ DTO ที่แชร์มาจาก @shared/dto
+3. ผูก API เข้ากับ UI (จัดการ State Loading, Error, และ Success)
+
+### Step 6: 🧪 บังคับทำ Unit Test (Crucial Step!)
+**⚠️ ทวงถามและบังคับตัวเองเสมอ:** "เทสแล้วหรือยัง?"
+1. กลับไปที่ฝั่ง Backend
+2. สร้างไฟล์ *.spec.ts (เช่น eature.service.spec.ts, eature.controller.spec.ts)
+3. จำลอง (Mock) Prisma Service หรือ Dependencies ต่างๆ
+4. รัน 
+pm run test -w backend และต้องมั่นใจว่าไม่มี Error (Pass 100%)
+
+---
+
+## 🤖 คำสั่งสำหรับ AI (Prompt Instruction)
+เมื่อให้ AI ช่วยสร้าง Feature ใหม่ ให้แนบคำสั่งนี้ต่อท้ายเสมอ:
+> *"ช่วยสร้างฟีเจอร์ [ชื่อฟีเจอร์] โดยทำตามมาตรฐานข้อ 5. Feature Development Workflow ในไฟล์ doc.md ค่อยๆ ทำทีละสเต็ป เริ่มจาก UI -> Schema -> API -> ไฟล์ .http และสุดท้าย**ต้องบังคับให้ผม/คุณทำ Unit test** เสมอ"*

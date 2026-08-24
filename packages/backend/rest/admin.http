@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:3001
+
+### ========================================
+### 🛡️ ADMIN APIs (Requires Auth / Admin Role)
+### ========================================
+
+### 1. เข้าสู่ระบบของ Admin (Login as Admin)
+# ต้องใช้ Cookie จาก Admin เพื่อยิงเส้นอื่นต่อ
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin_user",
+  "password": "securepassword123"
+}
+
+### ==================== ARTICLES MANAGEMENT ====================
+
+### 2. สร้างบทความใหม่ (Create Article)
+# ต้อง Login เป็น Admin (หรือ User ที่มีสิทธิ์)
+POST {{baseUrl}}/articles
+Content-Type: application/json
+
+{
+  "title": "ข่าวประกาศจากทีมงาน",
+  "excerpt": "อัปเดตแพทช์ใหม่ล่าสุด 2.0",
+  "content": "<p>รายละเอียดเนื้อหาอัปเดต...</p>",
+  "category": "NEWS",
+  "tags": ["update", "patch2.0", "announcement"],
+  "coverImage": "https://example.com/admin-cover.jpg"
+}
+
+### ==================== UPLOAD ====================
+
+### 3. อัปโหลดรูปภาพ (Upload Image)
+# เนื่องจากเป็น File Upload ผ่าน REST Client จะต้องใช้ท่า multipart/form-data
+# และต้องชี้ path ของรูปภาพในเครื่อง
+POST {{baseUrl}}/upload/image
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

@@ -1,0 +1,54 @@
+@baseUrl = http://localhost:3001
+
+### ========================================
+### 👤 PUBLIC & USER APIs
+### ========================================
+
+### 1. ทดสอบระบบ (Health Check)
+GET {{baseUrl}}/
+Accept: application/json
+
+### ==================== AUTH ====================
+
+### 2. สมัครสมาชิก (Register)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "player1",
+  "email": "player1@example.com",
+  "password": "password123",
+  "confirm": "password123"
+}
+
+### 3. เข้าสู่ระบบ (Login)
+# หากสำเร็จ Extension จะจำ Cookie ไว้ให้ใช้อัตโนมัติ
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "player1",
+  "password": "password123"
+}
+
+### 4. ดึงข้อมูลโปรไฟล์ของฉัน (Get Profile)
+# ต้อง Login ก่อน
+GET {{baseUrl}}/auth/me
+Accept: application/json
+
+### 5. ออกจากระบบ (Logout)
+POST {{baseUrl}}/auth/logout
+Accept: application/json
+
+
+### ==================== ARTICLES ====================
+
+### 6. ดูบทความทั้งหมด (Get All Articles)
+GET {{baseUrl}}/articles
+Accept: application/json
+
+### 7. ดูบทความรายตัว (Get Article by ID)
+# ใส่ ID ที่ต้องการดึงข้อมูล
+@articleId = replace-this-with-article-id
+GET {{baseUrl}}/articles/{{articleId}}
+Accept: application/json

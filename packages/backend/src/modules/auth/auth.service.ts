@@ -19,7 +19,10 @@ export class AuthService {
     }
 
     // 2. เช็ครหัสผ่าน
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
     }
@@ -32,8 +35,8 @@ export class AuthService {
         id: user.id,
         email: user.email,
         username: user.username,
-        role: user.role
-      }
+        role: user.role,
+      },
     };
   }
 }

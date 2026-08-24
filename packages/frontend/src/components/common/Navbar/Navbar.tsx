@@ -23,70 +23,71 @@ export const Navbar = () => {
 
   return (
     <div className="w-full sticky top-0 z-50">
-      <nav className="w-full backdrop-blur-xl bg-[#f7ebc6]/90 border-b border-[#d4c38d] px-4 md:px-8 lg:px-12 py-4 flex justify-between items-center shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]">
-        
-        {/* Left Side: Hamburger (Mobile) + Logo */}
-        <div className="flex items-center gap-4">
-          <button 
-            className="md:hidden text-2xl text-[#1a241b] hover:text-[#B05B27] transition-colors"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Open Mobile Menu"
-          >
-            ☰
-          </button>
-          <Link href="/" className="text-2xl font-black tracking-widest text-[#1a241b] drop-shadow-sm hover:text-[#B05B27] transition-colors cursor-pointer">
-            GAMEVERSE
-          </Link>
-        </div>
-
-        {/* Center: Desktop Links */}
-        <div className="hidden md:flex gap-8 font-bold text-sm text-[#4a574b] items-center relative">
-          <Link href="/" className="text-[#1a241b] drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:text-[#B05B27] transition-colors">หน้าแรก</Link>
-          <Link href="/news" className="hover:text-[#1a241b] transition-colors">ข่าวเกม</Link>
-          
-          <div className="relative py-2" ref={dropdownRef}>
+      <nav className="w-full backdrop-blur-xl bg-[#f7ebc6]/90 border-b border-[#d4c38d] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-4 flex justify-between items-center w-full">
+          {/* Left Side: Hamburger (Mobile) + Logo */}
+          <div className="flex items-center gap-4">
             <button 
-              className="flex items-center gap-1 hover:text-[#1a241b] transition-colors"
-              onClick={() => setIsGamesOpen(!isGamesOpen)}
+              className="md:hidden text-2xl text-[#1a241b] hover:text-[#B05B27] transition-colors"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open Mobile Menu"
             >
-              เกม <span className="text-[10px]">{isGamesOpen ? '▲' : '▼'}</span>
+              ☰
             </button>
+            <Link href="/" className="text-2xl font-black tracking-widest text-[#1a241b] drop-shadow-sm hover:text-[#B05B27] transition-colors cursor-pointer">
+              GAMEVERSE
+            </Link>
+          </div>
+
+          {/* Center: Desktop Links */}
+          <div className="hidden md:flex gap-8 font-bold text-sm text-[#4a574b] items-center relative">
+            <Link href="/" className="text-[#1a241b] drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:text-[#B05B27] transition-colors">หน้าแรก</Link>
+            <Link href="/news" className="hover:text-[#1a241b] transition-colors">ข่าวเกม</Link>
             
-            {isGamesOpen && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-[#f7ebc6] border border-[#d4c38d] rounded-lg shadow-xl transition-all duration-300">
-                <div className="py-2 flex flex-col font-medium">
-                  <Link href="/games/online" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>🌍 เกม Online</Link>
-                  <Link href="/games/coop" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>🤝 เกม Co-op</Link>
-                  <Link href="/games/singleplayer" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>👤 เกมเล่นคนเดียว</Link>
-                  <Link href="/games/indie" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>💎 เกมอินดี้</Link>
+            <div className="relative py-2" ref={dropdownRef}>
+              <button 
+                className="flex items-center gap-1 hover:text-[#1a241b] transition-colors"
+                onClick={() => setIsGamesOpen(!isGamesOpen)}
+              >
+                เกม <span className="text-[10px]">{isGamesOpen ? '▲' : '▼'}</span>
+              </button>
+              
+              {isGamesOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-[#f7ebc6] border border-[#d4c38d] rounded-lg shadow-xl transition-all duration-300">
+                  <div className="py-2 flex flex-col font-medium">
+                    <Link href="/games/online" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>🌍 เกม Online</Link>
+                    <Link href="/games/coop" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>🤝 เกม Co-op</Link>
+                    <Link href="/games/singleplayer" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>👤 เกมเล่นคนเดียว</Link>
+                    <Link href="/games/indie" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>💎 เกมอินดี้</Link>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            <Link href="/about" className="hover:text-[#1a241b] transition-colors">เกี่ยวกับเรา</Link>
           </div>
 
-          <Link href="/about" className="hover:text-[#1a241b] transition-colors">เกี่ยวกับเรา</Link>
-        </div>
-
-        {/* Right Side: Search + Auth */}
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center bg-[#e8d7a5] border border-[#d4c38d] rounded-full px-4 py-2 shadow-inner cursor-pointer hover:bg-[#e0cba0] transition-colors">
-            <span className="text-sm text-[#5d6b5e]">Search games...</span>
-            <span className="ml-4 text-[#1a241b]">🔍</span>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-2">
-            <Link 
-              href="/login" 
-              className="px-4 py-2 text-sm font-bold text-[#1a241b] hover:text-[#B05B27] transition-colors"
-            >
-              SIGN IN
-            </Link>
-            <Link 
-              href="/register" 
-              className="px-4 py-2 text-sm font-bold bg-[#1a241b] text-[#f7ebc6] rounded-full hover:bg-[#B05B27] shadow-[0_0_15px_rgba(250,214,97,0.4)] transition-all hover:scale-105"
-            >
-              SIGN UP
-            </Link>
+          {/* Right Side: Search + Auth */}
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center bg-[#e8d7a5] border border-[#d4c38d] rounded-full px-4 py-2 shadow-inner cursor-pointer hover:bg-[#e0cba0] transition-colors">
+              <span className="text-sm text-[#5d6b5e]">Search games...</span>
+              <span className="ml-4 text-[#1a241b]">🔍</span>
+            </div>
+            
+            <div className="hidden md:flex items-center gap-2">
+              <Link 
+                href="/login" 
+                className="px-4 py-2 text-sm font-bold text-[#1a241b] hover:text-[#B05B27] transition-colors"
+              >
+                SIGN IN
+              </Link>
+              <Link 
+                href="/register" 
+                className="px-4 py-2 text-sm font-bold bg-[#1a241b] text-[#f7ebc6] rounded-full hover:bg-[#B05B27] shadow-[0_0_15px_rgba(250,214,97,0.4)] transition-all hover:scale-105"
+              >
+                SIGN UP
+              </Link>
+            </div>
           </div>
         </div>
       </nav>

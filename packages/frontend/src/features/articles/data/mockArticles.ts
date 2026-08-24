@@ -92,6 +92,61 @@ export const MOCK_ARTICLES: Article[] = [
     publishedAt: 'August 10, 2024',
     readTime: '4 min read',
     commentsCount: 22
+  },
+  {
+    id: 'retro-gaming-comeback',
+    title: 'Why Retro Gaming is Making a Massive Comeback',
+    excerpt: 'Players are flocking back to 8-bit and 16-bit classics. We explore the nostalgia factor.',
+    content: '<p class="text-xl">Nostalgia is a powerful force in gaming...</p>',
+    coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200',
+    category: 'RETRO',
+    tags: ['RETRO', 'NOSTALGIA', 'CLASSIC'],
+    author: {
+      name: 'Emma',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100'
+    },
+    publishedAt: 'August 15, 2024',
+    readTime: '6 min read',
+    commentsCount: 34
+  },
+  {
+    id: 'cyberpunk-revival',
+    title: 'Cyberpunk Revival: The Comeback Story of the Decade',
+    excerpt: 'After a disastrous launch, continuous updates have turned this sci-fi RPG into a masterpiece.',
+    content: '<p>The redemption arc is complete...</p>',
+    coverImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200',
+    category: 'REVIEWS',
+    tags: ['RPG', 'CYBERPUNK', 'UPDATE'],
+    author: { name: 'Kevin', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=100' },
+    publishedAt: 'August 18, 2024',
+    readTime: '7 min read',
+    commentsCount: 112
+  },
+  {
+    id: 'best-coop-games-2024',
+    title: 'Top 10 Co-Op Games to Ruin Your Friendships',
+    excerpt: 'Looking for a game to test your relationship? These cooperative titles are pure chaos.',
+    content: '<p>Communication is key, but yelling is funnier...</p>',
+    coverImage: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200',
+    category: 'FEATURES',
+    tags: ['CO-OP', 'MULTIPLAYER', 'LIST'],
+    author: { name: 'Lily', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100' },
+    publishedAt: 'August 20, 2024',
+    readTime: '5 min read',
+    commentsCount: 56
+  },
+  {
+    id: 'console-war-ends',
+    title: 'Is the Traditional Console War Finally Over?',
+    excerpt: 'With cross-platform play and cloud gaming on the rise, hardware exclusivity is dying.',
+    content: '<p>The era of buying a box just for one game is fading...</p>',
+    coverImage: 'https://images.unsplash.com/photo-1605901309584-818e25960b8f?auto=format&fit=crop&q=80&w=1200',
+    category: 'OPINION',
+    tags: ['CONSOLE', 'INDUSTRY', 'FUTURE'],
+    author: { name: 'Marcus', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=100' },
+    publishedAt: 'August 22, 2024',
+    readTime: '6 min read',
+    commentsCount: 201
   }
 ];
 
@@ -99,6 +154,6 @@ export const getArticleById = (id: string): Article | undefined => {
   return MOCK_ARTICLES.find(article => article.id === id);
 };
 
-export const getRecentArticles = (limit: number = 4): Article[] => {
-  return MOCK_ARTICLES.slice(0, limit);
+export const getRecentArticles = (limit: number = 4, skip: number = 0): Article[] => {
+  return MOCK_ARTICLES.slice(skip, skip + limit);
 };

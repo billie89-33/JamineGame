@@ -3,36 +3,54 @@ import Link from 'next/link';
 import { getRecentArticles } from '../../data/mockArticles';
 
 export const HeroArticle = () => {
-  const featuredArticle = getRecentArticles(1)[0];
+  // Get 5 articles: 1 for big left, 4 for right grid
+  const articles = getRecentArticles(5);
+  const mainArticle = articles[0];
+  const subArticles = articles.slice(1, 5);
 
   return (
-    <section className="mb-16">
-      <div className="group relative w-full bg-[#B05B27]/90 border border-[#d4c38d] p-6 lg:p-12 transition-all duration-700 hover:shadow-[0_20px_60px_-15px_rgba(176,91,39,0.5)] flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
-        {/* Cover Image */}
-        <div className="w-full lg:w-[62%] aspect-[4/3] md:aspect-video overflow-hidden relative shadow-inner">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1a241b]/20 to-[#0b0f0c]/60 mix-blend-overlay z-10"></div>
-          <img 
-            src={featuredArticle.coverImage} 
-            alt={featuredArticle.title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
-          />
-          <div className="absolute bottom-6 left-6 z-20 flex gap-3">
-            <span className="bg-[#1a241b]/60 backdrop-blur-md border border-[#f7ebc6] text-[#f7ebc6] text-sm font-black px-4 py-1.5 shadow-md">FEATURED</span>
-            <span className="bg-[#1a241b]/60 backdrop-blur-md border border-[#f7ebc6] text-[#f7ebc6] text-sm font-bold px-4 py-1.5 shadow-md uppercase">{featuredArticle.category}</span>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="w-full lg:w-[38%] flex flex-col justify-center py-4 lg:py-0">
-          <h1 className="text-4xl lg:text-6xl font-black text-[#f7ebc6] mb-6 leading-tight group-hover:text-white transition-colors duration-500 drop-shadow-md">
-            {featuredArticle.title}
-          </h1>
-          <p className="text-[#f7ebc6]/90 text-lg font-medium mb-8 leading-relaxed">
-            {featuredArticle.excerpt}
-          </p>
-          <Link href={`/article/${featuredArticle.id}`} className="self-start px-10 py-4 bg-[#f7ebc6] font-bold text-lg text-[#B05B27] hover:bg-white hover:shadow-[0_0_20px_rgba(247,235,198,0.4)] transition-all duration-300">
-            READ REVIEW
+    <section className="mb-12 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[400px] lg:h-[480px]">
+        {/* Big Image (Left) */}
+        {mainArticle && (
+          <Link href={`/article/${mainArticle.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/30 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
+            <img 
+              src={mainArticle.coverImage} 
+              alt={mainArticle.title} 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+            />
+            <div className="absolute bottom-6 left-6 right-6 z-20 flex flex-col items-start">
+              <span className="bg-[#B05B27] text-[#f7ebc6] text-xs font-black px-3 py-1 shadow-md uppercase mb-3 tracking-wider">
+                {mainArticle.category}
+              </span>
+              <h2 className="text-2xl lg:text-3xl xl:text-4xl font-black text-[#f7ebc6] leading-tight line-clamp-2 drop-shadow-lg group-hover:text-white transition-colors">
+                {mainArticle.title}
+              </h2>
+            </div>
           </Link>
+        )}
+
+        {/* 4 Small Images (Right) 2x2 */}
+        <div className="hidden lg:grid grid-cols-2 grid-rows-2 gap-4 h-full">
+          {subArticles.map((article) => (
+            <Link key={article.id} href={`/article/${article.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/20 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
+              <img 
+                src={article.coverImage} 
+                alt={article.title} 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+              />
+              <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-col items-start">
+                <span className="bg-[#1a241b]/80 backdrop-blur-sm text-[#f7ebc6] text-[10px] font-bold px-2 py-0.5 shadow-md uppercase mb-2">
+                  {article.category}
+                </span>
+                <h3 className="text-sm xl:text-base font-bold text-[#f7ebc6] leading-tight line-clamp-2 drop-shadow-md group-hover:text-[#B05B27] transition-colors">
+                  {article.title}
+                </h3>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

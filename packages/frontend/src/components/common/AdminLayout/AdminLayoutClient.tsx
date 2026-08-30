@@ -6,46 +6,26 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut, Gamepad2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-  const { logout, user, isLoading } = useAuth();
+const menuItems = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Games', href: '/dashboard/games', icon: Gamepad2 },
+  { name: 'Articles', href: '/dashboard/articles', icon: FileText },
+  { name: 'Users', href: '/dashboard/users', icon: Users },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+];
 
-  React.useEffect(() => {
-    // 🚧 DEV BYPASS: ปลดล็อคให้เข้าดู UI ได้เลยตอนเขียนโค้ด
-    // if (process.env.NODE_ENV === 'development') {
-    //   return;
-    // }
-
-    if (!isLoading) {
-      if (!user) {
-        router.push('/login');
-      } else if (user.role !== 'ADMIN') {
-        alert('Access Denied: Admin only');
-        router.push('/');
-      }
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading && process.env.NODE_ENV !== 'development') {
-    return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">LOADING...</div>;
-  }
-
-  // ป้องกันการ render ถ้าไม่ใช่ Admin
-  if (!user || user.role !== 'ADMIN') {
-    return null;
-  }
-
-  const menuItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Games', href: '/dashboard/games', icon: Gamepad2 },
-    { name: 'Articles', href: '/dashboard/articles', icon: FileText },
-    { name: 'Users', href: '/dashboard/users', icon: Users },
-    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
-  ];
-
-  const SidebarContent = () => (
+function SidebarContent({ 
+  pathname, 
+  user, 
+  logout, 
+  setIsSidebarOpen 
+}: { 
+  pathname: string, 
+  user: any, 
+  logout: () => void, 
+  setIsSidebarOpen: (v: boolean) => void 
+}) {
+  return (
     <div className="flex flex-col h-full bg-[#1a241b] text-[#f7ebc6] p-6 w-64 md:w-full border-r border-[#202d21]">
       <div className="flex items-center justify-between mb-10">
         <h2 className="text-2xl font-black text-lime-400">GAMEVERSE<br/><span className="text-[#f7ebc6]">ADMIN</span></h2>
@@ -99,6 +79,48 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
+}
+
+export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { logout, user, isLoading } = useAuth();
+
+  React.useEffect(() => {
+    // 🚧 DEV BYPASS: ปลดล็อคให้เข้าดู UI ได้เลยตอนเขียนโค้ด
+    // if (process.env.NODE_ENV === 'development') {
+    //   return;
+    // }
+
+    if (!isLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.role !== 'ADMIN') {
+        alert('Access Denied: Admin only');
+        router.push('/');
+      }
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading && process.env.NODE_ENV !== 'development') {
+    return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">LOADING...</div>;
+  }
+
+  // ป้องกันการ render ถ้าไม่ใช่ Admin
+  if (!user || user.role !== 'ADMIN') {
+    return null;
+  }
+
+  const menuItems = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Games', href: '/dashboard/games', icon: Gamepad2 },
+    { name: 'Articles', href: '/dashboard/articles', icon: FileText },
+    { name: 'Users', href: '/dashboard/users', icon: Users },
+    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  ];
+
+
 
   return (
     <div className="flex h-screen w-full bg-[#0b0f0c] overflow-hidden font-sans relative">
@@ -121,14 +143,14 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
             className="h-full shadow-2xl transition-transform transform translate-x-0" 
             onClick={e => e.stopPropagation()}
           >
-            <SidebarContent />
+            <SidebarContent pathname={pathname} user={user} logout={logout} setIsSidebarOpen={setIsSidebarOpen} />
           </div>
         </div>
       )}
 
       {/* Desktop Sidebar */}
       <div className="hidden md:flex md:w-64 md:flex-shrink-0 h-full">
-        <SidebarContent />
+        <SidebarContent pathname={pathname} user={user} logout={logout} setIsSidebarOpen={setIsSidebarOpen} />
       </div>
 
       {/* Main Content Area */}

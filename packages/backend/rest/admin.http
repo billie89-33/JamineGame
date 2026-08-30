@@ -4,6 +4,17 @@
 ### 🛡️ ADMIN APIs (Requires Auth / Admin Role)
 ### ========================================
 
+### 0. สมัครบัญชี Admin (Register Admin)
+POST {{baseUrl}}/auth/register-admin
+Content-Type: application/json
+
+{
+  "username": "admin_user",
+  "email": "admin@gameverse.com",
+  "password": "securepassword123",
+  "confirm": "securepassword123"
+}
+
 ### 1. เข้าสู่ระบบของ Admin (Login as Admin)
 # ต้องใช้ Cookie จาก Admin เพื่อยิงเส้นอื่นต่อ
 POST {{baseUrl}}/auth/login

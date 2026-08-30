@@ -26,13 +26,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f0c] flex items-center justify-center font-sans py-12 p-4 relative">
-      <Link href="/" className="absolute top-8 left-8 text-lime-400 hover:text-lime-300 flex items-center gap-2 font-bold transition-colors">
-        <ArrowLeft size={20} />
-        BACK TO HOME
-      </Link>
-
+    <div className="min-h-screen bg-[#0b0f0c] flex items-center justify-center font-sans py-12 p-4">
       <div className="w-full max-w-md bg-[#f7ebc6] rounded-3xl p-8 border border-[#d4c38d] shadow-[0_15px_40px_-10px_rgba(250,214,97,0.3)]">
+        <Link href="/" className="inline-flex items-center gap-2 text-[#1a241b]/60 hover:text-[#1a241b] font-bold text-sm mb-6 transition-colors">
+          <ArrowLeft size={16} />
+          BACK TO HOME
+        </Link>
         <h1 className="text-3xl font-black text-[#1a241b] mb-6 text-center">CREATE ACCOUNT</h1>
         
         <form onSubmit={handleRegister} className="flex flex-col gap-4">

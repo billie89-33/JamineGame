@@ -14,6 +14,17 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
+    // ==========================================
+    // 🚧 TODO: เปลี่ยนเป็น false เมื่อต้องการเปิดใช้งานระบบ Login (ตรวจจับสิทธิ์) จริงๆ
+    const DEV_BYPASS = false; 
+    // ==========================================
+    
+    if (DEV_BYPASS) {
+      // จำลองข้อมูลแอดมิน เพื่อให้สร้าง/แก้ไข ข้อมูลได้โดยไม่ติด Error Foreign Key
+      request['user'] = { sub: '276027ba-3f97-42b8-b19d-ebc87196ccea', username: 'DevAdmin', role: 'ADMIN' };
+      return true;
+    }
+
     // ดึง token จาก cookie 'access_token'
     const token = request.cookies?.access_token;
 

@@ -13,10 +13,10 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const { logout, user, isLoading } = useAuth();
 
   React.useEffect(() => {
-    // 🚧 DEV BYPASS: ปลดล็อคให้เข้าดู UI ได้เลยตอนเขียนโค้ด (ถ้าขึ้น Production จะกลับมาล็อคปกติ)
-    if (process.env.NODE_ENV === 'development') {
-      return;
-    }
+    // 🚧 DEV BYPASS: ปลดล็อคให้เข้าดู UI ได้เลยตอนเขียนโค้ด
+    // if (process.env.NODE_ENV === 'development') {
+    //   return;
+    // }
 
     if (!isLoading) {
       if (!user) {
@@ -32,8 +32,8 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
     return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">LOADING...</div>;
   }
 
-  // ป้องกันการ render ถ้าไม่ใช่ Admin (ยกเว้นโหมด Dev)
-  if ((!user || user.role !== 'ADMIN') && process.env.NODE_ENV !== 'development') {
+  // ป้องกันการ render ถ้าไม่ใช่ Admin
+  if (!user || user.role !== 'ADMIN') {
     return null;
   }
 

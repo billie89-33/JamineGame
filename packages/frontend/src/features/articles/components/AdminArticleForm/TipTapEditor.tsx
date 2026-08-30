@@ -13,7 +13,21 @@ interface TipTapEditorProps {
   onChange: (html: string) => void;
   onImageUpload?: (file: File) => Promise<string>;
 }
+interface ToolbarButtonProps {
+  onClick: () => void;
+  isActive?: boolean;
+  children: React.ReactNode;
+}
 
+const ToolbarButton = ({ onClick, isActive, children }: ToolbarButtonProps) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`p-2 rounded-lg font-bold transition-colors ${isActive ? 'bg-[#1a241b] text-[#f7ebc6]' : 'text-[#1a241b] hover:bg-[#d4c38d]'}`}
+  >
+    {children}
+  </button>
+);
 export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -75,15 +89,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
 
   if (!editor) return null;
 
-  const ToolbarButton = ({ onClick, isActive, children }: any) => (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`p-2 rounded-lg font-bold transition-colors ${isActive ? 'bg-[#1a241b] text-[#f7ebc6]' : 'text-[#1a241b] hover:bg-[#d4c38d]'}`}
-    >
-      {children}
-    </button>
-  );
+
 
   return (
     <div className="w-full flex flex-col rounded-xl overflow-hidden shadow-sm">

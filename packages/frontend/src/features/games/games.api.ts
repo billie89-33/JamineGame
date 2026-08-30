@@ -17,7 +17,7 @@ export const gamesApi = {
     return response.json();
   },
 
-  createGame: async (data: any) => {
+  createGame: async (data: Record<string, unknown>) => {
     const response = await fetch(`${API_URL}/games`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -28,7 +28,7 @@ export const gamesApi = {
     return response.json();
   },
 
-  updateGame: async (id: string, data: any) => {
+  updateGame: async (id: string, data: Record<string, unknown>) => {
     const response = await fetch(`${API_URL}/games/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

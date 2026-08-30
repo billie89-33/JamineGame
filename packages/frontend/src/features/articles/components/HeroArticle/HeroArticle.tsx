@@ -51,12 +51,12 @@ export const HeroArticle = async () => {
 
         {/* 4 Small Images (Right) 2x2 */}
         <div className="hidden lg:grid grid-cols-2 grid-rows-2 gap-4 h-full">
-          {subArticles.map((article) => (
-            <Link key={article.id} href={`/article/${article.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
+          {subArticles.map((article: Record<string, unknown>) => (
+            <Link key={article.id as string} href={`/article/${article.id as string}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/20 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
               <img 
-                src={article.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600'} 
-                alt={article.title} 
+                src={(article.coverImage as string) || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600'} 
+                alt={article.title as string} 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />
               <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-col items-start">

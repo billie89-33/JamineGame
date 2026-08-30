@@ -38,15 +38,15 @@ export const ArticleGrid = async () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-        {recentArticles.map((article) => (
+        {recentArticles.map((article: Record<string, unknown>) => (
           <ArticleCard 
-            key={article.id}
-            id={article.id}
-            title={article.title}
-            excerpt={article.excerpt}
-            imageUrl={article.coverImage}
-            category={article.category}
-            date={article.publishedAt}
+            key={article.id as string}
+            id={article.id as string}
+            title={article.title as string}
+            excerpt={article.excerpt as string}
+            imageUrl={article.coverImage as string}
+            category={article.category as string}
+            date={article.publishedAt as string}
           />
         ))}
       </div>

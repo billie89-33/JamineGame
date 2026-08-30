@@ -19,8 +19,8 @@ async function bootstrap() {
   // 2. Enable CORS
   app.enableCors({
     origin: isProduction
-      ? (process.env.FRONTEND_URL as string) // บน Production ให้รับเฉพาะ Vercel
-      : ['http://localhost:3000', 'http://127.0.0.1:3000'], // บน Dev ให้รับ Localhost
+      ? [process.env.FRONTEND_URL as string, 'https://jamine-game-frontend.vercel.app'].filter(Boolean)
+      : ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://jamine-game-frontend.vercel.app'],
     credentials: true,
   });
 

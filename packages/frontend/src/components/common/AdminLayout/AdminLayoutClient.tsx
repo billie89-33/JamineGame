@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut } from 'lucide-react';
+import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut, Gamepad2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
@@ -39,6 +39,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
 
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Games', href: '/dashboard/games', icon: Gamepad2 },
     { name: 'Articles', href: '/dashboard/articles', icon: FileText },
     { name: 'Users', href: '/dashboard/users', icon: Users },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },

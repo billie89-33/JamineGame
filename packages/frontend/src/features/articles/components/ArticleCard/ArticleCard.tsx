@@ -17,7 +17,7 @@ export const ArticleCard = ({ id, title, excerpt, imageUrl, category, date }: Ar
       <div className="w-full aspect-[4/3] rounded-xl bg-[#e8d7a5] mb-4 overflow-hidden relative shadow-inner">
         <div className="absolute inset-0 bg-[#1a241b]/10 mix-blend-overlay z-10 group-hover:opacity-0 transition-opacity"></div>
         <img 
-          src={imageUrl} 
+          src={imageUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800'} 
           alt={title} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 grayscale-[20%] group-hover:grayscale-0" 
         />

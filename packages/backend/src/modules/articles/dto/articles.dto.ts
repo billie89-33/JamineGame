@@ -32,4 +32,12 @@ export class CreateArticleDto extends SharedCreateArticleDto {
   @IsString({ each: true })
   @ArrayMinSize(1)
   declare tags: string[];
+
+  @IsString()
+  @IsOptional()
+  declare gameId?: string;
 }
+
+import { PartialType } from '@nestjs/swagger';
+
+export class UpdateArticleDto extends PartialType(CreateArticleDto) {}

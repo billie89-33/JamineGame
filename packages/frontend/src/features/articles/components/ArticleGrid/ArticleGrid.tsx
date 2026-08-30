@@ -2,9 +2,31 @@ import React from 'react';
 import { ArticleCard } from '../ArticleCard';
 import { getRecentArticles } from '../../data/mockArticles';
 
-export const ArticleGrid = () => {
-  // Skip the 5 articles already shown in the Hero banner
-  const recentArticles = getRecentArticles(6, 5); 
+export const ArticleGrid = async () => {
+  let allArticles = [];
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const res = await fetch(`${apiUrl}/articles?page=1&limit=11`, { 
+      next: { revalidate: 60 },
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      allArticles = data.data || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch articles from API:', error);
+  }
+
+  // Fallback if empty or failed
+  let recentArticles = [];
+  if (!allArticles || allArticles.length === 0) {
+    // Skip 5 from mock
+    recentArticles = getRecentArticles(6, 5); 
+  } else {
+    // Skip first 5 from DB, take next 6
+    recentArticles = allArticles.slice(5, 11);
+  }
 
   return (
     <fieldset className="border-4 border-[#B05B27] rounded-xl p-6 sm:p-8 mb-12 relative hover:border-[#f7ebc6] transition-colors duration-300 w-full">

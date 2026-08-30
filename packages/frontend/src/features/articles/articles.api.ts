@@ -25,8 +25,12 @@ export const articlesApi = {
     return response.json();
   },
   
-  getArticles: async () => {
-    const response = await fetch(`${API_URL}/articles`);
+  getArticles: async (page?: number, limit?: number) => {
+    let url = `${API_URL}/articles`;
+    if (page && limit) {
+      url += `?page=${page}&limit=${limit}`;
+    }
+    const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch articles');
     return response.json();
   },
@@ -34,6 +38,26 @@ export const articlesApi = {
   getArticleById: async (id: string) => {
     const response = await fetch(`${API_URL}/articles/${id}`);
     if (!response.ok) throw new Error('Failed to fetch article');
+    return response.json();
+  },
+
+  updateArticle: async (id: string, data: Partial<CreateArticleDto>) => {
+    const response = await fetch(`${API_URL}/articles/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to update article');
+    return response.json();
+  },
+
+  deleteArticle: async (id: string) => {
+    const response = await fetch(`${API_URL}/articles/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to delete article');
     return response.json();
   }
 };

@@ -17,3 +17,4 @@ build/
 .env.test.local
 .env.production.local
 *.zip
+doc/ 

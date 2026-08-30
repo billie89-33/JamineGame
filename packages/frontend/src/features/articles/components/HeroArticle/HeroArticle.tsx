@@ -2,9 +2,27 @@ import React from 'react';
 import Link from 'next/link';
 import { getRecentArticles } from '../../data/mockArticles';
 
-export const HeroArticle = () => {
-  // Get 5 articles: 1 for big left, 4 for right grid
-  const articles = getRecentArticles(5);
+export const HeroArticle = async () => {
+  let articles = [];
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const res = await fetch(`${apiUrl}/articles?page=1&limit=5`, { 
+      next: { revalidate: 60 },
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      articles = data.data || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch articles from API:', error);
+  }
+
+  // Fallback to mock data if API fails or DB is empty
+  if (!articles || articles.length === 0) {
+    articles = getRecentArticles(5);
+  }
+
   const mainArticle = articles[0];
   const subArticles = articles.slice(1, 5);
 
@@ -16,7 +34,7 @@ export const HeroArticle = () => {
           <Link href={`/article/${mainArticle.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/30 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
             <img 
-              src={mainArticle.coverImage} 
+              src={mainArticle.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200'} 
               alt={mainArticle.title} 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
             />
@@ -37,7 +55,7 @@ export const HeroArticle = () => {
             <Link key={article.id} href={`/article/${article.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/20 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
               <img 
-                src={article.coverImage} 
+                src={article.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600'} 
                 alt={article.title} 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />

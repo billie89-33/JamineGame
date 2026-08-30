@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { GamesModule } from './modules/games/games.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UploadModule } from './modules/upload/upload.module';
     UsersModule,
     AuthModule,
     ArticlesModule,
+    GamesModule,
     UploadModule,
   ],
   controllers: [AppController],

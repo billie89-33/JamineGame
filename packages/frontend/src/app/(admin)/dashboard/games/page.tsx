@@ -2,29 +2,28 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { articlesApi } from '@/features/articles/articles.api';
-import { ArticleResponseDto } from '@shared/dto';
-import { Plus, Edit2, Trash2, Search } from 'lucide-react';
+import { gamesApi } from '@/features/games/games.api';
+import { Plus, Edit2, Trash2, Search, Gamepad2 } from 'lucide-react';
 
-export default function AdminArticlesPage() {
-  const [articles, setArticles] = useState<ArticleResponseDto[]>([]);
+export default function AdminGamesPage() {
+  const [games, setGames] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
   useEffect(() => {
-    fetchArticles(currentPage);
+    fetchGames(currentPage);
   }, [currentPage]);
 
-  const fetchArticles = async (page: number) => {
+  const fetchGames = async (page: number) => {
     setIsLoading(true);
     try {
-      const response = await articlesApi.getArticles(page, limit);
-      setArticles(response.data || []);
+      const response = await gamesApi.getGames(page, limit);
+      setGames(response.data || []);
       setTotalPages(response.totalPages || 1);
     } catch (error) {
-      console.error("Failed to fetch articles", error);
+      console.error("Failed to fetch games", error);
     } finally {
       setIsLoading(false);
     }
@@ -33,12 +32,11 @@ export default function AdminArticlesPage() {
   const handleDelete = async (id: string, title: string) => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
       try {
-        await articlesApi.deleteArticle(id);
-        alert('Article deleted successfully');
-        // Refresh the current page
-        fetchArticles(currentPage);
+        await gamesApi.deleteGame(id);
+        alert('Game deleted successfully');
+        fetchGames(currentPage);
       } catch (error) {
-        alert('Failed to delete article');
+        alert('Failed to delete game');
         console.error(error);
       }
     }
@@ -48,15 +46,18 @@ export default function AdminArticlesPage() {
     <div className="w-full flex flex-col gap-6 font-sans">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#f7ebc6] p-6 rounded-2xl border border-[#d4c38d] shadow-sm">
         <div>
-          <h1 className="text-3xl font-black text-[#1a241b] uppercase tracking-wider">Articles</h1>
-          <p className="text-[#1a241b]/70 font-medium mt-1">Manage all your gameverse content</p>
+          <h1 className="text-3xl font-black text-[#1a241b] uppercase tracking-wider flex items-center gap-3">
+            <Gamepad2 size={32} />
+            Games
+          </h1>
+          <p className="text-[#1a241b]/70 font-medium mt-1">Manage game database</p>
         </div>
         <Link 
-          href="/dashboard/articles/create"
+          href="/dashboard/games/create"
           className="flex items-center gap-2 bg-[#1a241b] text-[#f7ebc6] px-6 py-3 rounded-xl font-bold hover:bg-[#2e3b2c] transition-colors"
         >
           <Plus size={20} />
-          WRITE NEW
+          ADD GAME
         </Link>
       </div>
 
@@ -65,58 +66,72 @@ export default function AdminArticlesPage() {
           <Search size={20} className="text-[#1a241b]/50" />
           <input 
             type="text" 
-            placeholder="Search articles..." 
+            placeholder="Search games..." 
             className="bg-transparent border-none outline-none text-[#1a241b] font-medium w-full placeholder:text-[#1a241b]/50"
           />
         </div>
 
         {isLoading ? (
-          <div className="text-center py-10 font-bold text-[#1a241b]">LOADING ARTICLES...</div>
+          <div className="text-center py-10 font-bold text-[#1a241b]">LOADING GAMES...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b-2 border-[#d4c38d] text-[#1a241b] text-sm uppercase tracking-wider">
                   <th className="pb-4 font-black">Title</th>
-                  <th className="pb-4 font-black">Category</th>
-                  <th className="pb-4 font-black">Author</th>
-                  <th className="pb-4 font-black">Date</th>
+                  <th className="pb-4 font-black">Developer</th>
+                  <th className="pb-4 font-black">Release Date</th>
+                  <th className="pb-4 font-black">Platforms</th>
                   <th className="pb-4 font-black text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {articles.length === 0 ? (
+                {games.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-10 text-center font-medium text-[#1a241b]/60">
-                      No articles found. Start writing!
+                      No games found. Add some games!
                     </td>
                   </tr>
                 ) : (
-                  articles.map((article) => (
-                    <tr key={article.id} className="border-b border-[#d4c38d] last:border-0 hover:bg-[#e8d7a5]/50 transition-colors">
+                  games.map((game) => (
+                    <tr key={game.id} className="border-b border-[#d4c38d] last:border-0 hover:bg-[#e8d7a5]/50 transition-colors">
                       <td className="py-4">
-                        <p className="font-bold text-[#1a241b]">{article.title}</p>
+                        <div className="flex items-center gap-3">
+                          {game.coverImage && (
+                            <img src={game.coverImage} alt={game.title} className="w-10 h-10 rounded-md object-cover bg-[#d4c38d]" />
+                          )}
+                          <p className="font-bold text-[#1a241b]">{game.title}</p>
+                        </div>
                       </td>
-                      <td className="py-4">
-                        <span className="bg-[#1a241b] text-[#f7ebc6] px-3 py-1 rounded-full text-xs font-bold">
-                          {article.category}
-                        </span>
-                      </td>
-                      <td className="py-4 font-medium text-[#1a241b]">{article.author?.username || 'Unknown'}</td>
+                      <td className="py-4 font-medium text-[#1a241b]">{game.developer || '-'}</td>
                       <td className="py-4 text-[#1a241b]/80 text-sm">
-                        {new Date(article.createdAt).toLocaleDateString('th-TH')}
+                        {game.releaseDate ? new Date(game.releaseDate).toLocaleDateString('th-TH') : '-'}
+                      </td>
+                      <td className="py-4">
+                        <div className="flex gap-1 flex-wrap">
+                          {game.platforms?.slice(0, 3).map((p: string, i: number) => (
+                            <span key={i} className="bg-[#1a241b] text-[#f7ebc6] px-2 py-1 rounded-md text-xs font-bold whitespace-nowrap">
+                              {p}
+                            </span>
+                          ))}
+                          {game.platforms?.length > 3 && (
+                            <span className="bg-[#d4c38d] text-[#1a241b] px-2 py-1 rounded-md text-xs font-bold">
+                              +{game.platforms.length - 3}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-4">
                         <div className="flex justify-end gap-2">
                           <Link 
-                            href={`/dashboard/articles/edit/${article.id}`}
+                            href={`/dashboard/games/edit/${game.slug}`}
                             className="p-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] hover:bg-[#d4c38d] transition-colors" 
                             title="Edit"
                           >
                             <Edit2 size={16} />
                           </Link>
                           <button 
-                            onClick={() => handleDelete(article.id, article.title)}
+                            onClick={() => handleDelete(game.id, game.title)}
                             className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors" 
                             title="Delete"
                           >
@@ -141,14 +156,14 @@ export default function AdminArticlesPage() {
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d] transition-colors"
+                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d]"
               >
                 Previous
               </button>
               <button 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d] transition-colors"
+                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d]"
               >
                 Next
               </button>

@@ -37,9 +37,31 @@ model Article {
   authorId      String
   author        User     @relation(fields: [authorId], references: [id])
   
+  gameId        String?
+  game          Game?    @relation(fields: [gameId], references: [id])
+  
   publishedAt   DateTime @default(now())
   readTime      String?
   commentsCount Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model Game {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  coverImage  String?
+  developer   String?
+  publisher   String?
+  releaseDate DateTime?
+  platforms   String[]
+  genres      String[]
+  rating      Float?
+  
+  articles    Article[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -1,14 +1,15 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLogin } from '@/features/auth';
 
+import { ArrowLeft } from 'lucide-react';
+
 export default function LoginPage() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   
-  // เรียกใช้ Custom Hook ตัวเก่งของเรา (โค้ดบรรทัดเดียวจบ!)
   const { executeLogin, isLoading, error } = useLogin();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,7 +18,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f0c] flex items-center justify-center font-sans">
+    <div className="min-h-screen bg-[#0b0f0c] flex items-center justify-center font-sans p-4 relative">
+      <Link href="/" className="absolute top-8 left-8 text-lime-400 hover:text-lime-300 flex items-center gap-2 font-bold transition-colors">
+        <ArrowLeft size={20} />
+        BACK TO HOME
+      </Link>
+      
       <div className="w-full max-w-md bg-[#f7ebc6] rounded-3xl p-8 border border-[#d4c38d] shadow-[0_15px_40px_-10px_rgba(250,214,97,0.3)]">
         <h1 className="text-3xl font-black text-[#1a241b] mb-6 text-center">GAMEVERSE LOGIN</h1>
         

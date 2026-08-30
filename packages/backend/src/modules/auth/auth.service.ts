@@ -12,10 +12,10 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    // 1. หา User จากอีเมล
+    // 1. หา User จากชื่อผู้ใช้ (Username)
     const user = await this.usersService.findByUsername(loginDto.username);
     if (!user) {
-      throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
     }
 
     // 2. เช็ครหัสผ่าน
@@ -24,7 +24,7 @@ export class AuthService {
       user.password,
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
     }
 
     // 3. ถ้าถูกหมด ให้สร้าง Token

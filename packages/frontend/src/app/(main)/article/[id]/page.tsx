@@ -1,7 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { Sidebar } from '@/components/common';
-import { getArticleById } from '@/features/articles/data/mockArticles';
+import { articlesApi } from '@/features/articles/articles.api';
 import { 
   ArticleHeader, 
   ArticleHeroImage, 
@@ -15,7 +15,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   
   console.log("Requested ID:", decodedId);
   
-  const article = getArticleById(decodedId);
+  const article = await articlesApi.getArticleById(decodedId).catch(() => null);
   console.log("Found Article:", article ? article.title : "Not Found");
 
   if (!article) {

@@ -6,16 +6,22 @@ import { articlesApi } from '../../articles.api';
 import { CreateArticleDto } from '@shared/dto';
 import { useRouter } from 'next/navigation';
 
-export function AdminArticleForm() {
+export function AdminArticleForm({ 
+  initialData, 
+  articleId 
+}: { 
+  initialData?: Omit<CreateArticleDto, 'tags'> & { tags?: string[] }, 
+  articleId?: string 
+} = {}) {
   const router = useRouter();
   const [formData, setFormData] = useState<Omit<CreateArticleDto, 'tags'>>({
-    title: '',
-    excerpt: '',
-    content: '',
-    category: 'REVIEWS',
-    coverImage: '',
+    title: initialData?.title || '',
+    excerpt: initialData?.excerpt || '',
+    content: initialData?.content || '',
+    category: initialData?.category || 'REVIEWS',
+    coverImage: initialData?.coverImage || '',
   });
-  const [tagsInput, setTagsInput] = useState('');
+  const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
@@ -41,14 +47,23 @@ export function AdminArticleForm() {
         finalCoverImage = await handleImageUpload(coverFile);
       }
 
-      await articlesApi.createArticle({
-        ...formData,
-        coverImage: finalCoverImage,
-        tags: processTags(tagsInput),
-      } as CreateArticleDto);
+      if (articleId) {
+        await articlesApi.updateArticle(articleId, {
+          ...formData,
+          ...(finalCoverImage ? { coverImage: finalCoverImage } : {}),
+          tags: processTags(tagsInput),
+        });
+        alert('อัปเดตบทความสำเร็จ!');
+      } else {
+        await articlesApi.createArticle({
+          ...formData,
+          coverImage: finalCoverImage,
+          tags: processTags(tagsInput),
+        } as CreateArticleDto);
+        alert('สร้างบทความสำเร็จ!');
+      }
 
-      alert('สร้างบทความสำเร็จ!');
-      router.push('/dashboard/articles'); // หรือพากลับไปหน้าจัดการ
+      router.push('/dashboard/articles'); // กลับไปหน้าจัดการ
     } catch (error) {
       alert('เกิดข้อผิดพลาด: ' + (error as Error).message);
     } finally {
@@ -148,7 +163,7 @@ export function AdminArticleForm() {
         disabled={isLoading}
         className="w-full py-4 mt-6 bg-[#1a241b] text-[#f7ebc6] font-black text-xl rounded-xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? 'PUBLISHING...' : 'PUBLISH ARTICLE'}
+        {isLoading ? (articleId ? 'UPDATING...' : 'PUBLISHING...') : (articleId ? 'UPDATE ARTICLE' : 'PUBLISH ARTICLE')}
       </button>
     </form>
   );

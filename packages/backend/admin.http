@@ -1,0 +1,28 @@
+### Variables
+@baseUrl = http://localhost:3001
+
+### 1. Register Admin
+# สร้างบัญชี Admin ใหม่ (ไม่ต้องใช้ Token)
+POST {{baseUrl}}/auth/register-admin
+Content-Type: application/json
+
+{
+  "username": "superadmin",
+  "email": "superadmin@gameverse.com",
+  "password": "password123"
+}
+
+### 2. Login Admin
+# ทดสอบ Login ด้วยบัญชี Admin ที่เพิ่งสร้าง
+# หลังจากยิงเส้นนี้ มันจะคืนค่า access_token กลับมาทาง Cookie ให้เอง
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "superadmin",
+  "password": "password123"
+}
+
+### 3. Check Profile (ME)
+# ดึงข้อมูลตัวเอง (ต้องล็อกอินก่อน)
+GET {{baseUrl}}/auth/me

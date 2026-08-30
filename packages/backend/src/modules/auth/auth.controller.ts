@@ -25,8 +25,15 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     // สร้างผู้ใช้ (ถ้าซ้ำมันจะ Error เด้งกลับไปเองจาก ConflictException ใน Service)
-    const user = await this.usersService.create(registerDto);
+    const user = await this.usersService.create(registerDto, 'USER');
     return { message: 'สมัครสมาชิกสำเร็จ', userId: user.id };
+  }
+
+  // 🚧 สำหรับสมัคร Admin โดยเฉพาะ (อาจจะต้องเพิ่ม Secret Key ป้องกันในอนาคต)
+  @Post('register-admin')
+  async registerAdmin(@Body() registerDto: RegisterDto) {
+    const user = await this.usersService.create(registerDto, 'ADMIN');
+    return { message: 'สมัครสมาชิก Admin สำเร็จ', userId: user.id };
   }
 
   @Post('login')

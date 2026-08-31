@@ -7,11 +7,11 @@ import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut, Gamepad2 }
 import { useAuth } from '@/contexts/AuthContext';
 
 const menuItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Games', href: '/dashboard/games', icon: Gamepad2 },
-  { name: 'Articles', href: '/dashboard/articles', icon: FileText },
-  { name: 'Users', href: '/dashboard/users', icon: Users },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Games', href: '/admin/games', icon: Gamepad2 },
+  { name: 'Articles', href: '/admin/articles', icon: FileText },
+  { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 function SidebarContent({ 
@@ -113,11 +113,11 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   }
 
   const menuItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Games', href: '/dashboard/games', icon: Gamepad2 },
-    { name: 'Articles', href: '/dashboard/articles', icon: FileText },
-    { name: 'Users', href: '/dashboard/users', icon: Users },
-    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'Games', href: '/admin/games', icon: Gamepad2 },
+    { name: 'Articles', href: '/admin/articles', icon: FileText },
+    { name: 'Users', href: '/admin/users', icon: Users },
+    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
 

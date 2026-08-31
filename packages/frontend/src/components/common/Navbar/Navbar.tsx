@@ -97,7 +97,7 @@ export const Navbar = () => {
                       <div className="py-2 flex flex-col font-medium text-sm">
                         <Link href="/profile" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors text-[#1a241b]" onClick={() => setIsUserMenuOpen(false)}>👤 โปรไฟล์ (Profile)</Link>
                         {user.role === 'ADMIN' && (
-                          <Link href="/admin" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors text-[#1a241b]" onClick={() => setIsUserMenuOpen(false)}>⚙️ หลังบ้าน (Admin)</Link>
+                          <Link href="/dashboard" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors text-[#1a241b]" onClick={() => setIsUserMenuOpen(false)}>⚙️ หลังบ้าน (Admin)</Link>
                         )}
                         <button onClick={() => { logout(); setIsUserMenuOpen(false); }} className="text-left px-4 py-2 hover:bg-[#e8d7a5] hover:text-red-600 transition-colors text-red-500 border-t border-[#d4c38d] mt-1 pt-2">
                           🚪 ออกจากระบบ (Logout)
@@ -189,7 +189,7 @@ export const Navbar = () => {
                 </Link>
                 {user.role === 'ADMIN' && (
                   <Link 
-                    href="/admin" 
+                    href="/dashboard" 
                     className="w-full py-3 text-center font-bold text-[#1a241b] border-2 border-[#1a241b] rounded-xl hover:bg-[#e8d7a5] transition-colors bg-[#e8d7a5]"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

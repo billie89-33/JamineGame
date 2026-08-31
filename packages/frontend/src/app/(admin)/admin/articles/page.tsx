@@ -52,7 +52,7 @@ export default function AdminArticlesPage() {
           <p className="text-[#1a241b]/70 font-medium mt-1">Manage all your gameverse content</p>
         </div>
         <Link 
-          href="/dashboard/articles/create"
+          href="/admin/articles/create"
           className="flex items-center gap-2 bg-[#1a241b] text-[#f7ebc6] px-6 py-3 rounded-xl font-bold hover:bg-[#2e3b2c] transition-colors"
         >
           <Plus size={20} />
@@ -109,7 +109,7 @@ export default function AdminArticlesPage() {
                       <td className="py-4">
                         <div className="flex justify-end gap-2">
                           <Link 
-                            href={`/dashboard/articles/edit/${article.id}`}
+                            href={`/admin/articles/edit/${article.id}`}
                             className="p-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] hover:bg-[#d4c38d] transition-colors" 
                             title="Edit"
                           >

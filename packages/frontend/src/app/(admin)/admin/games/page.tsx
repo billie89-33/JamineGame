@@ -53,7 +53,7 @@ export default function AdminGamesPage() {
           <p className="text-[#1a241b]/70 font-medium mt-1">Manage game database</p>
         </div>
         <Link 
-          href="/dashboard/games/create"
+          href="/admin/games/create"
           className="flex items-center gap-2 bg-[#1a241b] text-[#f7ebc6] px-6 py-3 rounded-xl font-bold hover:bg-[#2e3b2c] transition-colors"
         >
           <Plus size={20} />
@@ -124,7 +124,7 @@ export default function AdminGamesPage() {
                       <td className="py-4">
                         <div className="flex justify-end gap-2">
                           <Link 
-                            href={`/dashboard/games/edit/${game.slug}`}
+                            href={`/admin/games/edit/${game.slug}`}
                             className="p-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] hover:bg-[#d4c38d] transition-colors" 
                             title="Edit"
                           >

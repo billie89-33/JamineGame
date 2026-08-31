@@ -63,7 +63,7 @@ export function AdminArticleForm({
         alert('สร้างบทความสำเร็จ!');
       }
 
-      router.push('/dashboard/articles'); // กลับไปหน้าจัดการ
+      router.push('/admin/articles'); // กลับไปหน้าจัดการ
     } catch (error) {
       alert('เกิดข้อผิดพลาด: ' + (error as Error).message);
     } finally {

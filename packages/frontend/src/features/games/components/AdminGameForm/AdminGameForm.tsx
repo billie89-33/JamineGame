@@ -60,7 +60,7 @@ export function AdminGameForm({ initialData, gameId }: { initialData?: any, game
         alert('Create game success!');
       }
 
-      router.push('/dashboard/games');
+      router.push('/admin/games');
     } catch (error) {
       alert('Error: ' + (error as Error).message);
     } finally {

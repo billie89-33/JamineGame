@@ -5,7 +5,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, List, ListOrdered } from 'lucide-react';
+import Youtube from '@tiptap/extension-youtube';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, List, ListOrdered, Video } from 'lucide-react';
 import { useCallback } from 'react';
 
 interface TipTapEditorProps {
@@ -33,6 +34,10 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
     extensions: [
       StarterKit,
       Image,
+      Youtube.configure({
+        controls: true,
+        nocookie: true,
+      }),
       Link.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: 'เริ่มเขียนเนื้อหาบทความที่นี่...' }),
     ],
@@ -87,9 +92,18 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   }, [editor]);
 
+  const addYoutubeVideo = useCallback(() => {
+    const url = prompt('วางลิงก์ YouTube ที่นี่:');
+    if (url && editor) {
+      editor.commands.setYoutubeVideo({
+        src: url,
+        width: 640,
+        height: 480,
+      });
+    }
+  }, [editor]);
+
   if (!editor) return null;
-
-
 
   return (
     <div className="w-full flex flex-col rounded-xl overflow-hidden shadow-sm">
@@ -118,6 +132,9 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
         </ToolbarButton>
         <ToolbarButton onClick={addImage}>
           <ImageIcon size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={addYoutubeVideo}>
+          <Video size={18} />
         </ToolbarButton>
       </div>
       <EditorContent editor={editor} />

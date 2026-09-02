@@ -3,6 +3,7 @@ export class CreateArticleDto {
   excerpt!: string;
   content!: string;
   coverImage?: string;
+  videoUrl?: string;
   categoryId?: string;
   tags!: string[];
 }
@@ -13,6 +14,7 @@ export class ArticleResponseDto {
   excerpt!: string;
   content!: string;
   coverImage?: string | null;
+  videoUrl?: string | null;
   categoryId?: string | null;
   category?: {
     id: string;

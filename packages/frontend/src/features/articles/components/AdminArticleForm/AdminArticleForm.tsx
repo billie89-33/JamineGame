@@ -21,6 +21,7 @@ export function AdminArticleForm({
     content: initialData?.content || '',
     categoryId: initialData?.categoryId || '',
     coverImage: initialData?.coverImage || '',
+    videoUrl: initialData?.videoUrl || '',
   });
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -97,6 +98,30 @@ export function AdminArticleForm({
             ) : formData.coverImage ? (
               <img src={formData.coverImage} alt="Cover" className="w-full h-full object-cover" />
             ) : null}
+          </div>
+        )}
+      </div>
+
+      {/* Video URL */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[#1a241b] font-black text-lg">วิดีโอหน้าปก (VIDEO URL) [ออปชัน]</label>
+        <input 
+          type="url" 
+          placeholder="วางลิงก์ YouTube (เช่น https://www.youtube.com/watch?v=...)" 
+          value={formData.videoUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+        />
+        {formData.videoUrl && formData.videoUrl.includes('youtube.com') && (
+          <div className="w-full aspect-video mt-2 rounded-xl overflow-hidden border border-[#d4c38d]">
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src={`https://www.youtube.com/embed/${new URLSearchParams(new URL(formData.videoUrl).search).get('v')}`} 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+            ></iframe>
           </div>
         )}
       </div>

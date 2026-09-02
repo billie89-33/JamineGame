@@ -26,6 +26,10 @@ export class CreateArticleDto extends SharedCreateArticleDto {
 
   @IsString()
   @IsOptional()
+  declare videoUrl?: string;
+
+  @IsString()
+  @IsOptional()
   declare categoryId?: string;
 
   @IsArray()

@@ -25,8 +25,8 @@ export class CreateArticleDto extends SharedCreateArticleDto {
   declare coverImage?: string;
 
   @IsString()
-  @IsNotEmpty()
-  declare category: string;
+  @IsOptional()
+  declare categoryId?: string;
 
   @IsArray()
   @IsString({ each: true })

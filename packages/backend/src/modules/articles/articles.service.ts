@@ -19,6 +19,9 @@ export class ArticlesService {
           author: {
             select: { username: true },
           },
+          category: {
+            select: { id: true, name: true, slug: true },
+          },
         },
       }),
     ]);
@@ -38,6 +41,9 @@ export class ArticlesService {
       include: {
         author: {
           select: { username: true },
+        },
+        category: {
+          select: { id: true, name: true, slug: true },
         },
       },
     });

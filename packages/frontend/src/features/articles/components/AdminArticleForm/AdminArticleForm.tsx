@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TipTapEditor } from './TipTapEditor';
 import { articlesApi } from '../../articles.api';
+import { categoriesApi, Category } from '../../../categories/categories.api';
 import { CreateArticleDto } from '@shared/dto';
 import { useRouter } from 'next/navigation';
 
@@ -18,12 +19,19 @@ export function AdminArticleForm({
     title: initialData?.title || '',
     excerpt: initialData?.excerpt || '',
     content: initialData?.content || '',
-    category: initialData?.category || 'REVIEWS',
+    categoryId: initialData?.categoryId || '',
     coverImage: initialData?.coverImage || '',
   });
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    categoriesApi.getCategories()
+      .then(setCategories)
+      .catch(console.error);
+  }, []);
 
   const handleImageUpload = async (file: File) => {
     const res = await articlesApi.uploadImage(file);
@@ -75,7 +83,7 @@ export function AdminArticleForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-4xl mx-auto bg-[#f7ebc6] p-8 rounded-3xl border border-[#d4c38d] shadow-[0_15px_40px_-10px_rgba(250,214,97,0.3)]">
       {/* Cover Image Upload */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">COVER IMAGE</label>
+        <label className="text-[#1a241b] font-black text-lg">รูปภาพปก (COVER IMAGE)</label>
         <input 
           type="file" 
           accept="image/*" 
@@ -95,7 +103,7 @@ export function AdminArticleForm({
 
       {/* Title */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">ARTICLE TITLE</label>
+        <label className="text-[#1a241b] font-black text-lg">หัวข้อบทความ (TITLE)</label>
         <input 
           type="text" 
           placeholder="หัวข้อบทความ (Title)" 
@@ -109,21 +117,23 @@ export function AdminArticleForm({
       {/* Category & Excerpt */}
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex flex-col gap-2 w-full md:w-1/3">
-          <label className="text-[#1a241b] font-black text-lg">CATEGORY</label>
+          <label className="text-[#1a241b] font-black text-lg">หมวดหมู่ (CATEGORY)</label>
           <select 
-            value={formData.category}
-            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+            value={formData.categoryId || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
             className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] font-bold outline-none focus:border-[#1a241b] transition-colors appearance-none"
           >
-            <option value="REVIEWS">REVIEWS</option>
-            <option value="ESPORTS">ESPORTS</option>
-            <option value="HARDWARE">HARDWARE</option>
-            <option value="INDIE">INDIE</option>
+            <option value="" disabled>เลือกหมวดหมู่</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon ? `${cat.icon} ` : ''}{cat.name}
+              </option>
+            ))}
           </select>
         </div>
         
         <div className="flex flex-col gap-2 w-full md:w-2/3">
-          <label className="text-[#1a241b] font-black text-lg">EXCERPT</label>
+          <label className="text-[#1a241b] font-black text-lg">คำโปรย (EXCERPT)</label>
           <input 
             type="text" 
             placeholder="คำโปรยย่อหน้าสั้นๆ (Excerpt)"
@@ -137,7 +147,7 @@ export function AdminArticleForm({
 
       {/* Tags */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">TAGS</label>
+        <label className="text-[#1a241b] font-black text-lg">แท็ก (TAGS)</label>
         <input 
           type="text" 
           placeholder="ใส่แท็กคั่นด้วยคอมม่า (เช่น esport, review, dota2)"
@@ -149,7 +159,7 @@ export function AdminArticleForm({
 
       {/* Content Editor */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">CONTENT</label>
+        <label className="text-[#1a241b] font-black text-lg">เนื้อหา (CONTENT)</label>
         <TipTapEditor 
           content={formData.content} 
           onChange={(html) => setFormData(prev => ({ ...prev, content: html }))}
@@ -163,7 +173,7 @@ export function AdminArticleForm({
         disabled={isLoading}
         className="w-full py-4 mt-6 bg-[#1a241b] text-[#f7ebc6] font-black text-xl rounded-xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? (articleId ? 'UPDATING...' : 'PUBLISHING...') : (articleId ? 'UPDATE ARTICLE' : 'PUBLISH ARTICLE')}
+        {isLoading ? (articleId ? 'กำลังอัปเดต...' : 'กำลังเผยแพร่...') : (articleId ? 'บันทึกการแก้ไขบทความ' : 'เผยแพร่บทความ')}
       </button>
     </form>
   );

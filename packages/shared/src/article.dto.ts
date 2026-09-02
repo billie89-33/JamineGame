@@ -3,7 +3,7 @@ export class CreateArticleDto {
   excerpt!: string;
   content!: string;
   coverImage?: string;
-  category!: string;
+  categoryId?: string;
   tags!: string[];
 }
 
@@ -13,7 +13,12 @@ export class ArticleResponseDto {
   excerpt!: string;
   content!: string;
   coverImage?: string | null;
-  category!: string;
+  categoryId?: string | null;
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   tags!: string[];
   authorId!: string;
   publishedAt!: Date | string;

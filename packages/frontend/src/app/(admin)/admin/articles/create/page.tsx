@@ -5,7 +5,7 @@ export default function CreateArticlePage() {
   return (
     <div className="w-full">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-black text-[#f7ebc6] mb-8 tracking-wider">WRITE NEW ARTICLE</h1>
+        <h1 className="text-3xl font-black text-[#f7ebc6] mb-8 tracking-wider">เขียนบทความใหม่</h1>
         <AdminArticleForm />
       </div>
     </div>

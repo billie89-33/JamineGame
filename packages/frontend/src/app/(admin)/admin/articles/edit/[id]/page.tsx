@@ -30,13 +30,13 @@ export default function EditArticlePage() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-20 text-[#f7ebc6] font-bold">LOADING ARTICLE DATA...</div>;
+    return <div className="text-center py-20 text-[#f7ebc6] font-bold">กำลังโหลดข้อมูลบทความ...</div>;
   }
 
   return (
     <div className="w-full">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-black text-[#f7ebc6] mb-8 tracking-wider">EDIT ARTICLE</h1>
+        <h1 className="text-3xl font-black text-[#f7ebc6] mb-8 tracking-wider">แก้ไขบทความ</h1>
         {initialData && (
           <AdminArticleForm 
             initialData={initialData} 

@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut, Gamepad2 } from 'lucide-react';
+import { Menu, X, LayoutDashboard, FileText, Users, Settings, LogOut, Gamepad2, Layers } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const menuItems = [
-  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Games', href: '/admin/games', icon: Gamepad2 },
-  { name: 'Articles', href: '/admin/articles', icon: FileText },
-  { name: 'Users', href: '/admin/users', icon: Users },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: 'แดชบอร์ด', href: '/admin', icon: LayoutDashboard },
+  { name: 'จัดการบทความ', href: '/admin/articles', icon: FileText },
+  { name: 'จัดการหมวดหมู่', href: '/admin/categories', icon: Layers },
+  { name: 'จัดการเกม', href: '/admin/games', icon: Gamepad2 },
+  { name: 'จัดการผู้ใช้', href: '/admin/users', icon: Users },
+  { name: 'ตั้งค่าระบบ', href: '/admin/settings', icon: Settings },
 ];
 
 function SidebarContent({ 
@@ -61,8 +62,8 @@ function SidebarContent({
             {user?.username?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <p className="font-bold text-sm">{user?.username || 'Admin User'}</p>
-            <p className="text-xs text-gray-400">Administrator</p>
+            <p className="font-bold text-sm">{user?.username || 'ผู้ดูแลระบบ'}</p>
+            <p className="text-xs text-gray-400">ผู้ดูแลระบบสูงสุด</p>
           </div>
         </div>
         
@@ -74,7 +75,7 @@ function SidebarContent({
           className="flex items-center gap-4 px-4 py-3 rounded-xl w-full hover:bg-red-500/20 text-red-400 transition-all font-bold"
         >
           <LogOut size={20} />
-          Sign Out
+          ออกจากระบบ
         </button>
       </div>
     </div>
@@ -97,28 +98,20 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
       if (!user) {
         router.push('/login');
       } else if (user.role !== 'ADMIN') {
-        alert('Access Denied: Admin only');
+        alert('ปฏิเสธการเข้าถึง: สำหรับผู้ดูแลระบบเท่านั้น');
         router.push('/');
       }
     }
   }, [user, isLoading, router]);
 
   if (isLoading && process.env.NODE_ENV !== 'development') {
-    return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">LOADING...</div>;
+    return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">กำลังโหลด...</div>;
   }
 
   // ป้องกันการ render ถ้าไม่ใช่ Admin
   if (!user || user.role !== 'ADMIN') {
     return null;
   }
-
-  const menuItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Games', href: '/admin/games', icon: Gamepad2 },
-    { name: 'Articles', href: '/admin/articles', icon: FileText },
-    { name: 'Users', href: '/admin/users', icon: Users },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
-  ];
 
 
 

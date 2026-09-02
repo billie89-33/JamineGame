@@ -3,16 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { categoriesApi, Category } from '@/features/categories/categories.api';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isGamesOpen, setIsGamesOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    categoriesApi.getCategories()
+      .then(setCategories)
+      .catch(console.error);
+      
     const handleClickOutside = (event: MouseEvent) => {
       // Close dropdown if clicked outside of it
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -62,10 +68,13 @@ export const Navbar = () => {
               {isGamesOpen && (
                 <div className="absolute top-full left-0 mt-2 w-48 bg-[#f7ebc6] border border-[#d4c38d] rounded-lg shadow-xl transition-all duration-300">
                   <div className="py-2 flex flex-col font-medium">
-                    <Link href="/games/online" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>🌍 เกม Online</Link>
-                    <Link href="/games/coop" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>🤝 เกม Co-op</Link>
-                    <Link href="/games/singleplayer" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>👤 เกมเล่นคนเดียว</Link>
-                    <Link href="/games/indie" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>💎 เกมอินดี้</Link>
+                    {categories.length > 0 ? categories.map(cat => (
+                      <Link key={cat.id} href={`/games/${cat.slug}`} className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>
+                        {cat.icon ? `${cat.icon} ` : ''}{cat.name}
+                      </Link>
+                    )) : (
+                      <div className="px-4 py-2 text-[#a0a8a1] text-xs">Loading...</div>
+                    )}
                   </div>
                 </div>
               )}
@@ -163,10 +172,13 @@ export const Navbar = () => {
             </button>
             {isGamesOpen && (
               <div className="flex flex-col mt-4 ml-4 font-medium border-l-2 border-[#d4c38d]">
-                <Link href="/games/online" className="pl-4 py-3 hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>🌍 เกม Online</Link>
-                <Link href="/games/coop" className="pl-4 py-3 hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>🤝 เกม Co-op</Link>
-                <Link href="/games/singleplayer" className="pl-4 py-3 hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>👤 เกมเล่นคนเดียว</Link>
-                <Link href="/games/indie" className="pl-4 py-3 hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>💎 เกมอินดี้</Link>
+                {categories.length > 0 ? categories.map(cat => (
+                  <Link key={cat.id} href={`/games/${cat.slug}`} className="pl-4 py-3 hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                    {cat.icon ? `${cat.icon} ` : ''}{cat.name}
+                  </Link>
+                )) : (
+                  <div className="pl-4 py-3 text-[#a0a8a1] text-xs">Loading...</div>
+                )}
               </div>
             )}
           </div>

@@ -12,10 +12,10 @@ export class UploadService {
     });
   }
 
-  uploadImage(file: Express.Multer.File): Promise<any> {
+  uploadMedia(file: Express.Multer.File): Promise<any> {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'gameverse_articles' },
+        { folder: 'gameverse_articles', resource_type: 'auto' },
         (error, result) => {
           if (error) return reject(error);
           resolve(result);

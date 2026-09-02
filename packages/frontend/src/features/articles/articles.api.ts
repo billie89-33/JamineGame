@@ -2,15 +2,15 @@ import { API_URL } from '@/lib/config';
 import { CreateArticleDto } from '@shared/dto';
 
 export const articlesApi = {
-  uploadImage: async (file: File): Promise<{ url: string }> => {
+  uploadMedia: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await fetch(`${API_URL}/upload/image`, {
+    const response = await fetch(`${API_URL}/upload/media`, {
       method: 'POST',
       body: formData,
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Image upload failed');
+    if (!response.ok) throw new Error('Media upload failed');
     return response.json();
   },
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoriesApi } from '@/features/categories/categories.api';
 import { articlesApi } from '@/features/articles/articles.api';
@@ -34,14 +35,16 @@ export default async function GameCategoryPage({ params }: { params: Promise<{ s
       {/* Mock content for now until we have real articles matching this category */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((item) => (
-          <div key={item} className="bg-[#1a241b] rounded-xl overflow-hidden shadow-lg border border-[#2e3b2c] hover:scale-105 transition-transform cursor-pointer">
-            <div className="w-full h-40 bg-gradient-to-br from-[#2e3b2c] to-[#1a241b] flex items-center justify-center">
-              <span className="text-4xl opacity-50">{category.icon || '🎮'}</span>
+          <Link href={`/articles/${item}`} key={item}>
+            <div className="bg-[#1a241b] rounded-xl overflow-hidden shadow-lg border border-[#2e3b2c] hover:scale-105 transition-transform cursor-pointer">
+              <div className="w-full h-40 bg-gradient-to-br from-[#2e3b2c] to-[#1a241b] flex items-center justify-center">
+                <span className="text-4xl opacity-50">{category.icon || '🎮'}</span>
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-[#f7ebc6]">{category.name} #{item}</h3>
+              </div>
             </div>
-            <div className="p-4">
-              <h3 className="font-bold text-[#f7ebc6]">{category.name} #{item}</h3>
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
     </main>

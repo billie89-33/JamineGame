@@ -15,20 +15,20 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @UseGuards(AuthGuard)
-  @Post('image')
+  @Post('media')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+  async uploadMedia(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No file provided');
     }
     try {
-      const result = await this.uploadService.uploadImage(file);
+      const result = await this.uploadService.uploadMedia(file);
       return {
         message: 'Upload successful',
         url: result.secure_url,
       };
     } catch (error) {
-      throw new BadRequestException('Image upload failed');
+      throw new BadRequestException('Media upload failed');
     }
   }
 }

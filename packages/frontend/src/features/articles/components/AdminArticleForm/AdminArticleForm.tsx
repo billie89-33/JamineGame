@@ -25,8 +25,10 @@ export function AdminArticleForm({
   });
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
     categoriesApi.getCategories()
@@ -34,8 +36,8 @@ export function AdminArticleForm({
       .catch(console.error);
   }, []);
 
-  const handleImageUpload = async (file: File) => {
-    const res = await articlesApi.uploadImage(file);
+  const handleMediaUpload = async (file: File) => {
+    const res = await articlesApi.uploadMedia(file);
     return res.url;
   };
 
@@ -53,22 +55,28 @@ export function AdminArticleForm({
     try {
       let finalCoverImage = formData.coverImage;
       if (coverFile) {
-        finalCoverImage = await handleImageUpload(coverFile);
+        finalCoverImage = await handleMediaUpload(coverFile);
       }
 
+      let finalVideoUrl = formData.videoUrl;
+      if (videoFile) {
+        setIsUploadingVideo(true);
+        finalVideoUrl = await handleMediaUpload(videoFile);
+        setIsUploadingVideo(false);
+      }
+
+      const payload = {
+        ...formData,
+        ...(finalCoverImage ? { coverImage: finalCoverImage } : {}),
+        ...(finalVideoUrl ? { videoUrl: finalVideoUrl } : {}),
+        tags: processTags(tagsInput),
+      };
+
       if (articleId) {
-        await articlesApi.updateArticle(articleId, {
-          ...formData,
-          ...(finalCoverImage ? { coverImage: finalCoverImage } : {}),
-          tags: processTags(tagsInput),
-        });
+        await articlesApi.updateArticle(articleId, payload);
         alert('อัปเดตบทความสำเร็จ!');
       } else {
-        await articlesApi.createArticle({
-          ...formData,
-          coverImage: finalCoverImage,
-          tags: processTags(tagsInput),
-        } as CreateArticleDto);
+        await articlesApi.createArticle(payload);
         alert('สร้างบทความสำเร็จ!');
       }
 
@@ -103,25 +111,53 @@ export function AdminArticleForm({
       </div>
 
       {/* Video URL */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 p-6 rounded-2xl bg-[#e8d7a5]/50 border border-[#d4c38d]">
         <label className="text-[#1a241b] font-black text-lg">วิดีโอหน้าปก (VIDEO URL) [ออปชัน]</label>
-        <input 
-          type="url" 
-          placeholder="วางลิงก์ YouTube (เช่น https://www.youtube.com/watch?v=...)" 
-          value={formData.videoUrl}
-          onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
-          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
-        />
-        {formData.videoUrl && formData.videoUrl.includes('youtube.com') && (
-          <div className="w-full aspect-video mt-2 rounded-xl overflow-hidden border border-[#d4c38d]">
-            <iframe 
-              width="100%" 
-              height="100%" 
-              src={`https://www.youtube.com/embed/${new URLSearchParams(new URL(formData.videoUrl).search).get('v')}`} 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-            ></iframe>
+        
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="text-sm font-bold text-[#1a241b] mb-1">1. วางลิงก์ YouTube (แนะนำ)</p>
+            <input 
+              type="url" 
+              placeholder="วางลิงก์ YouTube (เช่น https://www.youtube.com/watch?v=...)" 
+              value={formData.videoUrl}
+              onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+              className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+            />
+          </div>
+          
+          <div className="text-center font-bold text-[#8a7f5f]">--- หรือ ---</div>
+          
+          <div>
+            <p className="text-sm font-bold text-[#1a241b] mb-1">2. อัปโหลดไฟล์วิดีโอ (.mp4) เข้าเซิร์ฟเวอร์โดยตรง</p>
+            <input 
+              type="file" 
+              accept="video/*" 
+              onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+              className="text-sm text-[#1a241b] w-full p-3 rounded-xl border border-[#d4c38d] bg-[#e8d7a5] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#1a241b] file:text-[#f7ebc6] hover:file:bg-[#2e3b2c] cursor-pointer"
+            />
+          </div>
+        </div>
+
+        {/* Video Preview */}
+        {(formData.videoUrl || videoFile) && (
+          <div className="w-full aspect-video mt-4 rounded-xl overflow-hidden border border-[#d4c38d] bg-black">
+            {videoFile ? (
+              <video src={URL.createObjectURL(videoFile)} controls className="w-full h-full object-contain"></video>
+            ) : (formData.videoUrl?.includes('youtube.com') || formData.videoUrl?.includes('youtu.be')) ? (
+              <iframe 
+                width="100%" 
+                height="100%" 
+                src={formData.videoUrl.includes('youtube.com') 
+                      ? `https://www.youtube.com/embed/${new URLSearchParams(new URL(formData.videoUrl).search).get('v')}`
+                      : `https://www.youtube.com/embed/${formData.videoUrl.split('/').pop()}`}
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+              ></iframe>
+            ) : formData.videoUrl ? (
+              <video src={formData.videoUrl} controls className="w-full h-full object-contain"></video>
+            ) : null}
           </div>
         )}
       </div>
@@ -195,10 +231,10 @@ export function AdminArticleForm({
       {/* Submit Button */}
       <button 
         type="submit" 
-        disabled={isLoading}
+        disabled={isLoading || isUploadingVideo}
         className="w-full py-4 mt-6 bg-[#1a241b] text-[#f7ebc6] font-black text-xl rounded-xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? (articleId ? 'กำลังอัปเดต...' : 'กำลังเผยแพร่...') : (articleId ? 'บันทึกการแก้ไขบทความ' : 'เผยแพร่บทความ')}
+        {isUploadingVideo ? 'กำลังอัปโหลดวิดีโอ (อาจใช้เวลานาน)...' : isLoading ? (articleId ? 'กำลังอัปเดต...' : 'กำลังเผยแพร่...') : (articleId ? 'บันทึกการแก้ไขบทความ' : 'เผยแพร่บทความ')}
       </button>
     </form>
   );

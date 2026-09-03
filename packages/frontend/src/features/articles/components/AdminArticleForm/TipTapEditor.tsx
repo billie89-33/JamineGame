@@ -7,8 +7,9 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import TextAlign from '@tiptap/extension-text-align';
 import Youtube from '@tiptap/extension-youtube';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, List, ListOrdered, Video } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, List, ListOrdered, Video, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { useCallback } from 'react';
 
 interface TipTapEditorProps {
@@ -41,6 +42,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
         nocookie: true,
       }),
       Link.configure({ openOnClick: false }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Placeholder.configure({ placeholder: 'เริ่มเขียนเนื้อหาบทความที่นี่...' }),
     ],
     content,
@@ -133,6 +135,16 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
         </ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')}>
           <ListOrdered size={18} />
+        </ToolbarButton>
+        <div className="w-px h-6 bg-[#d4c38d] mx-1" />
+        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })}>
+          <AlignLeft size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })}>
+          <AlignCenter size={18} />
+        </ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })}>
+          <AlignRight size={18} />
         </ToolbarButton>
         <div className="w-px h-6 bg-[#d4c38d] mx-1" />
         <ToolbarButton onClick={setLink} isActive={editor.isActive('link')}>

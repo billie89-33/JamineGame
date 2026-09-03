@@ -14,8 +14,7 @@ export default function AdminArticlesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
-  const fetchArticles = async (page: number) => {
-    setIsLoading(true);
+  const fetchArticles = async (page: number) => {
     try {
       const response = await articlesApi.getArticles(page, limit);
       setArticles(response.data || []);
@@ -28,6 +27,7 @@ export default function AdminArticlesPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchArticles(currentPage);
   }, [currentPage]);
 

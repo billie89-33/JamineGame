@@ -12,8 +12,7 @@ export default function AdminCategoriesPage() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const fetchCategories = async () => {
-    setIsLoading(true);
+  const fetchCategories = async () => {
     try {
       const data = await categoriesApi.getCategories();
       setCategories(data);
@@ -26,6 +25,7 @@ export default function AdminCategoriesPage() {
 
   useEffect(() => {
     // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchCategories();
   }, []);
 

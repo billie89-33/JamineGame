@@ -13,8 +13,7 @@ export default function AdminGamesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
-  const fetchGames = async (page: number) => {
-    setIsLoading(true);
+  const fetchGames = async (page: number) => {
     try {
       const response = await gamesApi.getGames(page, limit);
       setGames(response.data || []);
@@ -27,6 +26,7 @@ export default function AdminGamesPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchGames(currentPage);
   }, [currentPage]);
 

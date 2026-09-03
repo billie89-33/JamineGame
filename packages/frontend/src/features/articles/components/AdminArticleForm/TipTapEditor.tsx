@@ -42,7 +42,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
         nocookie: true,
       }),
       Link.configure({ openOnClick: false }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ['heading', 'paragraph', 'image', 'youtube'] }),
       Placeholder.configure({ placeholder: 'เริ่มเขียนเนื้อหาบทความที่นี่...' }),
     ],
     content,

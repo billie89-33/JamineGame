@@ -51,10 +51,17 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
         {article.excerpt}
       </p>
 
-      {/* Media (Video or Cover Image) */}
-      <div className="w-full mb-12 rounded-2xl overflow-hidden border border-[#2e3b2c] shadow-2xl bg-black">
-        {article.videoUrl ? (
-          ytId ? (
+      {/* Cover Image Banner */}
+      {article.coverImage && (
+        <div className="w-full mb-8 rounded-2xl overflow-hidden border border-[#2e3b2c] shadow-lg">
+          <img src={article.coverImage} alt={article.title} className="w-full h-auto object-cover max-h-[500px]" />
+        </div>
+      )}
+
+      {/* Video Player */}
+      {article.videoUrl && (
+        <div className="w-full mb-12 rounded-2xl overflow-hidden border border-[#2e3b2c] shadow-2xl bg-black">
+          {ytId ? (
             <div className="w-full aspect-video">
               <iframe 
                 width="100%" 
@@ -69,11 +76,9 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
             <div className="w-full aspect-video">
               <video src={article.videoUrl} controls className="w-full h-full object-contain"></video>
             </div>
-          )
-        ) : article.coverImage ? (
-          <img src={article.coverImage} alt={article.title} className="w-full h-auto object-cover max-h-[600px]" />
-        ) : null}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Content */}
       <div 

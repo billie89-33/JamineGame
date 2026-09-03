@@ -15,6 +15,10 @@ export default function AdminArticlesPage() {
   const limit = 10;
 
   const fetchArticles = async (page: number) => {
+    await Promise.resolve();
+    setIsLoading(true);
+    await Promise.resolve();
+    setIsLoading(true);
     try {
       const response = await articlesApi.getArticles(page, limit);
       setArticles(response.data || []);

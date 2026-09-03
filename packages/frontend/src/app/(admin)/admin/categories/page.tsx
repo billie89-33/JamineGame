@@ -13,6 +13,10 @@ export default function AdminCategoriesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const fetchCategories = async () => {
+    await Promise.resolve();
+    setIsLoading(true);
+    await Promise.resolve();
+    setIsLoading(true);
     try {
       const data = await categoriesApi.getCategories();
       setCategories(data);

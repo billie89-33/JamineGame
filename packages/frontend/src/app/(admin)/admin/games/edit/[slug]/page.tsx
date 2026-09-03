@@ -13,6 +13,10 @@ export default function EditGamePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchGame = async () => {
+    await Promise.resolve();
+    setIsLoading(true);
+    await Promise.resolve();
+    setIsLoading(true);
     try {
       const data = await gamesApi.getGameById(slug);
       setInitialData(data);

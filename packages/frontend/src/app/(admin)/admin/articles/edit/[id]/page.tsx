@@ -13,6 +13,10 @@ export default function EditArticlePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchArticle = async () => {
+    await Promise.resolve();
+    setIsLoading(true);
+    await Promise.resolve();
+    setIsLoading(true);
     try {
       const data = await articlesApi.getArticleById(id);
       setInitialData(data);

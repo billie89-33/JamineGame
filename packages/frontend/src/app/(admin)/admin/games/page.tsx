@@ -14,6 +14,10 @@ export default function AdminGamesPage() {
   const limit = 10;
 
   const fetchGames = async (page: number) => {
+    await Promise.resolve();
+    setIsLoading(true);
+    await Promise.resolve();
+    setIsLoading(true);
     try {
       const response = await gamesApi.getGames(page, limit);
       setGames(response.data || []);

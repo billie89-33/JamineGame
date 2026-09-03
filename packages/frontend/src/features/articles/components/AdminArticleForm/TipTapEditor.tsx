@@ -83,7 +83,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
 
   const setLink = useCallback(() => {
     if (!editor) return;
-    const previousUrl = editor.getAttributes('link').href;
+    const previousUrl = editor.getAttributes('link').href || '';
     const url = window.prompt('URL:', previousUrl);
     
     if (url === null) return; // cancelled
@@ -91,18 +91,23 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    
+    let finalUrl = url;
+    if (!/^https?:\/\//i.test(finalUrl) && !/^\//.test(finalUrl) && !/^mailto:/.test(finalUrl)) {
+      finalUrl = 'https://' + finalUrl;
+    }
+    
+    editor.chain().focus().extendMarkRange('link').setLink({ href: finalUrl }).run();
   }, [editor]);
 
   const addYoutubeVideo = useCallback(() => {
     const url = prompt('วางลิงก์ YouTube ที่นี่:');
     if (url && editor) {
-      // @ts-expect-error tiptap type issue
-      editor.commands.setYoutubeVideo({
+      editor.chain().focus().setYoutubeVideo({
         src: url,
         width: 640,
         height: 480,
-      });
+      }).run();
     }
   }, [editor]);
 

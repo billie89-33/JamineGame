@@ -25,7 +25,7 @@ export function AdminGameForm({ initialData, gameId }: { initialData?: Partial<G
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
   const handleImageUpload = async (file: File) => {
-    const res = await articlesApi.uploadImage(file);
+    const res = await articlesApi.uploadMedia(file);
     return res.url;
   };
 

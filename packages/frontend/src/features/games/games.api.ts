@@ -1,5 +1,19 @@
 import { API_URL } from '@/lib/config';
 
+export interface Game {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  coverImage?: string;
+  developer?: string;
+  publisher?: string;
+  releaseDate?: string;
+  rating?: number;
+  platforms?: string[];
+  genres?: string[];
+}
+
 export const gamesApi = {
   getGames: async (page?: number, limit?: number) => {
     let url = `${API_URL}/games`;

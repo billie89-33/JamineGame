@@ -114,9 +114,9 @@ export default function AdminGamesPage() {
                               {p}
                             </span>
                           ))}
-                          {game.platforms?.length > 3 && (
+                          {(game.platforms?.length || 0) > 3 && (
                             <span className="bg-[#d4c38d] text-[#1a241b] px-2 py-1 rounded-md text-xs font-bold">
-                              +{game.platforms.length - 3}
+                              +{(game.platforms?.length || 0) - 3}
                             </span>
                           )}
                         </div>

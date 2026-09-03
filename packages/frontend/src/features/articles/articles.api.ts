@@ -1,6 +1,20 @@
 import { API_URL } from '@/lib/config';
 import { CreateArticleDto } from '@shared/dto';
 
+export interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  coverImage?: string;
+  videoUrl?: string;
+  category?: string;
+  categoryId?: string;
+  publishedAt?: string;
+  tags?: string[];
+}
+
 export const articlesApi = {
   uploadMedia: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();

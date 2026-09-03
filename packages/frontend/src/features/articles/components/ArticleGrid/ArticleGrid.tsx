@@ -46,10 +46,10 @@ export const ArticleGrid = async () => {
             key={article.id}
             id={article.id}
             title={article.title}
-            excerpt={article.excerpt}
-            imageUrl={article.coverImage}
-            category={article.category}
-            date={article.publishedAt}
+            excerpt={article.excerpt || ''}
+            imageUrl={article.coverImage || ''}
+            category={article.category || ''}
+            date={article.publishedAt || ''}
           />
         ))}
       </div>

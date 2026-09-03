@@ -11,7 +11,7 @@ export function AdminArticleForm({
   initialData, 
   articleId 
 }: { 
-  initialData?: Omit<CreateArticleDto, 'tags'> & { tags?: string[] }, 
+  initialData?: Partial<import('../../articles.api').Article>, 
   articleId?: string 
 } = {}) {
   const router = useRouter();
@@ -224,7 +224,7 @@ export function AdminArticleForm({
         <TipTapEditor 
           content={formData.content} 
           onChange={(html) => setFormData(prev => ({ ...prev, content: html }))}
-          onImageUpload={handleImageUpload}
+          onImageUpload={handleMediaUpload}
         />
       </div>
 

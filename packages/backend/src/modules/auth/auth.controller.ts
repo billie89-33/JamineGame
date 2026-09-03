@@ -75,7 +75,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('me')
   getProfile(@Req() req: Request) {
-    const user = (req as any).user;
+    const user = (req as Request & { user: { sub: string; username: string; role: string } }).user;
     return {
       message: 'ดึงข้อมูลโปรไฟล์สำเร็จ',
       user: {

@@ -28,7 +28,7 @@ export function AdminArticleForm({
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     categoriesApi.getCategories()

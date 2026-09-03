@@ -8,7 +8,7 @@ import { articlesApi } from '@/features/articles/articles.api';
 export default function EditArticlePage() {
   const params = useParams();
   const id = params.id as string;
-  const [initialData, setInitialData] = useState<any>(null);
+  const [initialData, setInitialData] = useState<import('@/features/articles/articles.api').Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -82,10 +82,10 @@ export default function AdminCategoriesPage() {
           )}
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <input type="text" placeholder="ชื่อ (เช่น เกม Online)" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required className="p-3 rounded-lg bg-white/50 border border-[#d4c38d]" />
-          <input type="text" placeholder="Slug (เช่น online)" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="p-3 rounded-lg bg-white/50 border border-[#d4c38d]" />
-          <input type="text" placeholder="ไอคอน (เช่น 🌍)" value={formData.icon} onChange={e => setFormData({...formData, icon: e.target.value})} className="p-3 rounded-lg bg-white/50 border border-[#d4c38d]" />
-          <input type="text" placeholder="คำอธิบายสั้นๆ" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="p-3 rounded-lg bg-white/50 border border-[#d4c38d]" />
+          <input type="text" placeholder="ชื่อ (เช่น เกม Online)" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required className="p-3 rounded-lg bg-white/50 border border-[#d4c38d] text-[#1a241b]" />
+          <input type="text" placeholder="Slug (เช่น online)" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} required className="p-3 rounded-lg bg-white/50 border border-[#d4c38d] text-[#1a241b]" />
+          <input type="text" placeholder="ไอคอน (เช่น 🌍)" value={formData.icon} onChange={e => setFormData({...formData, icon: e.target.value})} className="p-3 rounded-lg bg-white/50 border border-[#d4c38d] text-[#1a241b]" />
+          <input type="text" placeholder="คำอธิบายสั้นๆ" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="p-3 rounded-lg bg-white/50 border border-[#d4c38d] text-[#1a241b]" />
         </div>
         <button type="submit" className={`mt-2 py-3 rounded-lg font-bold transition-colors ${editingId ? 'bg-[#B05B27] text-white hover:bg-[#8a461e]' : 'bg-[#1a241b] text-[#f7ebc6] hover:bg-[#2e3b2c]'}`}>
           {editingId ? 'บันทึกการแก้ไข' : 'เพิ่มหมวดหมู่'}

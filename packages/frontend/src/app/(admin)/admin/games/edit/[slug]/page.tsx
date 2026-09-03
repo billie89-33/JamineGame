@@ -8,7 +8,7 @@ import { gamesApi } from '@/features/games/games.api';
 export default function EditGamePage() {
   const params = useParams();
   const slug = params.slug as string;
-  const [initialData, setInitialData] = useState<any>(null);
+  const [initialData, setInitialData] = useState<import('@/features/games/games.api').Game | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

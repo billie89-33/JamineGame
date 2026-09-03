@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
+import { Article } from '../../articles.api';
 import { ArticleCard } from '../ArticleCard';
 import { getRecentArticles } from '../../data/mockArticles';
 
@@ -40,7 +41,7 @@ export const ArticleGrid = async () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-        {recentArticles.map((article: any) => (
+        {recentArticles.map((article: Article) => (
           <ArticleCard 
             key={article.id}
             id={article.id}

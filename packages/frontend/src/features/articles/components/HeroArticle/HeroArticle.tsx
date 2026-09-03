@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
+import { Article } from '../../articles.api';
 import Link from 'next/link';
 import { getRecentArticles } from '../../data/mockArticles';
 
@@ -53,7 +54,7 @@ export const HeroArticle = async () => {
 
         {/* 4 Small Images (Right) 2x2 */}
         <div className="hidden lg:grid grid-cols-2 grid-rows-2 gap-4 h-full">
-          {subArticles.map((article: any) => (
+          {subArticles.map((article: Article) => (
             <Link key={article.id} href={`/article/${article.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/20 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
               <img 

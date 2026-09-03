@@ -6,7 +6,7 @@ import { gamesApi } from '@/features/games/games.api';
 import { Plus, Edit2, Trash2, Search, Gamepad2 } from 'lucide-react';
 
 export default function AdminGamesPage() {
-  const [games, setGames] = useState<any[]>([]);
+  const [games, setGames] = useState<import('@/features/games/games.api').Game[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

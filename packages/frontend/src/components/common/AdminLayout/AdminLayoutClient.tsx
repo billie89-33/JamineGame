@@ -22,7 +22,7 @@ function SidebarContent({
   setIsSidebarOpen 
 }: { 
   pathname: string, 
-  user: any, 
+  user: { username: string, role: string }, 
   logout: () => void, 
   setIsSidebarOpen: (v: boolean) => void 
 }) {

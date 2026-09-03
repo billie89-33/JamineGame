@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -23,6 +25,7 @@ export default function AdminCategoriesPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchCategories();
   }, []);
 

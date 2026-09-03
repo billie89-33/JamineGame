@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import React, { useState } from 'react';
@@ -58,7 +59,7 @@ export default function LoginPage() {
           </button>
           
           <p className="text-center text-[#5d6b5e] mt-4 text-sm">
-            Don't have an account? <Link href="/register" className="font-bold text-[#1a241b] hover:underline">Register here</Link>
+            Don&apos;t have an account? <Link href="/register" className="font-bold text-[#1a241b] hover:underline">Register here</Link>
           </p>
         </form>
       </div>

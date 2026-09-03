@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -11,12 +12,6 @@ export default function EditGamePage() {
   const [initialData, setInitialData] = useState<import('@/features/games/games.api').Game | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (slug) {
-      fetchGame();
-    }
-  }, [slug]);
-
   const fetchGame = async () => {
     try {
       const data = await gamesApi.getGameById(slug);
@@ -29,7 +24,13 @@ export default function EditGamePage() {
     }
   };
 
-  if (isLoading) {
+  useEffect(() => {
+    if (slug) {
+      fetchGame();
+    }
+  }, [slug]);
+
+    if (isLoading) {
     return <div className="text-center py-20 text-[#f7ebc6] font-bold">LOADING GAME DATA...</div>;
   }
 

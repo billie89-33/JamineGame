@@ -21,13 +21,10 @@ export function AdminArticleForm({
     content: initialData?.content || '',
     categoryId: initialData?.categoryId || '',
     coverImage: initialData?.coverImage || '',
-    
   });
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
-  
   const [coverFile, setCoverFile] = useState<File | null>(null);
-  
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -58,12 +55,9 @@ export function AdminArticleForm({
         finalCoverImage = await handleMediaUpload(coverFile);
       }
 
-      
-
       const payload = {
         ...formData,
         ...(finalCoverImage ? { coverImage: finalCoverImage } : {}),
-        
         tags: processTags(tagsInput),
       };
 
@@ -105,6 +99,62 @@ export function AdminArticleForm({
         )}
       </div>
 
+      {/* Title */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[#1a241b] font-black text-lg">หัวข้อบทความ (TITLE)</label>
+        <input 
+          type="text" 
+          placeholder="หัวข้อบทความ (Title)" 
+          required
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-2xl font-bold text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+        />
+      </div>
+
+      {/* Category & Excerpt */}
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col gap-2 w-full md:w-1/3">
+          <label className="text-[#1a241b] font-black text-lg">หมวดหมู่ (CATEGORY)</label>
+          <select 
+            value={formData.categoryId || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] font-bold outline-none focus:border-[#1a241b] transition-colors appearance-none"
+          >
+            <option value="" disabled>เลือกหมวดหมู่</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon ? `${cat.icon} ` : ''}{cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="flex flex-col gap-2 w-full md:w-2/3">
+          <label className="text-[#1a241b] font-black text-lg">คำโปรย (EXCERPT)</label>
+          <input 
+            type="text" 
+            placeholder="คำโปรยย่อหน้าสั้นๆ (Excerpt)"
+            required
+            value={formData.excerpt}
+            onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+          />
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[#1a241b] font-black text-lg">แท็ก (TAGS)</label>
+        <input 
+          type="text" 
+          placeholder="ใส่แท็กคั่นด้วยคอมม่า (เช่น esport, review, dota2)"
+          value={tagsInput}
+          onChange={(e) => setTagsInput(e.target.value)}
+          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
+        />
+      </div>
+
       {/* Content Editor */}
       <div className="flex flex-col gap-2">
         <label className="text-[#1a241b] font-black text-lg">เนื้อหา (CONTENT)</label>
@@ -118,10 +168,10 @@ export function AdminArticleForm({
       {/* Submit Button */}
       <button 
         type="submit" 
-        disabled={isLoading || isUploadingVideo}
-        className="w-full py-4 mt-6 bg-[#1a241b] text-[#f7ebc6] font-black text-xl rounded-xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={isLoading}
+        className="w-full bg-[#1a241b] text-[#f7ebc6] font-black text-xl py-6 rounded-2xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 mt-8"
       >
-        {isUploadingVideo ? 'กำลังอัปโหลดวิดีโอ (อาจใช้เวลานาน)...' : isLoading ? (articleId ? 'กำลังอัปเดต...' : 'กำลังเผยแพร่...') : (articleId ? 'บันทึกการแก้ไขบทความ' : 'เผยแพร่บทความ')}
+        {isLoading ? (articleId ? 'กำลังบันทึกการแก้ไข...' : 'กำลังสร้างบทความ...') : (articleId ? 'บันทึกการแก้ไขบทความ' : 'สร้างบทความใหม่')}
       </button>
     </form>
   );

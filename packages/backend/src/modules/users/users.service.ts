@@ -16,8 +16,9 @@ export class UsersService {
   }
 
   async findForLogin(email: string) {
+    const lowerEmail = email.toLowerCase();
     return this.prisma.user.findUnique({
-      where: { email },
+      where: { email: lowerEmail },
       include: {
         accounts: {
           where: { provider: 'LOCAL' },
@@ -27,9 +28,11 @@ export class UsersService {
   }
 
   async create(data: RegisterDto, role: 'USER' | 'ADMIN' = 'USER') {
+    const lowerEmail = data.email.toLowerCase();
+    
     // 1. Check if user already exists
     const existingEmail = await this.prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email: lowerEmail },
     });
     if (existingEmail) throw new ConflictException('อีเมลนี้ถูกใช้งานแล้ว');
 
@@ -46,7 +49,7 @@ export class UsersService {
     // 3. Save to Database
     return this.prisma.user.create({
       data: {
-        email: data.email,
+        email: lowerEmail,
         username: data.username,
         role: role,
         accounts: {

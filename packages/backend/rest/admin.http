@@ -9,10 +9,10 @@ POST {{baseUrl}}/auth/register-admin
 Content-Type: application/json
 
 {
-  "username": "admin_user",
-  "email": "admin@gameverse.com",
-  "password": "securepassword123",
-  "confirm": "securepassword123"
+  "username": "admin_bank",
+  "email": "bowvorn@gmail.com",
+  "password": "bowvorn123",
+  "confirm": "bowvorn123"
 }
 
 ### 1. เข้าสู่ระบบของ Admin (Login as Admin)
@@ -21,8 +21,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin_user",
-  "password": "securepassword123"
+  "email": "bowvorn@gmail.com",
+  "password": "bowvorn123"
 }
 
 ### ==================== ARTICLES MANAGEMENT ====================

@@ -12,19 +12,21 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    // 1. หา User จากชื่อผู้ใช้ (Username)
-    const user = await this.usersService.findByUsername(loginDto.username);
-    if (!user) {
-      throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+    // 1. หา User จาก Email พร้อมกับ Account (LOCAL)
+    const user = await this.usersService.findForLogin(loginDto.email);
+    if (!user || !user.accounts || user.accounts.length === 0) {
+      throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
     }
+
+    const account = user.accounts[0];
 
     // 2. เช็ครหัสผ่าน
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
-      user.password,
+      account.password || '',
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+      throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
     }
 
     // 3. ถ้าถูกหมด ให้สร้าง Token

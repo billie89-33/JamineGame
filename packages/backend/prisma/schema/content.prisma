@@ -1,0 +1,43 @@
+model Category {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  icon        String?
+  description String? @db.Text
+
+  articles Article[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Article {
+  id         String  @id @default(uuid())
+  title      String
+  excerpt    String
+  content    String  @db.Text
+  coverImage String?
+  videoUrl   String?
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  tags String[]
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  gameId String?
+  game   Game?   @relation(fields: [gameId], references: [id], onDelete: SetNull)
+
+  publishedAt   DateTime @default(now())
+  readTime      Int? // เปลี่ยนเป็น Int (จำนวนนาที) เพื่อให้ดึงไปแสดงผลง่ายขึ้น
+  commentsCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // เพิ่ม Index เพื่อให้ Database ค้นหาและ Join ข้อมูลได้เร็วขึ้น
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([gameId])
+}

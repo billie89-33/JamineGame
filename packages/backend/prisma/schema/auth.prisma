@@ -1,0 +1,35 @@
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id       String @id @default(uuid())
+  username String @unique
+  email    String @unique
+  role     Role   @default(USER)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // สำหรับทำ Soft Delete
+
+  accounts Account[] // ย้ายระบบ Login มาไว้ที่นี่ รองรับได้หลาย Provider
+  articles Article[]
+}
+
+model Account {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  provider          String // เช่น 'LOCAL', 'GOOGLE', 'FACEBOOK'
+  providerAccountId String? // ID อ้างอิงจากระบบภายนอก (ถ้าเป็น LOCAL ปล่อยว่างได้)
+  password          String? // รหัสผ่าน แฮชเก็บไว้ที่นี่
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ป้องกันการผูกบัญชีซ้ำจาก Provider เดียวกัน
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}

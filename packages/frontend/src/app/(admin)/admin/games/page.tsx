@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -13,10 +12,7 @@ export default function AdminGamesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
-  const fetchGames = async (page: number) => {
-    await Promise.resolve();
-    setIsLoading(true);
-    await Promise.resolve();
+  const fetchGames = async (page: number) => {
     setIsLoading(true);
     try {
       const response = await gamesApi.getGames(page, limit);
@@ -34,7 +30,7 @@ export default function AdminGamesPage() {
     fetchGames(currentPage);
   }, [currentPage]);
 
-    const handleDelete = async (id: string, title: string) => {
+  const handleDelete = async (id: string, title: string) => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
       try {
         await gamesApi.deleteGame(id);

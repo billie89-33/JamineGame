@@ -8,14 +8,14 @@ import { useLogin } from '@/features/auth';
 import { ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   
   const { executeLogin, isLoading, error } = useLogin();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await executeLogin({ username, password });
+    await executeLogin({ email, password });
   };
 
   return (
@@ -35,10 +35,10 @@ export default function LoginPage() {
           )}
 
           <input 
-            type="text" 
-            placeholder="Username" 
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email" 
+            placeholder="Email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
             className="p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#5d6b5e] outline-none focus:border-[#1a241b] transition-colors" 
           />

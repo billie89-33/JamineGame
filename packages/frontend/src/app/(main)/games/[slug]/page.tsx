@@ -1,51 +1,101 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categoriesApi } from '@/features/categories/categories.api';
-import { articlesApi } from '@/features/articles/articles.api';
+import { gamesApi } from '@/features/games/games.api';
 
-// This makes the route static if we want, but since categories can be dynamic, we might want dynamic rendering or revalidate.
-// For Next.js 13+ App Router, we can fetch data directly in the Server Component.
-
-export default async function GameCategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function GameDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  let category;
+  let game;
   
   try {
-    category = await categoriesApi.getCategoryBySlug(resolvedParams.slug);
+    // ดึงข้อมูลเกมจริงๆ จาก Backend ตาม slug
+    game = await gamesApi.getGameById(resolvedParams.slug);
   } catch (error) {
-    notFound(); // 404 if category slug doesn't exist
+    notFound(); // ถ้าไม่เจอเกม ให้แสดงหน้า 404
   }
 
-  // Fetch articles for this category
-  // For now we just use a generic fetch, in a real app you might have an API like articlesApi.getArticlesByCategory(category.id)
-  // Let's assume we fetch all and filter for now, or just show mock if the API isn't ready
-  
   return (
     <main className="max-w-7xl mx-auto px-4 py-12 md:px-8 lg:px-12 min-h-[60vh]">
-      <div className="flex items-center gap-4 mb-8">
-        {category.icon && <span className="text-4xl">{category.icon}</span>}
-        <h1 className="text-4xl font-black text-[#f7ebc6]">{category.name}</h1>
+      {/* ส่วนหัวของเกม (Hero Section) */}
+      <div className="flex flex-col md:flex-row gap-8 mb-12">
+        {game.coverImage ? (
+          <img 
+            src={game.coverImage} 
+            alt={game.title} 
+            className="w-full md:w-1/3 aspect-[3/4] object-cover rounded-2xl shadow-xl border border-[#d4c38d]"
+          />
+        ) : (
+          <div className="w-full md:w-1/3 aspect-[3/4] bg-[#1a241b] rounded-2xl flex items-center justify-center border border-[#d4c38d]">
+            <span className="text-6xl">🎮</span>
+          </div>
+        )}
+        
+        <div className="flex-1 flex flex-col justify-center">
+          <h1 className="text-5xl font-black text-[#1a241b] mb-4 uppercase">{game.title}</h1>
+          <p className="text-[#1a241b]/80 text-lg mb-6 leading-relaxed">
+            {game.description || 'ไม่มีคำอธิบายสำหรับเกมนี้'}
+          </p>
+          
+          <div className="grid grid-cols-2 gap-4 bg-[#f7ebc6] p-6 rounded-xl border border-[#d4c38d]">
+            <div>
+              <p className="text-sm font-bold text-[#1a241b]/50 uppercase">ผู้พัฒนา</p>
+              <p className="font-bold text-[#1a241b]">{game.developer || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#1a241b]/50 uppercase">ผู้จัดจำหน่าย</p>
+              <p className="font-bold text-[#1a241b]">{game.publisher || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#1a241b]/50 uppercase">วันวางจำหน่าย</p>
+              <p className="font-bold text-[#1a241b]">
+                {game.releaseDate ? new Date(game.releaseDate).toLocaleDateString('th-TH') : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#1a241b]/50 uppercase">คะแนน</p>
+              <p className="font-bold text-[#1a241b]">{game.rating ? `${game.rating}/10` : '-'}</p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {game.platforms?.map((p: string, i: number) => (
+              <span key={i} className="bg-[#1a241b] text-[#f7ebc6] px-3 py-1 rounded-lg text-sm font-bold">
+                {p}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
       
-      {category.description && (
-        <p className="text-[#a0a8a1] text-lg mb-8">{category.description}</p>
-      )}
+      {/* บทความที่เกี่ยวข้องกับเกมนี้ */}
+      <h2 className="text-3xl font-black text-[#1a241b] mb-6 uppercase border-b-2 border-[#d4c38d] pb-2">
+        ข่าวและบทความ ({game.title})
+      </h2>
       
-      {/* Mock content for now until we have real articles matching this category */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map((item) => (
-          <Link href={`/articles/${item}`} key={item}>
-            <div className="bg-[#1a241b] rounded-xl overflow-hidden shadow-lg border border-[#2e3b2c] hover:scale-105 transition-transform cursor-pointer">
-              <div className="w-full h-40 bg-gradient-to-br from-[#2e3b2c] to-[#1a241b] flex items-center justify-center">
-                <span className="text-4xl opacity-50">{category.icon || '🎮'}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {game.articles && game.articles.length > 0 ? (
+          game.articles.map((article: any) => (
+            <Link href={`/article/${article.id}`} key={article.id}>
+              <div className="bg-[#f7ebc6] rounded-xl overflow-hidden shadow-lg border border-[#d4c38d] hover:scale-105 transition-transform cursor-pointer h-full flex flex-col">
+                {article.coverImage ? (
+                  <img src={article.coverImage} alt={article.title} className="w-full h-48 object-cover" />
+                ) : (
+                  <div className="w-full h-48 bg-[#1a241b] flex items-center justify-center">
+                    <span className="text-4xl">📰</span>
+                  </div>
+                )}
+                <div className="p-5 flex-1 flex flex-col">
+                  <h3 className="font-bold text-xl text-[#1a241b] mb-2 line-clamp-2">{article.title}</h3>
+                  <p className="text-[#1a241b]/70 text-sm line-clamp-3">{article.excerpt}</p>
+                </div>
               </div>
-              <div className="p-4">
-                <h3 className="font-bold text-[#f7ebc6]">{category.name} #{item}</h3>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))
+        ) : (
+          <div className="col-span-full py-10 text-center text-[#1a241b]/60 font-medium bg-[#e8d7a5] rounded-xl border border-[#d4c38d]">
+            ยังไม่มีบทความสำหรับเกมนี้
+          </div>
+        )}
       </div>
     </main>
   );

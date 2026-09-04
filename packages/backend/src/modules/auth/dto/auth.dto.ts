@@ -5,9 +5,9 @@ import {
 import { IsString, IsEmail, MinLength, IsNotEmpty } from 'class-validator';
 
 export class LoginDto extends SharedLoginDto {
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
-  declare username: string;
+  declare email: string;
 
   @IsString()
   @IsNotEmpty()

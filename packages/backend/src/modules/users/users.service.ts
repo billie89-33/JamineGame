@@ -15,12 +15,27 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { username } });
   }
 
+  async findForLogin(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        accounts: {
+          where: { provider: 'LOCAL' },
+        },
+      },
+    });
+  }
+
   async create(data: RegisterDto, role: 'USER' | 'ADMIN' = 'USER') {
     // 1. Check if user already exists
-    const existingEmail = await this.findByEmail(data.email);
+    const existingEmail = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
     if (existingEmail) throw new ConflictException('อีเมลนี้ถูกใช้งานแล้ว');
 
-    const existingUsername = await this.findByUsername(data.username);
+    const existingUsername = await this.prisma.user.findUnique({
+      where: { username: data.username },
+    });
     if (existingUsername)
       throw new ConflictException('ชื่อผู้ใช้นี้ถูกใช้งานแล้ว');
 
@@ -33,9 +48,15 @@ export class UsersService {
       data: {
         email: data.email,
         username: data.username,
-        password: hashedPassword,
         role: role,
+        accounts: {
+          create: {
+            provider: 'LOCAL',
+            password: hashedPassword,
+          },
+        },
       },
+      // Exclude accounts from the returned result if needed, but create doesn't include it by default
     });
   }
 }

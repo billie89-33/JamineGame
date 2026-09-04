@@ -53,12 +53,12 @@ export class ArticlesService {
     return article;
   }
 
-  private calculateReadTime(content: string): string {
-    if (!content) return '1 min read';
+  private calculateReadTime(content: string): number {
+    if (!content) return 1;
     const textOnly = content.replace(/<[^>]*>?/gm, '');
     const wordCount = textOnly.split(/\s+/).filter((word) => word.length > 0).length;
     const readTimeMinutes = Math.ceil(wordCount / 200) || 1;
-    return `${readTimeMinutes} min read`;
+    return readTimeMinutes;
   }
 
   async create(data: CreateArticleDto, userId: string) {

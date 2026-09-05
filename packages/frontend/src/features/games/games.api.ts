@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/config';
+import { getAuthHeaders } from '../auth/auth.api';
 
 export interface Game {
   id: string;
@@ -34,7 +35,10 @@ export const gamesApi = {
   createGame: async (data: Partial<Game>) => {
     const response = await fetch(`${API_URL}/games`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify(data),
       credentials: 'include',
     });
@@ -45,7 +49,10 @@ export const gamesApi = {
   updateGame: async (id: string, data: Partial<Game>) => {
     const response = await fetch(`${API_URL}/games/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify(data),
       credentials: 'include',
     });
@@ -56,6 +63,7 @@ export const gamesApi = {
   deleteGame: async (id: string) => {
     const response = await fetch(`${API_URL}/games/${id}`, {
       method: 'DELETE',
+      headers: { ...getAuthHeaders() },
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to delete game');

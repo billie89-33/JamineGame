@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/config';
+import { getAuthHeaders } from '../auth/auth.api';
 
 export interface Category {
   id: string;
@@ -26,7 +27,10 @@ export const categoriesApi = {
   createCategory: async (data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<Category> => {
     const response = await fetch(`${API_URL}/categories`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify(data),
       credentials: 'include',
     });
@@ -37,7 +41,10 @@ export const categoriesApi = {
   updateCategory: async (id: string, data: Partial<Category>): Promise<Category> => {
     const response = await fetch(`${API_URL}/categories/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify(data),
       credentials: 'include',
     });
@@ -48,6 +55,7 @@ export const categoriesApi = {
   deleteCategory: async (id: string): Promise<void> => {
     const response = await fetch(`${API_URL}/categories/${id}`, {
       method: 'DELETE',
+      headers: { ...getAuthHeaders() },
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to delete category');

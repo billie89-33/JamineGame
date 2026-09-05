@@ -25,8 +25,11 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // ดึง token จาก cookie 'access_token'
-    const token = request.cookies?.access_token;
+    // ดึง token จาก Authorization Header (Bearer token) หรือ Cookie 'access_token'
+    const authHeader = request.headers.authorization;
+    const bearerToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    const cookieToken = request.cookies?.access_token;
+    const token = bearerToken || cookieToken;
 
     if (!token) {
       throw new UnauthorizedException('Please log in.');

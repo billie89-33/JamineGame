@@ -1,5 +1,6 @@
 import { API_URL } from '@/lib/config';
 import { CreateArticleDto } from '@shared/dto';
+import { getAuthHeaders } from '../auth/auth.api';
 
 export interface Article {
   id: string;
@@ -21,6 +22,7 @@ export const articlesApi = {
     formData.append('file', file);
     const response = await fetch(`${API_URL}/upload/media`, {
       method: 'POST',
+      headers: { ...getAuthHeaders() },
       body: formData,
       credentials: 'include',
     });
@@ -31,7 +33,10 @@ export const articlesApi = {
   createArticle: async (data: CreateArticleDto) => {
     const response = await fetch(`${API_URL}/articles`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify(data),
       credentials: 'include',
     });
@@ -58,7 +63,10 @@ export const articlesApi = {
   updateArticle: async (id: string, data: Partial<CreateArticleDto>) => {
     const response = await fetch(`${API_URL}/articles/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify(data),
       credentials: 'include',
     });
@@ -69,6 +77,7 @@ export const articlesApi = {
   deleteArticle: async (id: string) => {
     const response = await fetch(`${API_URL}/articles/${id}`, {
       method: 'DELETE',
+      headers: { ...getAuthHeaders() },
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to delete article');

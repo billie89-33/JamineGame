@@ -54,7 +54,11 @@ export class AuthController {
       maxAge: 1000 * 60 * 60 * 24, // 1 วัน
     });
 
-    return { message: 'เข้าสู่ระบบสำเร็จ', user: result.user };
+    return { 
+      message: 'เข้าสู่ระบบสำเร็จ', 
+      user: result.user,
+      access_token: result.access_token 
+    };
   }
 
   @Post('logout')

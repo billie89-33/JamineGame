@@ -48,6 +48,18 @@ export function AdminArticleForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.categoryId) {
+      alert('กรุณาเลือกหมวดหมู่บทความ');
+      return;
+    }
+
+    const processedTags = processTags(tagsInput);
+    if (processedTags.length === 0) {
+      alert('กรุณาระบุแท็กอย่างน้อย 1 แท็ก');
+      return;
+    }
+
     setIsLoading(true);
     try {
       let finalCoverImage = formData.coverImage;
@@ -58,8 +70,12 @@ export function AdminArticleForm({
       const payload = {
         ...formData,
         ...(finalCoverImage ? { coverImage: finalCoverImage } : {}),
-        tags: processTags(tagsInput),
+        tags: processedTags,
       };
+
+      if (!payload.categoryId) {
+        delete payload.categoryId;
+      }
 
       if (articleId) {
         await articlesApi.updateArticle(articleId, payload);
@@ -115,13 +131,14 @@ export function AdminArticleForm({
       {/* Category & Excerpt */}
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex flex-col gap-2 w-full md:w-1/3">
-          <label className="text-[#1a241b] font-black text-lg">หมวดหมู่ (CATEGORY)</label>
+          <label className="text-[#1a241b] font-black text-lg">หมวดหมู่ (CATEGORY) *</label>
           <select 
+            required
             value={formData.categoryId || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
             className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] font-bold outline-none focus:border-[#1a241b] transition-colors appearance-none"
           >
-            <option value="" disabled>เลือกหมวดหมู่</option>
+            <option value="" disabled>-- เลือกหมวดหมู่ --</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.icon ? `${cat.icon} ` : ''}{cat.name}
@@ -145,10 +162,11 @@ export function AdminArticleForm({
 
       {/* Tags */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">แท็ก (TAGS)</label>
+        <label className="text-[#1a241b] font-black text-lg">แท็ก (TAGS) *</label>
         <input 
           type="text" 
-          placeholder="ใส่แท็กคั่นด้วยคอมม่า (เช่น esport, review, dota2)"
+          placeholder="ใส่แท็กคั่นด้วยคอมม่า เช่น news, review, game (จำเป็น)"
+          required
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
           className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"

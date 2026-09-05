@@ -66,6 +66,10 @@ export class ArticlesService {
     return this.prisma.article.create({
       data: {
         ...data,
+        categoryId: data.categoryId || null,
+        coverImage: data.coverImage || null,
+        videoUrl: data.videoUrl || null,
+        gameId: data.gameId || null,
         readTime,
         authorId: userId,
       },
@@ -87,6 +91,10 @@ export class ArticlesService {
       where: { id },
       data: {
         ...data,
+        ...(data.categoryId !== undefined ? { categoryId: data.categoryId || null } : {}),
+        ...(data.coverImage !== undefined ? { coverImage: data.coverImage || null } : {}),
+        ...(data.videoUrl !== undefined ? { videoUrl: data.videoUrl || null } : {}),
+        ...(data.gameId !== undefined ? { gameId: data.gameId || null } : {}),
         ...(data.content ? { readTime } : {}),
       },
     });

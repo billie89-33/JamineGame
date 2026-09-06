@@ -15,7 +15,10 @@ export const articlesApi = {
       body: formData,
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Media upload failed');
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      throw new Error(errData?.message || 'Media upload failed');
+    }
     return response.json();
   },
 

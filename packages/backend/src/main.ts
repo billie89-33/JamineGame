@@ -1,4 +1,16 @@
 import 'dotenv/config';
+
+// Sanitize CLOUDINARY_URL before cloudinary package auto-initializes
+if (process.env.CLOUDINARY_URL) {
+  let url = process.env.CLOUDINARY_URL.replace(/['"]/g, '').trim();
+  url = url.replace(/^CLOUDINARY_URL=/i, '').trim();
+  if (url.startsWith('cloudinary://')) {
+    process.env.CLOUDINARY_URL = url;
+  } else {
+    delete process.env.CLOUDINARY_URL;
+  }
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';

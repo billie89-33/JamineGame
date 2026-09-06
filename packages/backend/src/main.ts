@@ -42,8 +42,12 @@ async function bootstrap() {
     .addCookieAuth('access_token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
-  await app.listen(process.env.PORT ?? 3001);
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('❌ FATAL BOOTSTRAP ERROR:', err);
+  process.exit(1);
+});

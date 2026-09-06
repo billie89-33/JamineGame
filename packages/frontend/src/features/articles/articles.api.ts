@@ -1,20 +1,9 @@
 import { API_URL } from '@/lib/config';
 import { CreateArticleDto } from '@shared/dto';
 import { getAuthHeaders } from '../auth/auth.api';
+import { Article } from './types';
 
-export interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  coverImage?: string;
-  videoUrl?: string;
-  category?: string;
-  categoryId?: string;
-  publishedAt?: string;
-  tags?: string[];
-}
+export type { Article };
 
 export const articlesApi = {
   uploadMedia: async (file: File): Promise<{ url: string }> => {
@@ -44,11 +33,14 @@ export const articlesApi = {
     return response.json();
   },
   
-  getArticles: async (page?: number, limit?: number) => {
-    let url = `${API_URL}/articles`;
-    if (page && limit) {
-      url += `?page=${page}&limit=${limit}`;
-    }
+  getArticles: async (page?: number, limit?: number, search?: string) => {
+    const params = new URLSearchParams();
+    if (page) params.append('page', page.toString());
+    if (limit) params.append('limit', limit.toString());
+    if (search) params.append('search', search);
+
+    const query = params.toString();
+    const url = `${API_URL}/articles${query ? `?${query}` : ''}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch articles');
     return response.json();

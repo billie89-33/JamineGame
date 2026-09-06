@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Article } from '../../articles.api';
 import { ArticleCard } from '../ArticleCard';
 import { getRecentArticles } from '../../data/mockArticles';
+import { API_URL } from '@/lib/config';
 
 export const ArticleGrid = async () => {
   let allArticles = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const res = await fetch(`${apiUrl}/articles?page=1&limit=11`, { 
+    const res = await fetch(`${API_URL}/articles?page=1&limit=11`, { 
       next: { revalidate: 60 },
     });
     
@@ -48,7 +46,7 @@ export const ArticleGrid = async () => {
             title={article.title}
             excerpt={article.excerpt || ''}
             imageUrl={article.coverImage || ''}
-            category={article.category || ''}
+            category={article.category}
             date={article.publishedAt || ''}
           />
         ))}

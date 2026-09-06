@@ -4,37 +4,31 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { AdminArticleForm } from '@/features/articles/components/AdminArticleForm/AdminArticleForm';
-import { articlesApi } from '@/features/articles/articles.api';
+import { articlesApi, Article } from '@/features/articles/articles.api';
 
 export default function EditArticlePage() {
   const params = useParams();
   const id = params.id as string;
-  const [initialData, setInitialData] = useState<import('@/features/articles/articles.api').Article | null>(null);
+  const [initialData, setInitialData] = useState<Partial<Article> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const fetchArticle = async () => {
-    await Promise.resolve();
-    setIsLoading(true);
-    await Promise.resolve();
-    setIsLoading(true);
-    try {
-      const data = await articlesApi.getArticleById(id);
-      setInitialData(data);
-    } catch (error) {
-      console.error('Failed to load article:', error);
-      alert('Failed to load article data');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (id) {
-      fetchArticle();
+      articlesApi
+        .getArticleById(id)
+        .then((data) => {
+          setInitialData(data);
+        })
+        .catch((error) => {
+          console.error('Failed to load article', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, [id]);
 
-    if (isLoading) {
+  if (isLoading) {
     return <div className="text-center py-20 text-[#f7ebc6] font-bold">กำลังโหลดข้อมูลบทความ...</div>;
   }
 

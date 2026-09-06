@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArticleDto, UpdateArticleDto } from './dto/articles.dto';
 
@@ -6,12 +11,28 @@ import { CreateArticleDto, UpdateArticleDto } from './dto/articles.dto';
 export class ArticlesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(page: number = 1, limit: number = 10) {
+  async findAll(page: number = 1, limit: number = 10, search?: string) {
     const skip = (page - 1) * limit;
 
+    const where: {
+      OR?: Array<
+        | { title: { contains: string; mode: 'insensitive' } }
+        | { excerpt: { contains: string; mode: 'insensitive' } }
+      >;
+    } = {};
+
+    if (search && search.trim()) {
+      const searchTerm = search.trim();
+      where.OR = [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { excerpt: { contains: searchTerm, mode: 'insensitive' } },
+      ];
+    }
+
     const [total, data] = await Promise.all([
-      this.prisma.article.count(),
+      this.prisma.article.count({ where }),
       this.prisma.article.findMany({
+        where,
         skip,
         take: limit,
         orderBy: { publishedAt: 'desc' },
@@ -30,7 +51,7 @@ export class ArticlesService {
       success: true,
       total,
       page,
-      totalPages: Math.ceil(total / limit),
+      totalPages: total > 0 ? Math.ceil(total / limit) : 1,
       data,
     };
   }
@@ -62,6 +83,15 @@ export class ArticlesService {
   }
 
   async create(data: CreateArticleDto, userId: string) {
+    if (data.categoryId) {
+      const category = await this.prisma.category.findUnique({
+        where: { id: data.categoryId },
+      });
+      if (!category) {
+        throw new BadRequestException(`Category not found with ID: ${data.categoryId}`);
+      }
+    }
+
     const readTime = this.calculateReadTime(data.content);
     return this.prisma.article.create({
       data: {
@@ -76,10 +106,31 @@ export class ArticlesService {
     });
   }
 
-  async update(id: string, data: UpdateArticleDto) {
+  async update(
+    id: string,
+    data: UpdateArticleDto,
+    currentUser?: { sub: string; role: string },
+  ) {
     const article = await this.prisma.article.findUnique({ where: { id } });
     if (!article) {
       throw new NotFoundException('Article not found');
+    }
+
+    if (
+      currentUser &&
+      currentUser.role !== 'ADMIN' &&
+      article.authorId !== currentUser.sub
+    ) {
+      throw new ForbiddenException('คุณไม่มีสิทธิ์แก้ไขบทความนี้');
+    }
+
+    if (data.categoryId) {
+      const category = await this.prisma.category.findUnique({
+        where: { id: data.categoryId },
+      });
+      if (!category) {
+        throw new BadRequestException(`Category not found with ID: ${data.categoryId}`);
+      }
     }
     
     let readTime = article.readTime;
@@ -100,10 +151,18 @@ export class ArticlesService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUser?: { sub: string; role: string }) {
     const article = await this.prisma.article.findUnique({ where: { id } });
     if (!article) {
       throw new NotFoundException('Article not found');
+    }
+
+    if (
+      currentUser &&
+      currentUser.role !== 'ADMIN' &&
+      article.authorId !== currentUser.sub
+    ) {
+      throw new ForbiddenException('คุณไม่มีสิทธิ์ลบบทความนี้');
     }
     
     return this.prisma.article.delete({

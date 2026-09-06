@@ -13,6 +13,8 @@ import {
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto, UpdateArticleDto } from './dto/articles.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import type { Request } from 'express';
 
 @Controller('articles')
@@ -23,10 +25,11 @@ export class ArticlesController {
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('search') search?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.articlesService.findAll(pageNum, limitNum);
+    return this.articlesService.findAll(pageNum, limitNum, search);
   }
 
   @Get(':id')
@@ -34,25 +37,31 @@ export class ArticlesController {
     return this.articlesService.findOne(id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Post()
   create(@Body() createArticleDto: CreateArticleDto, @Req() req: Request) {
     const userId = (req as Request & { user: { sub: string } }).user.sub;
     return this.articlesService.create(createArticleDto, userId);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateArticleDto: UpdateArticleDto,
+    @Req() req: Request,
   ) {
-    return this.articlesService.update(id, updateArticleDto);
+    const user = (req as Request & { user: { sub: string; role: string } }).user;
+    return this.articlesService.update(id, updateArticleDto, user);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.articlesService.remove(id);
+  remove(@Param('id') id: string, @Req() req: Request) {
+    const user = (req as Request & { user: { sub: string; role: string } }).user;
+    return this.articlesService.remove(id, user);
   }
 }

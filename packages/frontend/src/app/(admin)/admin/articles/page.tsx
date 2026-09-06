@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -12,15 +12,13 @@ export default function AdminArticlesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
   const limit = 10;
 
-  const fetchArticles = async (page: number) => {
-    await Promise.resolve();
-    setIsLoading(true);
-    await Promise.resolve();
+  const fetchArticles = async (page: number, search?: string) => {
     setIsLoading(true);
     try {
-      const response = await articlesApi.getArticles(page, limit);
+      const response = await articlesApi.getArticles(page, limit, search);
       setArticles(response.data || []);
       setTotalPages(response.totalPages || 1);
     } catch (error) {
@@ -31,19 +29,21 @@ export default function AdminArticlesPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    fetchArticles(currentPage);
-  }, [currentPage]);
+    const timer = setTimeout(() => {
+      fetchArticles(currentPage, searchTerm);
+    }, 300);
 
-    const handleDelete = async (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
+    return () => clearTimeout(timer);
+  }, [currentPage, searchTerm]);
+
+  const handleDelete = async (id: string, title: string) => {
+    if (window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบทความ "${title}"?`)) {
       try {
         await articlesApi.deleteArticle(id);
-        alert('Article deleted successfully');
-        // Refresh the current page
-        fetchArticles(currentPage);
+        alert('ลบบทความสำเร็จ');
+        fetchArticles(currentPage, searchTerm);
       } catch (error) {
-        alert('Failed to delete article');
+        alert('เกิดข้อผิดพลาดในการลบบทความ');
         console.error(error);
       }
     }
@@ -71,6 +71,11 @@ export default function AdminArticlesPage() {
           <input 
             type="text" 
             placeholder="ค้นหาบทความ..." 
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="bg-transparent border-none outline-none text-[#1a241b] font-medium w-full placeholder:text-[#1a241b]/50"
           />
         </div>
@@ -93,7 +98,7 @@ export default function AdminArticlesPage() {
                 {articles.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-10 text-center font-medium text-[#1a241b]/60">
-                      ยังไม่มีบทความ เริ่มเขียนกันเลย!
+                      {searchTerm ? 'ไม่พบบทความที่ตรงกับคำค้นหา' : 'ยังไม่มีบทความ เริ่มเขียนกันเลย!'}
                     </td>
                   </tr>
                 ) : (

@@ -1,15 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Article } from '../../articles.api';
 import Link from 'next/link';
 import { getRecentArticles } from '../../data/mockArticles';
+import { API_URL } from '@/lib/config';
+
+const getCategoryName = (category: unknown): string => {
+  if (!category) return 'ทั่วไป';
+  if (typeof category === 'object' && category !== null && 'name' in category) {
+    return (category as { name: string }).name || 'ทั่วไป';
+  }
+  return String(category);
+};
 
 export const HeroArticle = async () => {
   let articles = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const res = await fetch(`${apiUrl}/articles?page=1&limit=5`, { 
+    const res = await fetch(`${API_URL}/articles?page=1&limit=5`, { 
       next: { revalidate: 60 },
     });
     
@@ -43,7 +49,7 @@ export const HeroArticle = async () => {
             />
             <div className="absolute bottom-6 left-6 right-6 z-20 flex flex-col items-start">
               <span className="bg-[#B05B27] text-[#f7ebc6] text-xs font-black px-3 py-1 shadow-md uppercase mb-3 tracking-wider">
-                {mainArticle.category}
+                {getCategoryName(mainArticle.category)}
               </span>
               <h2 className="text-2xl lg:text-3xl xl:text-4xl font-black text-[#f7ebc6] leading-tight line-clamp-2 drop-shadow-lg group-hover:text-white transition-colors">
                 {mainArticle.title}
@@ -64,7 +70,7 @@ export const HeroArticle = async () => {
               />
               <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-col items-start">
                 <span className="bg-[#1a241b]/80 backdrop-blur-sm text-[#f7ebc6] text-[10px] font-bold px-2 py-0.5 shadow-md uppercase mb-2">
-                  {article.category}
+                  {getCategoryName(article.category)}
                 </span>
                 <h3 className="text-sm xl:text-base font-bold text-[#f7ebc6] leading-tight line-clamp-2 drop-shadow-md group-hover:text-[#B05B27] transition-colors">
                   {article.title}

@@ -29,6 +29,37 @@ export const removeAuthToken = (): void => {
   }
 };
 
+export const getStoredUser = (): User | null => {
+  if (typeof window !== 'undefined') {
+    const raw = localStorage.getItem('auth_user');
+    if (raw) {
+      try {
+        return JSON.parse(raw);
+      } catch {
+        localStorage.removeItem('auth_user');
+      }
+    }
+  }
+  return null;
+};
+
+export const setStoredUser = (user: User): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('auth_user', JSON.stringify(user));
+  }
+};
+
+export const removeStoredUser = (): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_user');
+  }
+};
+
+export const clearAuthStorage = (): void => {
+  removeAuthToken();
+  removeStoredUser();
+};
+
 export const getAuthHeaders = (): Record<string, string> => {
   const token = getAuthToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -51,6 +82,9 @@ export const authApi = {
     if (result.access_token) {
       setAuthToken(result.access_token);
     }
+    if (result.user) {
+      setStoredUser(result.user);
+    }
     return result;
   },
 
@@ -67,13 +101,16 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    removeAuthToken();
-    const response = await fetch(`${API_URL}/auth/logout`, {
-      method: 'POST',
-      headers: { ...getAuthHeaders() },
-      credentials: 'include',
-    });
-    if (!response.ok) throw new Error('Logout failed');
+    clearAuthStorage();
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        headers: { ...getAuthHeaders() },
+        credentials: 'include',
+      });
+    } catch {
+      // Ignore network errors on logout
+    }
   },
 
   me: async (): Promise<AuthResponse> => {

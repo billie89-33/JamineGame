@@ -51,7 +51,7 @@ export class AuthController {
       httpOnly: true, // ป้องกัน XSS
       secure: isProduction, // บน Prod ต้องเป็น HTTPS เท่านั้น
       sameSite: isProduction ? 'none' : 'lax', // อนุญาตให้ข้ามโดเมนบน Prod ได้
-      maxAge: 1000 * 60 * 60 * 24, // 1 วัน
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 วัน
     });
 
     return { 

@@ -1,17 +1,31 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useLogin } from '@/features/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   
   const { executeLogin, isLoading, error } = useLogin();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (user.role === 'ADMIN') {
+        router.replace('/admin');
+      } else {
+        router.replace('/');
+      }
+    }
+  }, [user, authLoading, router]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

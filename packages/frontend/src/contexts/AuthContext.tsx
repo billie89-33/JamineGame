@@ -3,12 +3,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { API_URL } from "@/lib/config";
 
-import { authApi } from "@/features/auth/auth.api";
+import { authApi, getStoredUser, setStoredUser, clearAuthStorage, getAuthToken } from "@/features/auth/auth.api";
 
 // กำหนดรูปร่างของข้อมูล User
 export interface User {
   id: string;
-  email: string;
+  email?: string;
   username: string;
   role: string;
 }
@@ -26,15 +26,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // 1. Initial hydration from localStorage to prevent flash of unauthenticated state
+  useEffect(() => {
+    const cachedUser = getStoredUser();
+    const token = getAuthToken();
+    if (cachedUser && token) {
+      setUser(cachedUser);
+    }
+  }, []);
+
+  // 2. Background verification with backend
   useEffect(() => {
     const fetchUser = async () => {
+      const token = getAuthToken();
+      if (!token) {
+        setIsLoading(false);
+        setUser(null);
+        clearAuthStorage();
+        return;
+      }
+
       try {
         const response = await authApi.me();
         if (response.user) {
           setUser(response.user);
+          setStoredUser(response.user);
+        } else {
+          setUser(null);
+          clearAuthStorage();
         }
       } catch (error) {
-        console.log("No active session");
+        // Token is invalid or expired
+        console.log("Session expired or invalid:", error);
+        setUser(null);
+        clearAuthStorage();
       } finally {
         setIsLoading(false);
       }
@@ -45,10 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (userData: User) => {
     setUser(userData);
+    setStoredUser(userData);
   };
 
   const logout = async () => {
     setUser(null);
+    clearAuthStorage();
     try {
       await authApi.logout();
     } catch (error) {

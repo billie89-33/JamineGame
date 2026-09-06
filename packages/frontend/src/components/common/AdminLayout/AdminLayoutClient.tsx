@@ -104,7 +104,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
     }
   }, [user, isLoading, router]);
 
-  if (isLoading && process.env.NODE_ENV !== 'development') {
+  if (isLoading) {
     return <div className="h-screen w-full flex items-center justify-center bg-[#0b0f0c] text-lime-400 font-black text-2xl tracking-widest">กำลังโหลด...</div>;
   }
 

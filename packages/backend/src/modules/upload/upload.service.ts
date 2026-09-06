@@ -7,15 +7,26 @@ export class UploadService {
   private readonly logger = new Logger(UploadService.name);
 
   constructor() {
+    let cloudName = (process.env.CLOUDINARY_CLOUD_NAME || '').replace(/['"]/g, '').trim();
+    let apiKey = (process.env.CLOUDINARY_API_KEY || '').replace(/['"]/g, '').trim();
+    let apiSecret = (process.env.CLOUDINARY_API_SECRET || '').replace(/['"]/g, '').trim();
     const cloudinaryUrl = (process.env.CLOUDINARY_URL || '').replace(/['"]/g, '').trim();
-    const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || '').replace(/['"]/g, '').trim();
-    const apiKey = (process.env.CLOUDINARY_API_KEY || '').replace(/['"]/g, '').trim();
-    const apiSecret = (process.env.CLOUDINARY_API_SECRET || '').replace(/['"]/g, '').trim();
 
     if (cloudinaryUrl) {
-      cloudinary.config(cloudinaryUrl);
-      this.logger.log('Cloudinary configured via CLOUDINARY_URL');
-    } else if (cloudName && apiKey && apiSecret) {
+      try {
+        const cleanedUrl = cloudinaryUrl.replace(/^CLOUDINARY_URL=/i, '').trim();
+        if (cleanedUrl.startsWith('cloudinary://')) {
+          const parsed = new URL(cleanedUrl);
+          apiKey = parsed.username || apiKey;
+          apiSecret = parsed.password || apiSecret;
+          cloudName = parsed.hostname || cloudName;
+        }
+      } catch (e) {
+        this.logger.warn('Could not parse CLOUDINARY_URL, checking standard variables');
+      }
+    }
+
+    if (cloudName && apiKey && apiSecret && cloudName !== 'demo') {
       cloudinary.config({
         cloud_name: cloudName,
         api_key: apiKey,
@@ -24,7 +35,7 @@ export class UploadService {
       });
       this.logger.log(`Cloudinary configured for cloud_name: ${cloudName}`);
     } else {
-      this.logger.warn('Cloudinary credentials are missing or incomplete in environment variables');
+      this.logger.warn('Cloudinary credentials missing or incomplete in environment');
       cloudinary.config({
         cloud_name: 'demo',
         api_key: 'demo',

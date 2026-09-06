@@ -1,18 +1,22 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 "use client";
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { articlesApi } from '@/features/articles/articles.api';
 import { ArticleResponseDto } from '@shared/dto';
-import { Plus, Edit2, Trash2, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, AlertTriangle, X, Loader2 } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function AdminArticlesPage() {
+  const { toast } = useToast();
   const [articles, setArticles] = useState<ArticleResponseDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const limit = 10;
 
   const fetchArticles = async (page: number, search?: string) => {
@@ -23,6 +27,7 @@ export default function AdminArticlesPage() {
       setTotalPages(response.totalPages || 1);
     } catch (error) {
       console.error("Failed to fetch articles", error);
+      toast.error("ไม่สามารถโหลดรายการบทความได้");
     } finally {
       setIsLoading(false);
     }
@@ -36,16 +41,18 @@ export default function AdminArticlesPage() {
     return () => clearTimeout(timer);
   }, [currentPage, searchTerm]);
 
-  const handleDelete = async (id: string, title: string) => {
-    if (window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบทความ "${title}"?`)) {
-      try {
-        await articlesApi.deleteArticle(id);
-        alert('ลบบทความสำเร็จ');
-        fetchArticles(currentPage, searchTerm);
-      } catch (error) {
-        alert('เกิดข้อผิดพลาดในการลบบทความ');
-        console.error(error);
-      }
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await articlesApi.deleteArticle(deleteTarget.id);
+      toast.success(`ลบบทความ "${deleteTarget.title}" สำเร็จเรียบร้อยแล้ว`);
+      setDeleteTarget(null);
+      fetchArticles(currentPage, searchTerm);
+    } catch (error) {
+      toast.error('เกิดข้อผิดพลาดในการลบบทความ: ' + (error as Error).message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -58,7 +65,7 @@ export default function AdminArticlesPage() {
         </div>
         <Link 
           href="/admin/articles/create"
-          className="flex items-center gap-2 bg-[#1a241b] text-[#f7ebc6] px-6 py-3 rounded-xl font-bold hover:bg-[#2e3b2c] transition-colors"
+          className="flex items-center gap-2 bg-[#1a241b] text-[#f7ebc6] px-6 py-3 rounded-xl font-bold hover:bg-[#2e3b2c] transition-colors shadow-md"
         >
           <Plus size={20} />
           เขียนบทความใหม่
@@ -81,7 +88,10 @@ export default function AdminArticlesPage() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-10 font-bold text-[#1a241b]">กำลังโหลด...</div>
+          <div className="text-center py-12 font-bold text-[#1a241b] flex items-center justify-center gap-3">
+            <Loader2 className="animate-spin" size={24} />
+            <span>กำลังโหลดข้อมูลบทความ...</span>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -126,8 +136,8 @@ export default function AdminArticlesPage() {
                             <Edit2 size={16} />
                           </Link>
                           <button 
-                            onClick={() => handleDelete(article.id, article.title)}
-                            className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors" 
+                            onClick={() => setDeleteTarget({ id: article.id, title: article.title })}
+                            className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer" 
                             title="ลบ"
                           >
                             <Trash2 size={16} />
@@ -151,14 +161,14 @@ export default function AdminArticlesPage() {
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d] transition-colors"
+                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d] transition-colors cursor-pointer"
               >
                 ก่อนหน้า
               </button>
               <button 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d] transition-colors"
+                className="px-4 py-2 rounded-lg bg-[#e8d7a5] text-[#1a241b] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d4c38d] transition-colors cursor-pointer"
               >
                 ถัดไป
               </button>
@@ -166,6 +176,50 @@ export default function AdminArticlesPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#f7ebc6] border border-[#d4c38d] shadow-2xl rounded-3xl p-6 md:p-8 max-w-md w-full relative">
+            <button 
+              onClick={() => !isDeleting && setDeleteTarget(null)}
+              className="absolute top-6 right-6 text-[#1a241b]/60 hover:text-[#1a241b] p-1 rounded-lg"
+              disabled={isDeleting}
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-14 h-14 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
+              <AlertTriangle size={28} />
+            </div>
+
+            <h3 className="text-2xl font-black text-[#1a241b] mb-2">ยืนยันการลบบทความ</h3>
+            <p className="text-[#5d6b5e] font-medium mb-6">
+              คุณแน่ใจหรือไม่ว่าต้องการลบบทความ <span className="font-bold text-[#1a241b]">"{deleteTarget.title}"</span>? การกระทำนี้ไม่สามารถย้อนกลับได้
+            </p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl font-bold bg-[#e8d7a5] hover:bg-[#d4c38d] text-[#1a241b] transition-colors cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isDeleting && <Loader2 size={16} className="animate-spin" />}
+                {isDeleting ? 'กำลังลบ...' : 'ยืนยันการลบ'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

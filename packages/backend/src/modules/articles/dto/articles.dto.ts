@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsArray,
   ArrayMinSize,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateArticleDto extends SharedCreateArticleDto {
@@ -40,6 +41,10 @@ export class CreateArticleDto extends SharedCreateArticleDto {
   @IsString()
   @IsOptional()
   declare gameId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  declare isFeatured?: boolean;
 }
 
 import { PartialType } from '@nestjs/swagger';

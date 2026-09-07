@@ -25,6 +25,7 @@ export function AdminArticleForm({
     categoryId: initialData?.categoryId || '',
     coverImage: initialData?.coverImage || '',
     videoUrl: initialData?.videoUrl || '',
+    isFeatured: initialData?.isFeatured || false,
   });
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -91,6 +92,7 @@ export function AdminArticleForm({
         excerpt: formData.excerpt.trim(),
         content: formData.content,
         tags: processedTags,
+        isFeatured: formData.isFeatured,
       };
 
       if (formData.categoryId) {
@@ -202,6 +204,16 @@ export function AdminArticleForm({
           />
         </div>
       </div>
+
+      <label className="flex items-center gap-3 rounded-xl border border-[#d4c38d] bg-[#e8d7a5] p-4 text-[#1a241b] font-bold cursor-pointer">
+        <input
+          type="checkbox"
+          checked={formData.isFeatured || false}
+          onChange={(e) => setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))}
+          className="h-5 w-5 accent-[#1a241b]"
+        />
+        Feature this article in the homepage hero
+      </label>
 
       {/* Video URL (Optional) & Tags */}
       <div className="flex flex-col md:flex-row gap-6">

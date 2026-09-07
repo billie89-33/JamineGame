@@ -36,11 +36,17 @@ export const articlesApi = {
     return response.json();
   },
   
-  getArticles: async (page?: number, limit?: number, search?: string) => {
+  getArticles: async (
+    page?: number,
+    limit?: number,
+    search?: string,
+    category?: string,
+  ) => {
     const params = new URLSearchParams();
     if (page) params.append('page', page.toString());
     if (limit) params.append('limit', limit.toString());
     if (search) params.append('search', search);
+    if (category) params.append('category', category);
 
     const query = params.toString();
     const url = `${API_URL}/articles${query ? `?${query}` : ''}`;

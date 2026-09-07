@@ -1,7 +1,6 @@
 import React from 'react';
 import { Article } from '../../articles.api';
 import Link from 'next/link';
-import { getRecentArticles } from '../../data/mockArticles';
 import { API_URL } from '@/lib/config';
 
 const getCategoryName = (category: unknown): string => {
@@ -15,7 +14,7 @@ const getCategoryName = (category: unknown): string => {
 export const HeroArticle = async () => {
   let articles = [];
   try {
-    const res = await fetch(`${API_URL}/articles?page=1&limit=5`, { 
+    const res = await fetch(`${API_URL}/articles/featured?limit=5`, {
       next: { revalidate: 60 },
     });
     
@@ -27,9 +26,8 @@ export const HeroArticle = async () => {
     console.error('Failed to fetch articles from API:', error);
   }
 
-  // Fallback to mock data if API fails or DB is empty
   if (!articles || articles.length === 0) {
-    articles = getRecentArticles(5);
+    return null;
   }
 
   const mainArticle = articles[0];

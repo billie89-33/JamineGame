@@ -12,6 +12,16 @@ export class GamesController {
     return this.gamesService.findAll(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 10);
   }
 
+  @Get('featured')
+  findFeatured(
+    @Query('limit') limit?: string,
+    @Query('articlesLimit') articlesLimit?: string,
+  ) {
+    const limitNum = limit ? parseInt(limit, 10) : 3;
+    const articlesLimitNum = articlesLimit ? parseInt(articlesLimit, 10) : 2;
+    return this.gamesService.findFeatured(limitNum, articlesLimitNum);
+  }
+
   @Get(':slug')
   findOne(@Param('slug') slug: string) {
     return this.gamesService.findOne(slug);

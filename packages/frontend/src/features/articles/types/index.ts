@@ -20,6 +20,7 @@ export interface Article {
   category?: string | ArticleCategory;
   categoryId?: string;
   tags?: string[];
+  isFeatured?: boolean;
   author?: Author;
   authorId?: string;
   publishedAt?: string;

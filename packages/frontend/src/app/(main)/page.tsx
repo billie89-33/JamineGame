@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeroArticle, ArticleGrid } from '@/features/articles/components';
+import { FeaturedGames } from '@/features/games/components';
 import { Sidebar } from '@/components/common';
 
 export default function Home() {
@@ -7,6 +8,8 @@ export default function Home() {
     <main className="max-w-7xl mx-auto px-4 py-12 md:px-8 lg:px-12 z-10 w-full">
       {/* 1. Hero Images (Full Width, spanning across both columns) */}
       <HeroArticle />
+
+      <FeaturedGames />
 
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
         {/* Main Content Area */}

@@ -15,6 +15,23 @@ export class GamesService {
     return { success: true, total, page, totalPages: Math.ceil(total / limit), data };
   }
 
+  async findFeatured(limit: number = 3, articlesLimit: number = 2) {
+    const data = await this.prisma.game.findMany({
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        articles: {
+          take: articlesLimit,
+          orderBy: { publishedAt: 'desc' },
+          include: {
+            category: { select: { id: true, name: true, slug: true } },
+          },
+        },
+      },
+    });
+    return { success: true, data };
+  }
+
   async findOne(slug: string) {
     const game = await this.prisma.game.findUnique({
       where: { slug },

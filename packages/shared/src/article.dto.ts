@@ -5,7 +5,9 @@ export class CreateArticleDto {
   coverImage?: string;
   videoUrl?: string;
   categoryId?: string;
+  gameId?: string;
   tags!: string[];
+  isFeatured?: boolean;
 }
 
 export class ArticleResponseDto {
@@ -21,7 +23,15 @@ export class ArticleResponseDto {
     name: string;
     slug: string;
   } | null;
+  gameId?: string | null;
+  game?: {
+    id: string;
+    title: string;
+    slug: string;
+    coverImage?: string | null;
+  } | null;
   tags!: string[];
+  isFeatured!: boolean;
   authorId!: string;
   publishedAt!: Date | string;
   readTime?: string | null;

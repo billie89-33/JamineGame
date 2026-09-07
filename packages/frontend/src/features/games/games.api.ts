@@ -15,6 +15,23 @@ export interface Game {
   genres?: string[];
 }
 
+export interface FeaturedGameArticle {
+  id: string;
+  title: string;
+  excerpt?: string;
+  coverImage?: string | null;
+  publishedAt?: string;
+}
+
+export interface FeaturedGame extends Game {
+  articles: FeaturedGameArticle[];
+}
+
+interface GamesResponse<T> {
+  success: boolean;
+  data: T[];
+}
+
 export const gamesApi = {
   getGames: async (page?: number, limit?: number) => {
     let url = `${API_URL}/games`;
@@ -23,6 +40,19 @@ export const gamesApi = {
     }
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch games');
+    return response.json();
+  },
+
+  getFeaturedGames: async (
+    limit: number = 3,
+    articlesLimit: number = 2,
+  ): Promise<GamesResponse<FeaturedGame>> => {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      articlesLimit: articlesLimit.toString(),
+    });
+    const response = await fetch(`${API_URL}/games/featured?${params}`);
+    if (!response.ok) throw new Error('Failed to fetch featured games');
     return response.json();
   },
 

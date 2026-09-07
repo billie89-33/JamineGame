@@ -30,6 +30,8 @@ model Article {
   gameId String?
   game   Game?   @relation(fields: [gameId], references: [id], onDelete: SetNull)
 
+  isFeatured Boolean @default(false)
+
   publishedAt   DateTime @default(now())
   readTime      Int? // เปลี่ยนเป็น Int (จำนวนนาที) เพื่อให้ดึงไปแสดงผลง่ายขึ้น
   commentsCount Int      @default(0)
@@ -40,4 +42,5 @@ model Article {
   @@index([categoryId])
   @@index([authorId])
   @@index([gameId])
+  @@index([isFeatured])
 }

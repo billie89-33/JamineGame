@@ -11,7 +11,12 @@ import { CreateArticleDto, UpdateArticleDto } from './dto/articles.dto';
 export class ArticlesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(page: number = 1, limit: number = 10, search?: string) {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    category?: string,
+  ) {
     const skip = (page - 1) * limit;
 
     const where: {
@@ -19,6 +24,7 @@ export class ArticlesService {
         | { title: { contains: string; mode: 'insensitive' } }
         | { excerpt: { contains: string; mode: 'insensitive' } }
       >;
+      category?: { slug: string };
     } = {};
 
     if (search && search.trim()) {
@@ -27,6 +33,10 @@ export class ArticlesService {
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { excerpt: { contains: searchTerm, mode: 'insensitive' } },
       ];
+    }
+
+    if (category && category.trim()) {
+      where.category = { slug: category.trim() };
     }
 
     const [total, data] = await Promise.all([
@@ -43,6 +53,9 @@ export class ArticlesService {
           category: {
             select: { id: true, name: true, slug: true },
           },
+          game: {
+            select: { id: true, title: true, slug: true },
+          },
         },
       }),
     ]);
@@ -56,6 +69,55 @@ export class ArticlesService {
     };
   }
 
+  async findFeatured(limit: number = 5) {
+    const featuredArticles = await this.prisma.article.findMany({
+      where: { isFeatured: true },
+      take: limit,
+      orderBy: { publishedAt: 'desc' },
+      include: {
+        author: {
+          select: { username: true },
+        },
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+        game: {
+          select: { id: true, title: true, slug: true },
+        },
+      },
+    });
+
+    if (featuredArticles.length < limit) {
+      const needed = limit - featuredArticles.length;
+      const excludeIds = featuredArticles.map((a) => a.id);
+      const fallbackArticles = await this.prisma.article.findMany({
+        where: excludeIds.length > 0 ? { id: { notIn: excludeIds } } : {},
+        take: needed,
+        orderBy: { publishedAt: 'desc' },
+        include: {
+          author: {
+            select: { username: true },
+          },
+          category: {
+            select: { id: true, name: true, slug: true },
+          },
+          game: {
+            select: { id: true, title: true, slug: true },
+          },
+        },
+      });
+      return {
+        success: true,
+        data: [...featuredArticles, ...fallbackArticles],
+      };
+    }
+
+    return {
+      success: true,
+      data: featuredArticles,
+    };
+  }
+
   async findOne(id: string) {
     const article = await this.prisma.article.findUnique({
       where: { id },
@@ -65,6 +127,9 @@ export class ArticlesService {
         },
         category: {
           select: { id: true, name: true, slug: true },
+        },
+        game: {
+          select: { id: true, title: true, slug: true, coverImage: true },
         },
       },
     });

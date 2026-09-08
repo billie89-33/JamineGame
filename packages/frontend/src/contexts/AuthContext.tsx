@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { API_URL } from "@/lib/config";
 
 import { authApi, getStoredUser, setStoredUser, clearAuthStorage, getAuthToken } from "@/features/auth/auth.api";
 
@@ -31,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const cachedUser = getStoredUser();
     const token = getAuthToken();
     if (cachedUser && token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(cachedUser);
     }
   }, []);

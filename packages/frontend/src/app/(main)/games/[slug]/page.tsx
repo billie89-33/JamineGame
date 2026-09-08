@@ -10,7 +10,7 @@ export default async function GameDetailPage({ params }: { params: Promise<{ slu
   try {
     // ดึงข้อมูลเกมจริงๆ จาก Backend ตาม slug
     game = await gamesApi.getGameById(resolvedParams.slug);
-  } catch (error) {
+  } catch {
     notFound(); // ถ้าไม่เจอเกม ให้แสดงหน้า 404
   }
 
@@ -74,7 +74,7 @@ export default async function GameDetailPage({ params }: { params: Promise<{ slu
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {game.articles && game.articles.length > 0 ? (
-          game.articles.map((article: any) => (
+          game.articles.map((article: { id: string; title: string; excerpt?: string; coverImage?: string }) => (
             <Link href={`/article/${article.id}`} key={article.id}>
               <div className="bg-[#f7ebc6] rounded-xl overflow-hidden shadow-lg border border-[#d4c38d] hover:scale-105 transition-transform cursor-pointer h-full flex flex-col">
                 {article.coverImage ? (

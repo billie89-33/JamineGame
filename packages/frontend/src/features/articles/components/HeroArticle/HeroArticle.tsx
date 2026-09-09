@@ -15,7 +15,7 @@ export const HeroArticle = async () => {
   let articles = [];
   try {
     const res = await fetch(`${API_URL}/articles/featured?limit=5`, {
-      cache: 'no-store',
+      next: { revalidate: 60 },
     });
     
     if (res.ok) {

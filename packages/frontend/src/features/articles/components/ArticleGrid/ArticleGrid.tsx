@@ -1,14 +1,14 @@
 import React from 'react';
-import Link from 'next/link';
 import { Article } from '../../articles.api';
 import { ArticleCard } from '../ArticleCard';
+import { getRecentArticles } from '../../data/mockArticles';
 import { API_URL } from '@/lib/config';
 
 export const ArticleGrid = async () => {
   let allArticles = [];
   try {
-    const res = await fetch(`${API_URL}/articles?page=1&limit=6`, { 
-      cache: 'no-store'
+    const res = await fetch(`${API_URL}/articles?page=1&limit=11`, { 
+      next: { revalidate: 60 },
     });
     
     if (res.ok) {
@@ -19,34 +19,38 @@ export const ArticleGrid = async () => {
     console.error('Failed to fetch articles from API:', error);
   }
 
+  // Fallback if empty or failed
+  let recentArticles = [];
+  if (!allArticles || allArticles.length === 0) {
+    // Skip 5 from mock
+    recentArticles = getRecentArticles(6, 5); 
+  } else {
+    // Skip first 5 from DB, take next 6
+    recentArticles = allArticles.slice(5, 11);
+  }
+
   return (
     <fieldset className="border-4 border-[#B05B27] rounded-xl p-6 sm:p-8 mb-12 relative hover:border-[#f7ebc6] transition-colors duration-300 w-full">
       <legend className="text-xl lg:text-2xl font-bold text-[#f7ebc6] px-4 ml-4 tracking-wide uppercase drop-shadow-[0_0_8px_rgba(247,235,198,0.2)]">
         Latest Articles
       </legend>
       <div className="flex justify-end mb-6">
-        <Link href="/news" className="text-[#a5b8a6] hover:text-[#f7ebc6] transition-colors text-sm font-semibold">VIEW ALL &raquo;</Link>
+        <a href="#" className="text-[#a5b8a6] hover:text-[#f7ebc6] transition-colors text-sm font-semibold">VIEW ALL &raquo;</a>
       </div>
 
-      {allArticles.length === 0 ? (
-        <div className="text-center text-[#f7ebc6] py-10 bg-[#1a241b] border border-[#B05B27] rounded-xl">
-          No articles found.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-          {allArticles.map((article: Article) => (
-            <ArticleCard 
-              key={article.id}
-              id={article.id}
-              title={article.title}
-              excerpt={article.excerpt || ''}
-              imageUrl={article.coverImage || ''}
-              category={article.category}
-              date={article.publishedAt || ''}
-            />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+        {recentArticles.map((article: Article) => (
+          <ArticleCard 
+            key={article.id}
+            id={article.id}
+            title={article.title}
+            excerpt={article.excerpt || ''}
+            imageUrl={article.coverImage || ''}
+            category={article.category}
+            date={article.publishedAt || ''}
+          />
+        ))}
+      </div>
     </fieldset>
   );
 };

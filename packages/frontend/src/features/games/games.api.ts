@@ -38,7 +38,7 @@ export const gamesApi = {
     if (page && limit) {
       url += `?page=${page}&limit=${limit}`;
     }
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) throw new Error('Failed to fetch games');
     return response.json();
   },
@@ -51,13 +51,13 @@ export const gamesApi = {
       limit: limit.toString(),
       articlesLimit: articlesLimit.toString(),
     });
-    const response = await fetch(`${API_URL}/games/featured?${params}`);
+    const response = await fetch(`${API_URL}/games/featured?${params}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Failed to fetch featured games');
     return response.json();
   },
 
   getGameById: async (slug: string) => {
-    const response = await fetch(`${API_URL}/games/${slug}`);
+    const response = await fetch(`${API_URL}/games/${slug}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Failed to fetch game');
     return response.json();
   },

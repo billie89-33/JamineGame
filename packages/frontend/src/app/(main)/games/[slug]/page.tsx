@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { gamesApi } from '@/features/games/games.api';
+import { ArticleCard } from '@/features/articles/components/ArticleCard';
 
 export default async function GameDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -74,22 +75,17 @@ export default async function GameDetailPage({ params }: { params: Promise<{ slu
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {game.articles && game.articles.length > 0 ? (
-          game.articles.map((article: { id: string; title: string; excerpt?: string; coverImage?: string }) => (
-            <Link href={`/article/${article.id}`} key={article.id}>
-              <div className="bg-[#f7ebc6] rounded-xl overflow-hidden shadow-lg border border-[#d4c38d] hover:scale-105 transition-transform cursor-pointer h-full flex flex-col">
-                {article.coverImage ? (
-                  <img src={article.coverImage} alt={article.title} className="w-full h-48 object-cover" />
-                ) : (
-                  <div className="w-full h-48 bg-[#1a241b] flex items-center justify-center">
-                    <span className="text-4xl">📰</span>
-                  </div>
-                )}
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-xl text-[#1a241b] mb-2 line-clamp-2">{article.title}</h3>
-                  <p className="text-[#1a241b]/70 text-sm line-clamp-3">{article.excerpt}</p>
-                </div>
-              </div>
-            </Link>
+          game.articles.map((article: any) => (
+            <div key={article.id} className="h-full">
+              <ArticleCard
+                id={article.id}
+                title={article.title}
+                excerpt={article.excerpt || ''}
+                imageUrl={article.coverImage || ''}
+                category={article.category}
+                date={article.publishedAt || ''}
+              />
+            </div>
           ))
         ) : (
           <div className="col-span-full py-10 text-center text-[#1a241b]/60 font-medium bg-[#e8d7a5] rounded-xl border border-[#d4c38d]">

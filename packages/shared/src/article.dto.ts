@@ -1,12 +1,18 @@
+export enum ArticleType {
+  NEWS = 'NEWS',
+  GAME = 'GAME',
+}
+
 export class CreateArticleDto {
   title!: string;
   excerpt!: string;
   content!: string;
   coverImage?: string;
+  heroImage?: string;
   videoUrl?: string;
   categoryId?: string;
-  gameId?: string;
   tags!: string[];
+  articleType?: ArticleType;
   isFeatured?: boolean;
 }
 
@@ -16,6 +22,7 @@ export class ArticleResponseDto {
   excerpt!: string;
   content!: string;
   coverImage?: string | null;
+  heroImage?: string | null;
   videoUrl?: string | null;
   categoryId?: string | null;
   category?: {
@@ -23,14 +30,8 @@ export class ArticleResponseDto {
     name: string;
     slug: string;
   } | null;
-  gameId?: string | null;
-  game?: {
-    id: string;
-    title: string;
-    slug: string;
-    coverImage?: string | null;
-  } | null;
   tags!: string[];
+  articleType!: ArticleType;
   isFeatured!: boolean;
   authorId!: string;
   publishedAt!: Date | string;

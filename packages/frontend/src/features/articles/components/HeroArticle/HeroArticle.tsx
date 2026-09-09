@@ -14,8 +14,8 @@ const getCategoryName = (category: unknown): string => {
 export const HeroArticle = async () => {
   let articles = [];
   try {
-    const res = await fetch(`${API_URL}/articles/featured?limit=5`, {
-      next: { revalidate: 60 },
+    const res = await fetch(`http://127.0.0.1:3001/articles/featured?limit=5`, {
+      cache: 'no-store',
     });
     
     if (res.ok) {
@@ -41,7 +41,7 @@ export const HeroArticle = async () => {
           <Link href={`/article/${mainArticle.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/30 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
             <img 
-              src={mainArticle.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200'} 
+              src={mainArticle.heroImage || mainArticle.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200'} 
               alt={mainArticle.title} 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
             />
@@ -62,7 +62,7 @@ export const HeroArticle = async () => {
             <Link key={article.id} href={`/article/${article.id}`} className="group relative w-full h-full overflow-hidden border border-[#d4c38d] shadow-sm bg-[#1a241b]">
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f0c]/90 via-[#0b0f0c]/20 to-transparent z-10 transition-opacity group-hover:opacity-80"></div>
               <img 
-                src={article.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600'} 
+                src={article.heroImage || article.coverImage || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600'} 
                 alt={article.title} 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />

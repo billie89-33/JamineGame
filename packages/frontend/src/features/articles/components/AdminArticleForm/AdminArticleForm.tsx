@@ -24,12 +24,15 @@ export function AdminArticleForm({
     content: initialData?.content || '',
     categoryId: initialData?.categoryId || '',
     coverImage: initialData?.coverImage || '',
+    heroImage: initialData?.heroImage || '',
     videoUrl: initialData?.videoUrl || '',
     isFeatured: initialData?.isFeatured || false,
+    articleType: initialData?.articleType || ('NEWS' as any),
   });
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [heroFile, setHeroFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -60,30 +63,39 @@ export function AdminArticleForm({
     e.preventDefault();
     
     if (!formData.title.trim()) {
-      toast.warning('กรุณากรอกหัวข้อบทความ');
+      toast.warning('กรุณากรอกหัวข้อบทความให้เรียบร้อย');
       return;
     }
 
     if (!formData.categoryId) {
-      toast.warning('กรุณาเลือกหมวดหมู่บทความ');
+      toast.warning('กรุณาเลือกหมวดหมู่ให้เรียบร้อย');
       return;
     }
 
     const processedTags = processTags(tagsInput);
     if (processedTags.length === 0) {
-      toast.warning('กรุณาระบุแท็กอย่างน้อย 1 แท็ก (เช่น news, update)');
+      toast.warning('กรุณาใส่แท็กอย่างน้อย 1 แท็ก (เช่น news, update)');
       return;
     }
 
     if (!formData.content || formData.content === '<p></p>') {
-      toast.warning('กรุณากรอกเนื้อหาบทความ');
+      toast.warning('กรุณาเขียนเนื้อหาบทความ');
       return;
     }
 
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       let finalCoverImage = formData.coverImage;
+      let finalHeroImage = formData.heroImage;
+      
       if (coverFile) {
+        finalCoverImage = await handleMediaUpload(coverFile);
+      }
+      if (heroFile) {
+        finalHeroImage = await handleMediaUpload(heroFile);
+      }
+
+      if (false) {
         finalCoverImage = await handleMediaUpload(coverFile);
       }
 
@@ -93,6 +105,7 @@ export function AdminArticleForm({
         content: formData.content,
         tags: processedTags,
         isFeatured: formData.isFeatured,
+        articleType: formData.articleType,
       };
 
       if (formData.categoryId) {
@@ -102,22 +115,31 @@ export function AdminArticleForm({
       if (finalCoverImage) {
         payload.coverImage = finalCoverImage;
       }
+      if (finalHeroImage) {
+        payload.heroImage = finalHeroImage;
+      }
+      if (false) {
+        payload.coverImage = finalCoverImage;
+      }
 
-      if (formData.videoUrl && formData.videoUrl.trim()) {
-        payload.videoUrl = formData.videoUrl.trim();
+      if (formData.videoUrl) {
+        payload.videoUrl = formData.videoUrl;
       }
 
       if (articleId) {
         await articlesApi.updateArticle(articleId, payload);
-        toast.success('อัปเดตบทความสำเร็จเรียบร้อยแล้ว');
+        toast.success('อัปเดตบทความเรียบร้อยแล้ว!');
+        router.push('/admin/articles');
+        router.refresh();
       } else {
         await articlesApi.createArticle(payload as CreateArticleDto);
-        toast.success('สร้างบทความสำเร็จเรียบร้อยแล้ว');
+        toast.success('สร้างบทความใหม่เรียบร้อยแล้ว!');
+        router.push('/admin/articles');
+        router.refresh();
       }
-
-      router.push('/admin/articles'); // กลับไปหน้าจัดการ
-    } catch (error) {
-      toast.error('เกิดข้อผิดพลาด: ' + (error as Error).message);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     } finally {
       setIsLoading(false);
     }
@@ -125,6 +147,21 @@ export function AdminArticleForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-4xl mx-auto bg-[#f7ebc6] p-8 rounded-3xl border border-[#d4c38d] shadow-[0_15px_40px_-10px_rgba(250,214,97,0.3)]">
+      {/* Article Type Selector */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[#1a241b] font-black text-lg">ประเภท (TYPE) *</label>
+        <div className="flex gap-4">
+          <label className={`flex items-center gap-2 cursor-pointer p-4 rounded-xl border-2 transition-all ${formData.articleType === 'NEWS' ? 'border-[#1a241b] bg-[#1a241b] text-[#f7ebc6]' : 'border-[#d4c38d] bg-[#e8d7a5] text-[#1a241b] hover:border-[#1a241b]'}`}>
+            <input type="radio" name="articleType" className="hidden" value="NEWS" checked={formData.articleType === 'NEWS'} onChange={(e) => setFormData(prev => ({ ...prev, articleType: 'NEWS' as any }))} />
+            <span className="font-bold">📰 ข่าวทั่วไป (News)</span>
+          </label>
+          <label className={`flex items-center gap-2 cursor-pointer p-4 rounded-xl border-2 transition-all ${formData.articleType === 'GAME' ? 'border-[#1a241b] bg-[#1a241b] text-[#f7ebc6]' : 'border-[#d4c38d] bg-[#e8d7a5] text-[#1a241b] hover:border-[#1a241b]'}`}>
+            <input type="radio" name="articleType" className="hidden" value="GAME" checked={formData.articleType === 'GAME'} onChange={(e) => setFormData(prev => ({ ...prev, articleType: 'GAME' as any }))} />
+            <span className="font-bold">🎮 ข้อมูลเกม (Game Database)</span>
+          </label>
+        </div>
+      </div>
+
       {/* Cover Image Upload */}
       <div className="flex flex-col gap-2">
         <label className="text-[#1a241b] font-black text-lg flex items-center gap-2">
@@ -205,15 +242,55 @@ export function AdminArticleForm({
         </div>
       </div>
 
-      <label className="flex items-center gap-3 rounded-xl border border-[#d4c38d] bg-[#e8d7a5] p-4 text-[#1a241b] font-bold cursor-pointer">
-        <input
-          type="checkbox"
-          checked={formData.isFeatured || false}
-          onChange={(e) => setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))}
-          className="h-5 w-5 accent-[#1a241b]"
-        />
-        Feature this article in the homepage hero
-      </label>
+      <div className="flex flex-col gap-4 p-4 rounded-xl border border-[#B05B27] bg-[#f7ebc6] shadow-sm">
+        <label className="flex items-center gap-3 text-[#1a241b] font-black text-lg cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.isFeatured || false}
+            onChange={(e) => setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))}
+            className="h-6 w-6 accent-[#B05B27]"
+          />
+          🔥 นำไปแสดงหน้าแรก (Featured Hero Banner)
+        </label>
+        
+        {formData.isFeatured && (
+          <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#d4c38d]">
+            <label className="text-[#1a241b] font-bold text-sm flex items-center gap-2">
+              <ImageIcon size={16} />
+              ภาพแบนเนอร์หน้าแรก (Hero Image)
+            </label>
+            <p className="text-xs text-[#5d6b5e] mb-2">
+              ภาพแนวนอน (สัดส่วน 16:9) เพื่อความสวยงามสูงสุด หากไม่ใส่ระบบจะใช้ภาพปกแทน
+            </p>
+            <div className="flex items-center gap-4">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => setHeroFile(e.target.files?.[0] || null)}
+                className="text-sm text-[#1a241b] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#B05B27] file:text-[#f7ebc6] hover:file:bg-[#8a451d] cursor-pointer"
+              />
+              {(heroFile || formData.heroImage) && (
+                <button
+                  type="button"
+                  onClick={() => { setHeroFile(null); setFormData(prev => ({ ...prev, heroImage: '' })) }}
+                  className="flex items-center gap-1 text-xs font-bold text-red-600 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-lg transition-colors"
+                >
+                  <X size={14} /> ลบรูปแบนเนอร์
+                </button>
+              )}
+            </div>
+            {(heroFile || formData.heroImage) && (
+              <div className="w-full aspect-video mt-2 rounded-xl border border-[#d4c38d] overflow-hidden bg-[#e8d7a5] relative">
+                {heroFile ? (
+                  <img src={URL.createObjectURL(heroFile)} alt="Hero preview" className="w-full h-full object-cover" />
+                ) : formData.heroImage ? (
+                  <img src={formData.heroImage} alt="Hero" className="w-full h-full object-cover" />
+                ) : null}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Video URL (Optional) & Tags */}
       <div className="flex flex-col md:flex-row gap-6">

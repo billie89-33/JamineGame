@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArticleDto, UpdateArticleDto } from './dto/articles.dto';
+import { ArticleType } from '@prisma/client';
 
 @Injectable()
 export class ArticlesService {
@@ -16,16 +17,11 @@ export class ArticlesService {
     limit: number = 10,
     search?: string,
     category?: string,
+    type?: string,
   ) {
     const skip = (page - 1) * limit;
 
-    const where: {
-      OR?: Array<
-        | { title: { contains: string; mode: 'insensitive' } }
-        | { excerpt: { contains: string; mode: 'insensitive' } }
-      >;
-      category?: { slug: string };
-    } = {};
+    const where: any = {};
 
     if (search && search.trim()) {
       const searchTerm = search.trim();
@@ -37,6 +33,10 @@ export class ArticlesService {
 
     if (category && category.trim()) {
       where.category = { slug: category.trim() };
+    }
+
+    if (type && type.trim()) {
+      where.articleType = type.trim().toUpperCase() as ArticleType;
     }
 
     const [total, data] = await Promise.all([
@@ -52,9 +52,6 @@ export class ArticlesService {
           },
           category: {
             select: { id: true, name: true, slug: true },
-          },
-          game: {
-            select: { id: true, title: true, slug: true },
           },
         },
       }),
@@ -81,9 +78,6 @@ export class ArticlesService {
         category: {
           select: { id: true, name: true, slug: true },
         },
-        game: {
-          select: { id: true, title: true, slug: true },
-        },
       },
     });
 
@@ -100,9 +94,6 @@ export class ArticlesService {
           },
           category: {
             select: { id: true, name: true, slug: true },
-          },
-          game: {
-            select: { id: true, title: true, slug: true },
           },
         },
       });
@@ -127,9 +118,6 @@ export class ArticlesService {
         },
         category: {
           select: { id: true, name: true, slug: true },
-        },
-        game: {
-          select: { id: true, title: true, slug: true, coverImage: true },
         },
       },
     });
@@ -164,7 +152,6 @@ export class ArticlesService {
         categoryId: data.categoryId || null,
         coverImage: data.coverImage || null,
         videoUrl: data.videoUrl || null,
-        gameId: data.gameId || null,
         readTime,
         authorId: userId,
       },
@@ -210,7 +197,6 @@ export class ArticlesService {
         ...(data.categoryId !== undefined ? { categoryId: data.categoryId || null } : {}),
         ...(data.coverImage !== undefined ? { coverImage: data.coverImage || null } : {}),
         ...(data.videoUrl !== undefined ? { videoUrl: data.videoUrl || null } : {}),
-        ...(data.gameId !== undefined ? { gameId: data.gameId || null } : {}),
         ...(data.content ? { readTime } : {}),
       },
     });

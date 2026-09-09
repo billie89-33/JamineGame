@@ -27,10 +27,11 @@ export class ArticlesController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('category') category?: string,
+    @Query('type') type?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.articlesService.findAll(pageNum, limitNum, search, category);
+    return this.articlesService.findAll(pageNum, limitNum, search, category, type);
   }
 
   @Get('featured')

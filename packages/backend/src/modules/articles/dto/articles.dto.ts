@@ -1,4 +1,4 @@
-import { CreateArticleDto as SharedCreateArticleDto } from '@shared/dto';
+import { CreateArticleDto as SharedCreateArticleDto, ArticleType } from '@shared/dto';
 import {
   IsString,
   IsNotEmpty,
@@ -6,6 +6,7 @@ import {
   IsArray,
   ArrayMinSize,
   IsBoolean,
+  IsEnum,
 } from 'class-validator';
 
 export class CreateArticleDto extends SharedCreateArticleDto {
@@ -27,6 +28,10 @@ export class CreateArticleDto extends SharedCreateArticleDto {
 
   @IsString()
   @IsOptional()
+  declare heroImage?: string;
+
+  @IsString()
+  @IsOptional()
   declare videoUrl?: string;
 
   @IsString()
@@ -38,9 +43,9 @@ export class CreateArticleDto extends SharedCreateArticleDto {
   @ArrayMinSize(1)
   declare tags: string[];
 
-  @IsString()
+  @IsEnum(ArticleType)
   @IsOptional()
-  declare gameId?: string;
+  declare articleType?: ArticleType;
 
   @IsBoolean()
   @IsOptional()

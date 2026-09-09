@@ -1,20 +1,23 @@
 import React from 'react';
 import Link from 'next/link';
-import { FeaturedGame, gamesApi } from '../games.api';
-
-const getGenreLabel = (game: FeaturedGame) => game.genres?.[0] || 'GAME';
+import { articlesApi, Article } from '@/features/articles/articles.api';
+import { ArticleCard } from '@/features/articles/components/ArticleCard';
 
 export const FeaturedGames = async () => {
-  let games: FeaturedGame[] = [];
+  let articles: Article[] = [];
 
   try {
-    const response = await gamesApi.getFeaturedGames(3, 2);
-    games = response.data || [];
+    // We will fetch recent articles for this section
+    const res = await fetch(`http://127.0.0.1:3001/articles?page=1&limit=3&type=GAME`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      articles = data.data || [];
+    }
   } catch (error) {
-    console.error('Failed to fetch featured games:', error);
+    console.error('Failed to fetch articles for featured section:', error);
   }
 
-  if (games.length === 0) {
+  if (articles.length === 0) {
     return null;
   }
 
@@ -27,40 +30,16 @@ export const FeaturedGames = async () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {games.map((game) => (
-          <Link
-            key={game.id}
-            href={`/games/${game.slug}`}
-            className="group bg-[#1a241b] rounded-xl overflow-hidden border border-[#2e3b2c] hover:border-[#B05B27] hover:scale-[1.02] transition-all shadow-lg"
-          >
-            <div className="h-48 bg-gradient-to-br from-[#2e3b2c] to-[#0b0f0c] w-full overflow-hidden">
-              {game.coverImage ? (
-                <img
-                  src={game.coverImage}
-                  alt={game.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-5xl">
-                  Game
-                </div>
-              )}
-            </div>
-
-            <div className="p-4">
-              <div className="flex justify-between items-start gap-3 mb-2">
-                <h3 className="text-lg font-bold text-[#f7ebc6] line-clamp-1">
-                  {game.title}
-                </h3>
-                <span className="shrink-0 bg-[#e8d7a5] text-[#1a241b] text-[10px] font-black px-2 py-1 rounded-full">
-                  {getGenreLabel(game)}
-                </span>
-              </div>
-              <p className="text-[#a0a8a1] text-sm line-clamp-2">
-                {game.description || 'No description available.'}
-              </p>
-            </div>
-          </Link>
+        {articles.map((article) => (
+          <ArticleCard 
+            key={article.id}
+            id={article.id}
+            title={article.title}
+            excerpt={article.excerpt || ''}
+            imageUrl={article.coverImage || article.heroImage || ''}
+            category={article.category}
+            date={article.publishedAt || ''}
+          />
         ))}
       </div>
     </section>

@@ -10,7 +10,6 @@ const menuItems = [
   { name: 'แดชบอร์ด', href: '/admin', icon: LayoutDashboard },
   { name: 'จัดการบทความ', href: '/admin/articles', icon: FileText },
   { name: 'จัดการหมวดหมู่', href: '/admin/categories', icon: Layers },
-  { name: 'จัดการเกม', href: '/admin/games', icon: Gamepad2 },
   { name: 'จัดการผู้ใช้', href: '/admin/users', icon: Users },
   { name: 'ตั้งค่าระบบ', href: '/admin/settings', icon: Settings },
 ];

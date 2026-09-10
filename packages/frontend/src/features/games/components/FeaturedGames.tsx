@@ -2,13 +2,14 @@ import React from 'react';
 import Link from 'next/link';
 import { articlesApi, Article } from '@/features/articles/articles.api';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
+import { API_URL } from '@/lib/config';
 
 export const FeaturedGames = async () => {
   let articles: Article[] = [];
 
   try {
     // We will fetch recent articles for this section
-    const res = await fetch(`http://127.0.0.1:3001/articles?page=1&limit=3&type=GAME`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/articles?page=1&limit=3&type=GAME`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       articles = data.data || [];

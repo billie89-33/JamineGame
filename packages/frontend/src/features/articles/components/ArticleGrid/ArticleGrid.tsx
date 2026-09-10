@@ -2,11 +2,12 @@ import React from 'react';
 import Link from 'next/link';
 import { Article } from '../../articles.api';
 import { ArticleCard } from '../ArticleCard';
+import { API_URL } from '@/lib/config';
 
 export const ArticleGrid = async () => {
   let allArticles = [];
   try {
-    const res = await fetch(`http://127.0.0.1:3001/articles?page=1&limit=6`, { 
+    const res = await fetch(`${API_URL}/articles?page=1&limit=6`, { 
       cache: 'no-store'
     });
     

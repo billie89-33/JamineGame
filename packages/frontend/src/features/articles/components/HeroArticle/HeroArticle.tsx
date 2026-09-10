@@ -14,7 +14,7 @@ const getCategoryName = (category: unknown): string => {
 export const HeroArticle = async () => {
   let articles = [];
   try {
-    const res = await fetch(`http://127.0.0.1:3001/articles/featured?limit=5`, {
+    const res = await fetch(`${API_URL}/articles/featured?limit=5`, {
       cache: 'no-store',
     });
     

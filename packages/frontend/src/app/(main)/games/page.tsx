@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { articlesApi, Article } from '@/features/articles/articles.api';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { GameCategoryList } from '@/features/games/components/GameCategoryList';
+import { API_URL } from '@/lib/config';
 
 type GamesPageProps = {
   searchParams: Promise<{ page?: string }>;
@@ -19,7 +20,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
 
   try {
     // We will just fetch articles for now, later we can filter by Category if needed
-    const response = await fetch(`http://127.0.0.1:3001/articles?page=${currentPage}&limit=${limit}&type=GAME`, { cache: 'no-store' });
+    const response = await fetch(`${API_URL}/articles?page=${currentPage}&limit=${limit}&type=GAME`, { cache: 'no-store' });
     if (response.ok) {
       const data = await response.json();
       articles = data.data || [];

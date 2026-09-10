@@ -28,7 +28,8 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
     } else {
       hasError = true;
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Failed to fetch articles:', error);
     hasError = true;
   }

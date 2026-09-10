@@ -16,7 +16,8 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
   try {
     const response = await articlesApi.getArticles(1, 12, undefined, category);
     articles = response.data || [];
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Failed to fetch news articles:', error);
     hasError = true;
   }

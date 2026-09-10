@@ -15,7 +15,8 @@ export const ArticleGrid = async () => {
       const data = await res.json();
       allArticles = data.data || [];
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Failed to fetch articles from API:', error);
   }
 

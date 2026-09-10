@@ -14,7 +14,8 @@ export const FeaturedGames = async () => {
       const data = await res.json();
       articles = data.data || [];
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Failed to fetch articles for featured section:', error);
   }
 

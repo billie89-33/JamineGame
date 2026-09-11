@@ -68,9 +68,6 @@ export const Navbar = () => {
               {isGamesOpen && (
                 <div className="absolute top-full left-0 mt-2 w-48 bg-[#f7ebc6] border border-[#d4c38d] rounded-lg shadow-xl transition-all duration-300">
                   <div className="py-2 flex flex-col font-medium">
-                    <Link href="/games" className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors border-b border-[#d4c38d] font-bold text-[#B05B27]" onClick={() => setIsGamesOpen(false)}>
-                      🎮 เกมทั้งหมด (All Games)
-                    </Link>
                     {categories.length > 0 ? categories.map(cat => (
                       <Link key={cat.id} href={`/news?category=${encodeURIComponent(cat.slug)}`} className="px-4 py-2 hover:bg-[#e8d7a5] hover:text-[#B05B27] transition-colors" onClick={() => setIsGamesOpen(false)}>
                         {cat.icon ? `${cat.icon} ` : ''}{cat.name}
@@ -175,9 +172,6 @@ export const Navbar = () => {
             </button>
             {isGamesOpen && (
               <div className="flex flex-col mt-4 ml-4 font-medium border-l-2 border-[#d4c38d]">
-                <Link href="/games" className="pl-4 py-3 hover:text-[#B05B27] transition-colors font-bold text-[#B05B27] border-b border-[#d4c38d]/50" onClick={() => setIsMobileMenuOpen(false)}>
-                  🎮 เกมทั้งหมด (All Games)
-                </Link>
                 {categories.length > 0 ? categories.map(cat => (
                   <Link key={cat.id} href={`/news?category=${encodeURIComponent(cat.slug)}`} className="pl-4 py-3 hover:text-[#B05B27] transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                     {cat.icon ? `${cat.icon} ` : ''}{cat.name}

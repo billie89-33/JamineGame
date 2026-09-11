@@ -5,6 +5,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ArticlesModule } from './modules/articles/articles.module';
+import { GamesModule } from './modules/games/games.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 
@@ -14,6 +15,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
     UsersModule,
     AuthModule,
     ArticlesModule,
+    GamesModule,
     CategoriesModule,
     UploadModule,
   ],

@@ -4,41 +4,47 @@ import React, { useState, useEffect } from 'react';
 import { TipTapEditor } from './TipTapEditor';
 import { articlesApi } from '../../articles.api';
 import { categoriesApi, Category } from '../../../categories/categories.api';
-import { CreateArticleDto } from '@shared/dto';
-import { useRouter } from 'next/navigation';
-import { X, Video, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
+import { gamesApi } from '../../../games/games.api';
+import { CreateArticleDto, ArticleType, GameResponseDto } from '@shared/dto';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { X, Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2 } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 
 export function AdminArticleForm({ 
   initialData, 
   articleId 
 }: { 
-  initialData?: Partial<import('../../articles.api').Article>, 
+  initialData?: Partial<import('../../articles.api').Article> & { gameId?: string }, 
   articleId?: string 
 } = {}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const defaultTypeParam = searchParams.get('type') as ArticleType | null;
   const { toast } = useToast();
+  
   const [formData, setFormData] = useState<Omit<CreateArticleDto, 'tags'>>({
     title: initialData?.title || '',
     excerpt: initialData?.excerpt || '',
     content: initialData?.content || '',
     categoryId: initialData?.categoryId || '',
+    gameId: initialData?.gameId || '',
     coverImage: initialData?.coverImage || '',
     heroImage: initialData?.heroImage || '',
     videoUrl: initialData?.videoUrl || '',
     isFeatured: initialData?.isFeatured || false,
-    articleType: initialData?.articleType || ('NEWS' as any),
+    articleType: initialData?.articleType || defaultTypeParam || ArticleType.NEWS,
   });
+  
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [isLoading, setIsLoading] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [games, setGames] = useState<GameResponseDto[]>([]);
 
   useEffect(() => {
-    categoriesApi.getCategories()
-      .then(setCategories)
-      .catch(console.error);
+    categoriesApi.getCategories().then(setCategories).catch(console.error);
+    gamesApi.getGames(1, 100).then(res => setGames(res.data)).catch(console.error);
   }, []);
 
   const handleMediaUpload = async (file: File) => {
@@ -46,40 +52,10 @@ export function AdminArticleForm({
     return res.url;
   };
 
-  const processTags = (tagsString: string) => {
-    if (!tagsString) return [];
-    return tagsString
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag !== "");
-  };
-
-  const handleRemoveCover = () => {
-    setCoverFile(null);
-    setFormData(prev => ({ ...prev, coverImage: '' }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.title.trim()) {
-      toast.warning('กรุณากรอกหัวข้อบทความให้เรียบร้อย');
-      return;
-    }
-
-    if (!formData.categoryId) {
-      toast.warning('กรุณาเลือกหมวดหมู่ให้เรียบร้อย');
-      return;
-    }
-
-    const processedTags = processTags(tagsInput);
-    if (processedTags.length === 0) {
-      toast.warning('กรุณาใส่แท็กอย่างน้อย 1 แท็ก (เช่น news, update)');
-      return;
-    }
-
-    if (!formData.content || formData.content === '<p></p>') {
-      toast.warning('กรุณาเขียนเนื้อหาบทความ');
+    if (!formData.title || !formData.content) {
+      toast.error('กรุณากรอกหัวข้อและเนื้อหา');
       return;
     }
 
@@ -95,48 +71,30 @@ export function AdminArticleForm({
         finalHeroImage = await handleMediaUpload(heroFile);
       }
 
-      if (false) {
-        finalCoverImage = await handleMediaUpload(coverFile);
-      }
-
       const payload: Partial<CreateArticleDto> = {
         title: formData.title.trim(),
         excerpt: formData.excerpt.trim(),
         content: formData.content,
-        tags: processedTags,
+        categoryId: formData.categoryId || undefined,
+        gameId: formData.gameId || undefined,
+        coverImage: finalCoverImage,
+        heroImage: finalHeroImage,
+        videoUrl: formData.videoUrl,
         isFeatured: formData.isFeatured,
         articleType: formData.articleType,
+        tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean)
       };
-
-      if (formData.categoryId) {
-        payload.categoryId = formData.categoryId;
-      }
-
-      if (finalCoverImage) {
-        payload.coverImage = finalCoverImage;
-      }
-      if (finalHeroImage) {
-        payload.heroImage = finalHeroImage;
-      }
-      if (false) {
-        payload.coverImage = finalCoverImage;
-      }
-
-      if (formData.videoUrl) {
-        payload.videoUrl = formData.videoUrl;
-      }
 
       if (articleId) {
         await articlesApi.updateArticle(articleId, payload);
-        toast.success('อัปเดตบทความเรียบร้อยแล้ว!');
-        router.push('/admin/articles');
-        router.refresh();
+        toast.success('อัปเดตบทความสำเร็จ');
       } else {
         await articlesApi.createArticle(payload as CreateArticleDto);
-        toast.success('สร้างบทความใหม่เรียบร้อยแล้ว!');
-        router.push('/admin/articles');
-        router.refresh();
+        toast.success('สร้างบทความสำเร็จ');
       }
+      
+      router.push('/admin/articles');
+      router.refresh();
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
@@ -146,79 +104,137 @@ export function AdminArticleForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-4xl mx-auto bg-[#f7ebc6] p-8 rounded-3xl border border-[#d4c38d] shadow-[0_15px_40px_-10px_rgba(250,214,97,0.3)]">
-      {/* Article Type Selector */}
-      <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">ประเภท (TYPE) *</label>
-        <div className="flex gap-4">
-          <label className={`flex items-center gap-2 cursor-pointer p-4 rounded-xl border-2 transition-all ${formData.articleType === 'NEWS' ? 'border-[#1a241b] bg-[#1a241b] text-[#f7ebc6]' : 'border-[#d4c38d] bg-[#e8d7a5] text-[#1a241b] hover:border-[#1a241b]'}`}>
-            <input type="radio" name="articleType" className="hidden" value="NEWS" checked={formData.articleType === 'NEWS'} onChange={(e) => setFormData(prev => ({ ...prev, articleType: 'NEWS' as any }))} />
-            <span className="font-bold">📰 ข่าวทั่วไป (News)</span>
-          </label>
-          <label className={`flex items-center gap-2 cursor-pointer p-4 rounded-xl border-2 transition-all ${formData.articleType === 'GAME' ? 'border-[#1a241b] bg-[#1a241b] text-[#f7ebc6]' : 'border-[#d4c38d] bg-[#e8d7a5] text-[#1a241b] hover:border-[#1a241b]'}`}>
-            <input type="radio" name="articleType" className="hidden" value="GAME" checked={formData.articleType === 'GAME'} onChange={(e) => setFormData(prev => ({ ...prev, articleType: 'GAME' as any }))} />
-            <span className="font-bold">🎮 ข้อมูลเกม (Game Database)</span>
-          </label>
-        </div>
-      </div>
+    <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto w-full pb-20">
+      
+      {/* 🟢 คอลัมน์ซ้าย: ข้อมูลหลักและเนื้อหา */}
+      <div className="flex-1 flex flex-col gap-6">
+        
+        {/* ส่วนอารัมภบท */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 md:p-8 shadow-xl">
+          <h3 className="text-xl font-bold text-[#f7ebc6] mb-6 border-b border-[#202d21] pb-4">ข้อมูลส่วนอารัมภบท</h3>
+          
+          <div className="flex flex-col gap-6">
+            <div>
+              <label className="block text-sm font-bold text-gray-400 mb-3">ประเภทของบทความ (Type)</label>
+              <div className="flex flex-wrap gap-4">
+                {[
+                  { value: ArticleType.NEWS, label: '📰 ข่าวอัปเดต (News)' },
+                  { value: ArticleType.REVIEW, label: '🎯 รีวิวเกม (Review)' },
+                  { value: ArticleType.GUIDE, label: '💡 เทคนิค/บทสรุป (Guide)' },
+                  { value: ArticleType.FEATURE, label: '✨ บทความพิเศษ (Feature)' }
+                ].map((type) => (
+                  <label key={type.value} className={`flex items-center gap-2 px-4 py-3 rounded-xl border cursor-pointer transition-all ${formData.articleType === type.value ? 'bg-lime-500/10 border-lime-400 text-lime-400 font-bold' : 'bg-[#1a241b] border-[#2e3b2c] text-gray-400 hover:border-gray-500'}`}>
+                    <input
+                      type="radio"
+                      name="articleType"
+                      value={type.value}
+                      checked={formData.articleType === type.value}
+                      onChange={e => setFormData(prev => ({ ...prev, articleType: e.target.value as ArticleType }))}
+                      className="accent-lime-400 w-4 h-4"
+                    />
+                    {type.label}
+                  </label>
+                ))}
+              </div>
+            </div>
 
-      {/* Cover Image Upload */}
-      <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg flex items-center gap-2">
-          <ImageIcon size={20} />
-          รูปภาพปก (COVER IMAGE)
-        </label>
-        <div className="flex items-center gap-4">
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
-            className="text-sm text-[#1a241b] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#1a241b] file:text-[#f7ebc6] hover:file:bg-[#2e3b2c] cursor-pointer"
-          />
-          {(coverFile || formData.coverImage) && (
-            <button
-              type="button"
-              onClick={handleRemoveCover}
-              className="flex items-center gap-1 text-xs font-bold text-red-600 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-lg transition-colors"
-            >
-              <X size={14} />
-              ลบรูปปก
-            </button>
-          )}
-        </div>
-        {(coverFile || formData.coverImage) && (
-          <div className="w-full h-64 mt-2 rounded-xl border border-[#d4c38d] overflow-hidden bg-[#e8d7a5] relative">
-            {coverFile ? (
-              <img src={URL.createObjectURL(coverFile)} alt="Cover preview" className="w-full h-full object-cover" />
-            ) : formData.coverImage ? (
-              <img src={formData.coverImage} alt="Cover" className="w-full h-full object-cover" />
-            ) : null}
+            <div>
+              <label className="block text-sm font-bold text-gray-400 mb-2 flex items-center gap-1">
+                <Gamepad2 size={16} /> เกมที่เกี่ยวข้อง (Related Game) - ตัวเลือกเสริม
+              </label>
+              <select
+                value={formData.gameId}
+                onChange={e => setFormData(prev => ({ ...prev, gameId: e.target.value }))}
+                className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400"
+              >
+                <option value="">-- ไม่ระบุเกม --</option>
+                {games.map(g => (
+                  <option key={g.id} value={g.id}>{g.title}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* ส่วนเนื้อหาหลัก */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 md:p-8 shadow-xl flex flex-col gap-6">
+          <h3 className="text-xl font-bold text-[#f7ebc6] border-b border-[#202d21] pb-4">ข้อมูลเนื้อหา</h3>
+          
+          <div>
+            <label className="text-gray-400 font-bold text-sm mb-2 block">ชื่อหัวข้อ (Title) *</label>
+            <input 
+              type="text" 
+              placeholder="หัวข้อบทความ..." 
+              required
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full p-4 rounded-xl bg-[#1a241b] border border-[#2e3b2c] text-2xl font-bold text-white placeholder:text-gray-600 outline-none focus:border-lime-400 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="text-gray-400 font-bold text-sm mb-2 block">คำโปรย (Excerpt) *</label>
+            <input 
+              type="text" 
+              placeholder="คำโปรยสั้นๆ..." 
+              required
+              value={formData.excerpt}
+              onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+              className="w-full p-4 rounded-xl bg-[#1a241b] border border-[#2e3b2c] text-white placeholder:text-gray-600 outline-none focus:border-lime-400 transition-colors font-medium"
+            />
+          </div>
+
+          <div>
+            <label className="text-gray-400 font-bold text-sm mb-2 flex items-center gap-2">
+              <Sparkles size={16} /> เนื้อหา (CONTENT) *
+            </label>
+            <div className="bg-[#1a241b] border border-[#2e3b2c] rounded-2xl overflow-hidden">
+              <TipTapEditor 
+                content={formData.content} 
+                onChange={(html) => setFormData(prev => ({ ...prev, content: html }))}
+                onImageUpload={handleMediaUpload}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Title */}
-      <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg">หัวข้อบทความ (TITLE) *</label>
-        <input 
-          type="text" 
-          placeholder="หัวข้อบทความ (Title)" 
-          required
-          value={formData.title}
-          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-          className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-2xl font-bold text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors"
-        />
-      </div>
+      {/* 🔴 คอลัมน์ขวา: แผงตั้งค่าด้านขวา */}
+      <div className="w-full lg:w-80 flex flex-col gap-6 shrink-0">
+        
+        {/* ปุ่ม Submit */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 shadow-xl">
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full py-4 rounded-xl font-bold text-lg text-[#1a241b] bg-lime-400 hover:bg-lime-500 transition-all flex items-center justify-center gap-2 mb-4 disabled:opacity-50 shadow-[0_0_20px_rgba(163,230,53,0.2)]"
+          >
+            {isLoading && <Loader2 size={24} className="animate-spin" />}
+            {isLoading ? 'กำลังบันทึก...' : (articleId ? 'อัปเดตบทความ' : 'บันทึกและเผยแพร่')}
+          </button>
+          
+          <label className="flex items-center gap-3 p-4 bg-[#1a241b] rounded-xl border border-[#2e3b2c] cursor-pointer hover:border-lime-400 transition-colors">
+            <input
+              type="checkbox"
+              checked={formData.isFeatured || false}
+              onChange={(e) => setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))}
+              className="w-5 h-5 accent-lime-400"
+            />
+            <span className="text-[#f7ebc6] font-bold flex items-center gap-2">
+              <Sparkles size={18} className="text-amber-400" />
+              แนะนำ (Featured)
+            </span>
+          </label>
+        </div>
 
-      {/* Category & Excerpt */}
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex flex-col gap-2 w-full md:w-1/3">
-          <label className="text-[#1a241b] font-black text-lg">หมวดหมู่ (CATEGORY) *</label>
+        {/* หมวดหมู่ */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 shadow-xl">
+          <h3 className="font-bold text-[#f7ebc6] mb-4">หมวดหมู่ (Category) *</h3>
           <select 
             required
             value={formData.categoryId || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] font-bold outline-none focus:border-[#1a241b] transition-colors appearance-none"
+            className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400"
           >
             <option value="" disabled>-- เลือกหมวดหมู่ --</option>
             {categories.map((cat) => (
@@ -228,121 +244,58 @@ export function AdminArticleForm({
             ))}
           </select>
         </div>
-        
-        <div className="flex flex-col gap-2 w-full md:w-2/3">
-          <label className="text-[#1a241b] font-black text-lg">คำโปรย (EXCERPT) *</label>
-          <input 
-            type="text" 
-            placeholder="คำโปรยย่อหน้าสั้นๆ สำหรับแสดงในการ์ดบทความ" 
-            required
-            value={formData.excerpt}
-            onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors font-medium"
-          />
-        </div>
-      </div>
 
-      <div className="flex flex-col gap-4 p-4 rounded-xl border border-[#B05B27] bg-[#f7ebc6] shadow-sm">
-        <label className="flex items-center gap-3 text-[#1a241b] font-black text-lg cursor-pointer">
+        {/* รูปหน้าปก */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 shadow-xl">
+          <h3 className="font-bold text-[#f7ebc6] mb-4 flex items-center gap-2">
+            <ImageIcon size={18} /> รูปหน้าปก (Cover)
+          </h3>
           <input
-            type="checkbox"
-            checked={formData.isFeatured || false}
-            onChange={(e) => setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))}
-            className="h-6 w-6 accent-[#B05B27]"
+            type="file"
+            accept="image/*"
+            onChange={e => setCoverFile(e.target.files?.[0] || null)}
+            className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#2e3b2c] file:text-[#f7ebc6] hover:file:bg-[#3a4a37] cursor-pointer mb-4"
           />
-          🔥 นำไปแสดงหน้าแรก (Featured Hero Banner)
-        </label>
-        
-        {formData.isFeatured && (
-          <div className="flex flex-col gap-2 mt-2 pt-4 border-t border-[#d4c38d]">
-            <label className="text-[#1a241b] font-bold text-sm flex items-center gap-2">
-              <ImageIcon size={16} />
-              ภาพแบนเนอร์หน้าแรก (Hero Image)
-            </label>
-            <p className="text-xs text-[#5d6b5e] mb-2">
-              ภาพแนวนอน (สัดส่วน 16:9) เพื่อความสวยงามสูงสุด หากไม่ใส่ระบบจะใช้ภาพปกแทน
-            </p>
-            <div className="flex items-center gap-4">
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={(e) => setHeroFile(e.target.files?.[0] || null)}
-                className="text-sm text-[#1a241b] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#B05B27] file:text-[#f7ebc6] hover:file:bg-[#8a451d] cursor-pointer"
+          {(coverFile || formData.coverImage) && (
+            <div className="aspect-video rounded-xl bg-[#1a241b] border border-[#2e3b2c] overflow-hidden relative">
+              <img 
+                src={coverFile ? URL.createObjectURL(coverFile) : formData.coverImage} 
+                alt="Cover preview" 
+                className="w-full h-full object-cover"
               />
-              {(heroFile || formData.heroImage) && (
-                <button
-                  type="button"
-                  onClick={() => { setHeroFile(null); setFormData(prev => ({ ...prev, heroImage: '' })) }}
-                  className="flex items-center gap-1 text-xs font-bold text-red-600 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-lg transition-colors"
-                >
-                  <X size={14} /> ลบรูปแบนเนอร์
-                </button>
-              )}
             </div>
-            {(heroFile || formData.heroImage) && (
-              <div className="w-full aspect-video mt-2 rounded-xl border border-[#d4c38d] overflow-hidden bg-[#e8d7a5] relative">
-                {heroFile ? (
-                  <img src={URL.createObjectURL(heroFile)} alt="Hero preview" className="w-full h-full object-cover" />
-                ) : formData.heroImage ? (
-                  <img src={formData.heroImage} alt="Hero" className="w-full h-full object-cover" />
-                ) : null}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Video URL (Optional) & Tags */}
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex flex-col gap-2 w-full md:w-1/2">
-          <label className="text-[#1a241b] font-black text-lg flex items-center gap-2">
-            <Video size={20} />
-            ลิงก์วิดีโอ (YOUTUBE / VIDEO URL)
-          </label>
-          <input 
-            type="url" 
-            placeholder="เช่น https://www.youtube.com/watch?v=... (ไม่บังคับ)" 
-            value={formData.videoUrl || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
-            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors font-medium"
-          />
+          )}
         </div>
 
-        <div className="flex flex-col gap-2 w-full md:w-1/2">
-          <label className="text-[#1a241b] font-black text-lg">แท็ก (TAGS) *</label>
+        {/* แท็ก */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 shadow-xl">
+          <h3 className="font-bold text-[#f7ebc6] mb-4">แท็ก (Tags) *</h3>
           <input 
             type="text" 
-            placeholder="ใส่แท็กคั่นด้วยคอมม่า เช่น news, review, rpg (จำเป็น)" 
+            placeholder="news, review (คั่นด้วย ,)" 
             required
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            className="w-full p-4 rounded-xl bg-[#e8d7a5] border border-[#d4c38d] text-[#1a241b] placeholder:text-[#8a7f5f] outline-none focus:border-[#1a241b] transition-colors font-medium"
+            className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 placeholder:text-gray-600"
           />
         </div>
-      </div>
 
-      {/* Content Editor */}
-      <div className="flex flex-col gap-2">
-        <label className="text-[#1a241b] font-black text-lg flex items-center gap-2">
-          <Sparkles size={20} />
-          เนื้อหาบทความ (CONTENT) *
-        </label>
-        <TipTapEditor 
-          content={formData.content} 
-          onChange={(html) => setFormData(prev => ({ ...prev, content: html }))}
-          onImageUpload={handleMediaUpload}
-        />
-      </div>
+        {/* วิดีโอ (ถ้ามี) */}
+        <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 shadow-xl">
+          <h3 className="font-bold text-[#f7ebc6] mb-4 flex items-center gap-2">
+            <Video size={18} /> วิดีโอ (YouTube URL)
+          </h3>
+          <input
+            type="text"
+            value={formData.videoUrl || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+            placeholder="https://youtube.com/watch?v=..."
+            className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400"
+          />
+        </div>
 
-      {/* Submit Button */}
-      <button 
-        type="submit" 
-        disabled={isLoading}
-        className="w-full bg-[#1a241b] text-[#f7ebc6] font-black text-xl py-6 rounded-2xl hover:bg-[#2e3b2c] transition-colors disabled:opacity-50 mt-8 shadow-lg cursor-pointer flex items-center justify-center gap-2"
-      >
-        {isLoading && <Loader2 size={24} className="animate-spin text-lime-400" />}
-        {isLoading ? (articleId ? 'กำลังบันทึกการแก้ไข...' : 'กำลังสร้างบทความ...') : (articleId ? 'บันทึกการแก้ไขบทความ' : 'สร้างบทความใหม่')}
-      </button>
+      </div>
     </form>
   );
 }
+

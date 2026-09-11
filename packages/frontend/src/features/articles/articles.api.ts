@@ -41,12 +41,16 @@ export const articlesApi = {
     limit?: number,
     search?: string,
     category?: string,
+    heroImage?: string,
+    articleType?: string,
   ) => {
     const params = new URLSearchParams();
     if (page) params.append('page', page.toString());
     if (limit) params.append('limit', limit.toString());
     if (search) params.append('search', search);
     if (category) params.append('category', category);
+    if (heroImage) params.append('heroImage', heroImage);
+    if (articleType) params.append('type', articleType);
 
     const query = params.toString();
     const url = `${API_URL}/articles${query ? `?${query}` : ''}`;

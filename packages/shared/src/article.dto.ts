@@ -1,6 +1,8 @@
 export enum ArticleType {
   NEWS = 'NEWS',
-  GAME = 'GAME',
+  REVIEW = 'REVIEW',
+  GUIDE = 'GUIDE',
+  FEATURE = 'FEATURE',
 }
 
 export class CreateArticleDto {
@@ -11,6 +13,7 @@ export class CreateArticleDto {
   heroImage?: string;
   videoUrl?: string;
   categoryId?: string;
+  gameId?: string;
   tags!: string[];
   articleType?: ArticleType;
   isFeatured?: boolean;
@@ -25,10 +28,15 @@ export class ArticleResponseDto {
   heroImage?: string | null;
   videoUrl?: string | null;
   categoryId?: string | null;
+  gameId?: string | null;
   category?: {
     id: string;
     name: string;
     slug: string;
+  } | null;
+  game?: {
+    id: string;
+    title: string;
   } | null;
   tags!: string[];
   articleType!: ArticleType;

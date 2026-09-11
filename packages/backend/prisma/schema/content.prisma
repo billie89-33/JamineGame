@@ -6,6 +6,7 @@ model Category {
   description String? @db.Text
 
   articles Article[]
+  games    Game[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -13,37 +14,77 @@ model Category {
 
 enum ArticleType {
   NEWS
-  GAME
+  REVIEW
+  GUIDE
+  FEATURE
 }
 
 model Article {
-  id            String      @id @default(uuid())
-  title         String
-  excerpt       String?
-  content       String      @db.Text
-  coverImage    String?
-  heroImage     String?
-  videoUrl      String?
+  id         String  @id @default(uuid())
+  title      String
+  excerpt    String?
+  content    String  @db.Text
+  coverImage String?
+  heroImage  String?
+  videoUrl   String?
 
-  categoryId    String?
-  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
-  tags          String[]
+  gameId     String?
+  game       Game?     @relation(fields: [gameId], references: [id], onDelete: SetNull)
 
-  authorId      String
-  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags String[]
 
-  articleType   ArticleType @default(NEWS)
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  isFeatured    Boolean     @default(false)
+  articleType ArticleType @default(NEWS)
 
-  publishedAt   DateTime    @default(now())
+  isFeatured Boolean @default(false)
+
+  publishedAt   DateTime @default(now())
   readTime      Int?
-  commentsCount Int         @default(0)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  commentsCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  // เพิ่ม Index เพื่อให้ Database ค้นหาและ Join ข้อมูลได้เร็วขึ้น
+  @@index([categoryId])
+  @@index([gameId])
+  @@index([authorId])
+  @@index([isFeatured])
+}
+
+model Game {
+  id                 String    @id @default(uuid())
+  title              String
+  description        String?   @db.Text
+  content            String    @db.Text
+  coverImage         String?
+  videoUrl           String?
+  developer          String?
+  publisher          String?
+  releaseDate        DateTime?
+  platforms          String[]
+  downloadLinks      String?
+  systemRequirements String?   @db.Text
+  rating             Float?
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags       String[]
+
+  articles   Article[]
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  isFeatured Boolean @default(false)
+
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   @@index([categoryId])
   @@index([authorId])
   @@index([isFeatured])

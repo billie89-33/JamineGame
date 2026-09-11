@@ -53,6 +53,9 @@ export class ArticlesService {
           category: {
             select: { id: true, name: true, slug: true },
           },
+          game: {
+            select: { id: true, title: true },
+          },
         },
       }),
     ]);
@@ -78,6 +81,9 @@ export class ArticlesService {
         category: {
           select: { id: true, name: true, slug: true },
         },
+        game: {
+          select: { id: true, title: true },
+        },
       },
     });
 
@@ -94,6 +100,9 @@ export class ArticlesService {
           },
           category: {
             select: { id: true, name: true, slug: true },
+          },
+          game: {
+            select: { id: true, title: true },
           },
         },
       });
@@ -118,6 +127,9 @@ export class ArticlesService {
         },
         category: {
           select: { id: true, name: true, slug: true },
+        },
+        game: {
+          select: { id: true, title: true },
         },
       },
     });
@@ -150,6 +162,7 @@ export class ArticlesService {
       data: {
         ...data,
         categoryId: data.categoryId || null,
+        gameId: data.gameId || null,
         coverImage: data.coverImage || null,
         videoUrl: data.videoUrl || null,
         readTime,
@@ -195,6 +208,7 @@ export class ArticlesService {
       data: {
         ...data,
         ...(data.categoryId !== undefined ? { categoryId: data.categoryId || null } : {}),
+        ...(data.gameId !== undefined ? { gameId: data.gameId || null } : {}),
         ...(data.coverImage !== undefined ? { coverImage: data.coverImage || null } : {}),
         ...(data.videoUrl !== undefined ? { videoUrl: data.videoUrl || null } : {}),
         ...(data.content ? { readTime } : {}),

@@ -1,3 +1,4 @@
+import { ArticleType } from '@shared/dto';
 export interface Author {
   username?: string;
   name?: string;
@@ -16,9 +17,13 @@ export interface Article {
   excerpt?: string;
   content: string;
   coverImage?: string;
+  heroImage?: string;
   videoUrl?: string;
+  articleType?: ArticleType;
   category?: string | ArticleCategory;
   categoryId?: string;
+  gameId?: string;
+  game?: any;
   tags?: string[];
   isFeatured?: boolean;
   author?: Author;

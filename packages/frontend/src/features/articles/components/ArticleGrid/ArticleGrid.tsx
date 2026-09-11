@@ -7,7 +7,7 @@ import { API_URL } from '@/lib/config';
 export const ArticleGrid = async () => {
   let allArticles = [];
   try {
-    const res = await fetch(`${API_URL}/articles?page=1&limit=6`, { 
+    const res = await fetch(`${API_URL}/articles?page=1&limit=6&type=NEWS`, { 
       cache: 'no-store'
     });
     

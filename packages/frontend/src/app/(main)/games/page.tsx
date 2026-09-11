@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { articlesApi, Article } from '@/features/articles/articles.api';
+import { GameResponseDto } from '@shared/dto';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { GameCategoryList } from '@/features/games/components/GameCategoryList';
 import { API_URL } from '@/lib/config';
@@ -14,23 +14,22 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
   const currentPage = resolvedParams.page ? parseInt(resolvedParams.page, 10) : 1;
   const limit = 12; // 12 items per page
   
-  let articles: Article[] = [];
+  let games: GameResponseDto[] = [];
   let totalPages = 1;
   let hasError = false;
 
   try {
-    // We will just fetch articles for now, later we can filter by Category if needed
-    const response = await fetch(`${API_URL}/articles?page=${currentPage}&limit=${limit}&type=GAME`, { cache: 'no-store' });
+    const response = await fetch(`${API_URL}/games?page=${currentPage}&limit=${limit}`, { cache: 'no-store' });
     if (response.ok) {
       const data = await response.json();
-      articles = data.data || [];
-      totalPages = data.totalPages || 1;
+      games = data.data || [];
+      totalPages = data.meta?.totalPages || 1;
     } else {
       hasError = true;
     }
   } catch (error: any) {
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch articles:', error);
+    console.error('Failed to fetch games:', error);
     hasError = true;
   }
 
@@ -49,22 +48,22 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
         <div className="rounded-xl border border-[#B05B27] bg-[#1a241b] p-8 text-center text-[#f7ebc6]">
           Unable to load content right now. Please try again later.
         </div>
-      ) : articles.length === 0 ? (
+      ) : games.length === 0 ? (
         <div className="rounded-xl border border-[#B05B27] bg-[#1a241b] p-8 text-center text-[#f7ebc6]">
           No content found.
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {articles.map((article) => (
+            {games.map((game) => (
               <ArticleCard 
-                key={article.id}
-                id={article.id}
-                title={article.title}
-                excerpt={article.excerpt || ''}
-                imageUrl={article.coverImage || article.heroImage || ''}
-                category={article.category}
-                date={article.publishedAt || ''}
+                key={game.id}
+                id={game.id}
+                title={game.title}
+                excerpt={game.description || ''}
+                imageUrl={game.coverImage || ''}
+                category={game.category}
+                date={game.publishedAt?.toString() || ''}
               />
             ))}
           </div>

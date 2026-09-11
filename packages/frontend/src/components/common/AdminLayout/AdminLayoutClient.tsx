@@ -8,9 +8,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const menuItems = [
   { name: 'แดชบอร์ด', href: '/admin', icon: LayoutDashboard },
-  { name: 'จัดการบทความ', href: '/admin/articles', icon: FileText },
+  { name: 'ข่าวสารและบทความ', href: '/admin/articles', icon: FileText },
+  { name: 'คลังสารานุกรมเกม', href: '/admin/games', icon: Gamepad2 },
   { name: 'จัดการหมวดหมู่', href: '/admin/categories', icon: Layers },
-  { name: 'จัดการผู้ใช้', href: '/admin/users', icon: Users },
+  { name: 'จัดการผู้ใช้งาน', href: '/admin/users', icon: Users },
   { name: 'ตั้งค่าระบบ', href: '/admin/settings', icon: Settings },
 ];
 

@@ -15,6 +15,7 @@ model User {
 
   accounts Account[] // ย้ายระบบ Login มาไว้ที่นี่ รองรับได้หลาย Provider
   articles Article[]
+  games    Game[]
 }
 
 model Account {

@@ -18,6 +18,7 @@ export class ArticlesService {
     search?: string,
     category?: string,
     type?: string,
+    sort?: string,
   ) {
     const skip = (page - 1) * limit;
 
@@ -36,7 +37,17 @@ export class ArticlesService {
     }
 
     if (type && type.trim()) {
-      where.articleType = type.trim().toUpperCase() as ArticleType;
+      const types = type.split(',').map(t => t.trim().toUpperCase() as ArticleType);
+      if (types.length > 1) {
+        where.articleType = { in: types };
+      } else {
+        where.articleType = types[0];
+      }
+    }
+
+    let orderBy: any = { publishedAt: 'desc' };
+    if (sort === 'views') {
+      orderBy = { viewCount: 'desc' };
     }
 
     const [total, data] = await Promise.all([
@@ -45,7 +56,7 @@ export class ArticlesService {
         where,
         skip,
         take: limit,
-        orderBy: { publishedAt: 'desc' },
+        orderBy,
         include: {
           author: {
             select: { username: true },
@@ -137,6 +148,13 @@ export class ArticlesService {
       throw new NotFoundException('Article not found');
     }
     return article;
+  }
+
+  async incrementView(id: string) {
+    return this.prisma.article.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+    });
   }
 
   private calculateReadTime(content: string): number {

@@ -45,6 +45,7 @@ model Article {
 
   publishedAt   DateTime @default(now())
   readTime      Int?
+  viewCount     Int      @default(0)
   commentsCount Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

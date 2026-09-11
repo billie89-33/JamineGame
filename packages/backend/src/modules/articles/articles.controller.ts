@@ -28,16 +28,22 @@ export class ArticlesController {
     @Query('search') search?: string,
     @Query('category') category?: string,
     @Query('type') type?: string,
+    @Query('sort') sort?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.articlesService.findAll(pageNum, limitNum, search, category, type);
+    return this.articlesService.findAll(pageNum, limitNum, search, category, type, sort);
   }
 
   @Get('featured')
   findFeatured(@Query('limit') limit?: string) {
     const limitNum = limit ? parseInt(limit, 10) : 5;
     return this.articlesService.findFeatured(limitNum);
+  }
+
+  @Patch(':id/view')
+  incrementView(@Param('id') id: string) {
+    return this.articlesService.incrementView(id);
   }
 
   @Get(':id')

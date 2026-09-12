@@ -12,15 +12,7 @@ import { useToast } from '@/contexts/ToastContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const DEFAULT_SYS_REQ = `**แนะนำ (Recommended):**
-ต้องการโปรเซสเซอร์และระบบปฏิบัติการแบบ 64 บิต
-ระบบปฏิบัติการ: Windows 10 or above
-โปรเซสเซอร์: Intel Core i7-10700 / AMD Ryzen 5 5600 or better
-หน่วยความจำ: แรม 16 GB
-กราฟิกส์: NVIDIA GeForce RTX 3060 / AMD Radeon RX 6800 or better
-DirectX: เวอร์ชัน 11
-เครือข่าย: การเชื่อมต่ออินเทอร์เน็ตแบบบรอดแบนด์
-พื้นที่จัดเก็บข้อมูล: พื้นที่ว่างที่พร้อมใช้งาน 40 GB`;
+const DEFAULT_SYS_REQ = `**แนะนำ (Recommended):**\n`;
 
 export function AdminGameForm({ 
   initialData, 
@@ -43,7 +35,7 @@ export function AdminGameForm({
     publisher: initialData?.publisher || '',
     releaseDate: initialData?.releaseDate ? new Date(initialData.releaseDate).toISOString().split('T')[0] : '',
     downloadLinks: initialData?.downloadLinks || '',
-    systemRequirements: initialData?.systemRequirements || '',
+    systemRequirements: initialData?.systemRequirements || DEFAULT_SYS_REQ,
     rating: initialData?.rating || undefined,
     isFeatured: initialData?.isFeatured || false,
   });
@@ -92,18 +84,13 @@ export function AdminGameForm({
       const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
       const platforms = platformsInput.split(',').map(p => p.trim()).filter(Boolean);
 
-      let finalSysReq = formData.systemRequirements?.trim() || '';
-      if (finalSysReq && !finalSysReq.includes('**แนะนำ (Recommended):**')) {
-        finalSysReq = '**แนะนำ (Recommended):**\n' + finalSysReq;
-      }
-
       const payload: CreateGameDto = {
         ...formData,
         coverImage: finalCoverImage,
         releaseDate: formData.releaseDate ? new Date(formData.releaseDate) : undefined,
         tags,
         platforms,
-        systemRequirements: finalSysReq,
+        systemRequirements: formData.systemRequirements,
         categoryId: formData.categoryId || undefined,
         rating: formData.rating ? Number(formData.rating) : undefined,
       };
@@ -206,7 +193,7 @@ export function AdminGameForm({
             name="systemRequirements"
             value={formData.systemRequirements}
             onChange={handleChange}
-            placeholder={DEFAULT_SYS_REQ}
+            placeholder="Minimum & Recommended Specs..."
             rows={10}
             className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 transition-colors"
           />

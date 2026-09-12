@@ -43,7 +43,7 @@ export function AdminGameForm({
     publisher: initialData?.publisher || '',
     releaseDate: initialData?.releaseDate ? new Date(initialData.releaseDate).toISOString().split('T')[0] : '',
     downloadLinks: initialData?.downloadLinks || '',
-    systemRequirements: initialData?.systemRequirements || DEFAULT_SYS_REQ,
+    systemRequirements: initialData?.systemRequirements || '',
     rating: initialData?.rating || undefined,
     isFeatured: initialData?.isFeatured || false,
   });
@@ -92,12 +92,18 @@ export function AdminGameForm({
       const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
       const platforms = platformsInput.split(',').map(p => p.trim()).filter(Boolean);
 
+      let finalSysReq = formData.systemRequirements?.trim() || '';
+      if (finalSysReq && !finalSysReq.includes('**แนะนำ (Recommended):**')) {
+        finalSysReq = '**แนะนำ (Recommended):**\n' + finalSysReq;
+      }
+
       const payload: CreateGameDto = {
         ...formData,
         coverImage: finalCoverImage,
         releaseDate: formData.releaseDate ? new Date(formData.releaseDate) : undefined,
         tags,
         platforms,
+        systemRequirements: finalSysReq,
         categoryId: formData.categoryId || undefined,
         rating: formData.rating ? Number(formData.rating) : undefined,
       };
@@ -200,7 +206,7 @@ export function AdminGameForm({
             name="systemRequirements"
             value={formData.systemRequirements}
             onChange={handleChange}
-            placeholder="Minimum & Recommended Specs..."
+            placeholder={DEFAULT_SYS_REQ}
             rows={10}
             className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 transition-colors"
           />

@@ -7,7 +7,7 @@ import { articlesApi } from '@/features/articles/articles.api'; // for uploadMed
 import { categoriesApi, Category } from '../../../categories/categories.api';
 import { CreateGameDto, GameResponseDto } from '@shared/dto';
 import { useRouter } from 'next/navigation';
-import { X, Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2, Monitor, Download, Calendar } from 'lucide-react';
+import { Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2, Monitor, Download, Calendar } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -112,9 +112,10 @@ export function AdminGameForm({
       
       router.push('/admin/games');
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(error?.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      const err = error as { message?: string };
+      toast.error(err?.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     } finally {
       setIsLoading(false);
     }

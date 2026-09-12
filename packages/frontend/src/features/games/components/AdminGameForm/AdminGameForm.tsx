@@ -86,6 +86,8 @@ export function AdminGameForm({
         releaseDate: formData.releaseDate ? new Date(formData.releaseDate) : undefined,
         tags,
         platforms,
+        categoryId: formData.categoryId || undefined,
+        rating: formData.rating ? Number(formData.rating) : undefined,
       };
 
       if (gameId) {

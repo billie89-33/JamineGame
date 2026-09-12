@@ -11,7 +11,7 @@ import {
   Request
 } from '@nestjs/common';
 import { GamesService } from './games.service';
-import { CreateGameDto, UpdateGameDto } from '@shared/dto';
+import { CreateGameDtoClass, UpdateGameDtoClass } from './dto/games.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('games')
@@ -20,7 +20,7 @@ export class GamesController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createGameDto: CreateGameDto, @Request() req) {
+  create(@Body() createGameDto: CreateGameDtoClass, @Request() req) {
     return this.gamesService.create(createGameDto, req.user.id);
   }
 
@@ -44,7 +44,7 @@ export class GamesController {
 
   @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
+  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDtoClass) {
     return this.gamesService.update(id, updateGameDto);
   }
 

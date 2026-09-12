@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateGameDto, UpdateGameDto, GameResponseDto } from '@shared/dto';
+import { CreateGameDtoClass, UpdateGameDtoClass } from './dto/games.dto';
+import { GameResponseDto } from '@shared/dto';
 
 @Injectable()
 export class GamesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createGameDto: CreateGameDto, authorId: string): Promise<GameResponseDto> {
+  async create(createGameDto: CreateGameDtoClass, authorId: string): Promise<GameResponseDto> {
     const game = await this.prisma.game.create({
       data: {
         ...createGameDto,
@@ -68,7 +69,7 @@ export class GamesService {
     return this.mapToDto(game);
   }
 
-  async update(id: string, updateGameDto: UpdateGameDto): Promise<GameResponseDto> {
+  async update(id: string, updateGameDto: UpdateGameDtoClass): Promise<GameResponseDto> {
     const gameExists = await this.prisma.game.findUnique({ where: { id } });
     if (!gameExists) {
       throw new NotFoundException(`Game with ID ${id} not found`);

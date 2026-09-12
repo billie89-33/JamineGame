@@ -9,6 +9,8 @@ import { CreateGameDto, GameResponseDto } from '@shared/dto';
 import { useRouter } from 'next/navigation';
 import { X, Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2, Monitor, Download, Calendar } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const DEFAULT_SYS_REQ = `**แนะนำ (Recommended):**
 ต้องการโปรเซสเซอร์และระบบปฏิบัติการแบบ 64 บิต
@@ -153,7 +155,21 @@ export function AdminGameForm({
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-400 mb-1 flex items-center gap-1"><Calendar size={14}/> วันวางจำหน่าย (Release Date)</label>
-                <input type="date" name="releaseDate" value={formData.releaseDate as string} onChange={handleChange} className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white" />
+                <div className="w-full">
+                  <DatePicker
+                    selected={formData.releaseDate ? new Date(formData.releaseDate) : null}
+                    onChange={(date: Date | null) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        releaseDate: date ? date.toISOString().split('T')[0] : ''
+                      }));
+                    }}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="วัน/เดือน/ปี"
+                    className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400"
+                    wrapperClassName="w-full"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-400 mb-1">คะแนน (Rating /10)</label>

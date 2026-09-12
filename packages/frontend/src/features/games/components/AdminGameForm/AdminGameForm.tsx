@@ -10,6 +10,26 @@ import { useRouter } from 'next/navigation';
 import { X, Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2, Monitor, Download, Calendar } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 
+const DEFAULT_SYS_REQ = `**ขั้นต่ำ (Minimum):**
+ต้องการโปรเซสเซอร์และระบบปฏิบัติการแบบ 64 บิต
+ระบบปฏิบัติการ: Windows 10
+โปรเซสเซอร์: (ระบุ CPU ขั้นต่ำ)
+หน่วยความจำ: แรม 8 GB
+กราฟิกส์: (ระบุ GPU ขั้นต่ำ)
+DirectX: เวอร์ชัน 11
+เครือข่าย: การเชื่อมต่ออินเทอร์เน็ตแบบบรอดแบนด์
+พื้นที่จัดเก็บข้อมูล: พื้นที่ว่างที่พร้อมใช้งาน 40 GB
+
+**แนะนำ (Recommended):**
+ต้องการโปรเซสเซอร์และระบบปฏิบัติการแบบ 64 บิต
+ระบบปฏิบัติการ: Windows 10 or above
+โปรเซสเซอร์: Intel Core i7-10700 / AMD Ryzen 5 5600 or better
+หน่วยความจำ: แรม 16 GB
+กราฟิกส์: NVIDIA GeForce RTX 3060 / AMD Radeon RX 6800 or better
+DirectX: เวอร์ชัน 11
+เครือข่าย: การเชื่อมต่ออินเทอร์เน็ตแบบบรอดแบนด์
+พื้นที่จัดเก็บข้อมูล: พื้นที่ว่างที่พร้อมใช้งาน 40 GB`;
+
 export function AdminGameForm({ 
   initialData, 
   gameId 
@@ -31,7 +51,7 @@ export function AdminGameForm({
     publisher: initialData?.publisher || '',
     releaseDate: initialData?.releaseDate ? new Date(initialData.releaseDate).toISOString().split('T')[0] : '',
     downloadLinks: initialData?.downloadLinks || '',
-    systemRequirements: initialData?.systemRequirements || '',
+    systemRequirements: initialData?.systemRequirements || DEFAULT_SYS_REQ,
     rating: initialData?.rating || undefined,
     isFeatured: initialData?.isFeatured || false,
   });
@@ -174,7 +194,7 @@ export function AdminGameForm({
             value={formData.systemRequirements}
             onChange={handleChange}
             placeholder="Minimum & Recommended Specs..."
-            rows={4}
+            rows={18}
             className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 transition-colors"
           />
         </div>

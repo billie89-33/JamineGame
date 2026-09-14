@@ -22,7 +22,7 @@ export class GamesService {
     return this.mapToDto(game);
   }
 
-  async findAll(page = 1, limit = 10, search?: string) {
+  async findAll(page = 1, limit = 10, search?: string, category?: string, isFeatured?: boolean) {
     const skip = (page - 1) * limit;
     
     const whereClause: any = {};
@@ -32,6 +32,16 @@ export class GamesService {
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (category) {
+      whereClause.category = {
+        slug: category
+      };
+    }
+
+    if (isFeatured) {
+      whereClause.isFeatured = true;
     }
 
     const [games, total] = await Promise.all([

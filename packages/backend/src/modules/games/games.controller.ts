@@ -28,12 +28,16 @@ export class GamesController {
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-    @Query('search') search?: string
+    @Query('search') search?: string,
+    @Query('category') category?: string,
+    @Query('isFeatured') isFeatured?: string
   ) {
     return this.gamesService.findAll(
       page ? parseInt(page, 10) : 1,
       limit ? parseInt(limit, 10) : 10,
-      search
+      search,
+      category,
+      isFeatured === 'true'
     );
   }
 

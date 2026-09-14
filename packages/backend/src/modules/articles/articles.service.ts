@@ -19,6 +19,7 @@ export class ArticlesService {
     category?: string,
     type?: string,
     sort?: string,
+    isFeatured?: boolean,
   ) {
     const skip = (page - 1) * limit;
 
@@ -43,6 +44,10 @@ export class ArticlesService {
       } else {
         where.articleType = types[0];
       }
+    }
+
+    if (isFeatured) {
+      where.isFeatured = true;
     }
 
     let orderBy: any = { publishedAt: 'desc' };

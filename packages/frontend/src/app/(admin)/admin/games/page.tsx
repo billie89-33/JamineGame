@@ -98,6 +98,7 @@ export default function AdminGamesPage() {
                 <th className="px-6 py-4 font-bold">ชื่อเกม</th>
                 <th className="px-6 py-4 font-bold hidden md:table-cell">หมวดหมู่</th>
                 <th className="px-6 py-4 font-bold hidden lg:table-cell">ค่ายเกม</th>
+                <th className="px-6 py-4 font-bold text-center">ไฮไลท์</th>
                 <th className="px-6 py-4 font-bold hidden xl:table-cell">วันที่</th>
                 <th className="px-6 py-4 font-bold text-right">จัดการ</th>
               </tr>
@@ -105,14 +106,14 @@ export default function AdminGamesPage() {
             <tbody className="divide-y divide-[#2e3b2c]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
                     <Loader2 size={32} className="mx-auto animate-spin mb-2 text-lime-400" />
                     กำลังโหลดข้อมูล...
                   </td>
                 </tr>
               ) : games.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
                     <Gamepad2 size={48} className="mx-auto mb-3 opacity-20" />
                     ไม่พบข้อมูลเกมในระบบ
                   </td>
@@ -131,11 +132,6 @@ export default function AdminGamesPage() {
                         )}
                         <div>
                           <p className="font-bold text-white text-base leading-tight group-hover:text-lime-400 transition-colors">{game.title}</p>
-                          {game.isFeatured && (
-                            <span className="inline-block mt-1 text-[10px] uppercase font-black tracking-wider bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30">
-                              Featured
-                            </span>
-                          )}
                         </div>
                       </div>
                     </td>
@@ -144,6 +140,17 @@ export default function AdminGamesPage() {
                     </td>
                     <td className="px-6 py-4 text-gray-400 hidden lg:table-cell">
                       {game.developer || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {game.isFeatured ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] uppercase font-black tracking-wider bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30">
+                          🌟 แนะนำ
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] uppercase font-bold text-gray-500">
+                          -
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-gray-400 text-sm hidden xl:table-cell">
                       {new Date(game.publishedAt).toLocaleDateString('th-TH')}

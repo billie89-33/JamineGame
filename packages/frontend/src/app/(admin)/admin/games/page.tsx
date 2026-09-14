@@ -64,6 +64,9 @@ export default function AdminGamesPage() {
             จัดการข้อมูลเกม
           </h1>
           <p className="text-gray-400 mt-1">เพิ่ม แก้ไข และลบข้อมูลแคตตาล็อกเกม</p>
+          <p className="text-amber-400/80 text-sm mt-2 flex items-center gap-1.5 font-medium bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20 w-fit">
+            <span className="text-amber-400">💡</span> เกมที่มีสถานะ "🌟 แนะนำ" จะถูกนำไปโชว์เป็นไฮไลท์ในหน้า Category Hub ของหมวดหมู่นั้นๆ
+          </p>
         </div>
         <Link 
           href="/admin/games/create" 

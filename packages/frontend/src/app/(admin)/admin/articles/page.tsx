@@ -84,6 +84,9 @@ export default function AdminArticlesPage() {
             จัดการข่าวและบทความ
           </h1>
           <p className="text-gray-400 mt-1">จัดการคอนเทนต์ ข่าวสาร รีวิว และบทความต่างๆ</p>
+          <p className="text-amber-400/80 text-sm mt-2 flex items-center gap-1.5 font-medium bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20 w-fit">
+            <span className="text-amber-400">💡</span> บทความที่มีสถานะ "🌟 แนะนำ" จะถูกนำไปโชว์เป็นไฮไลท์ในหน้า Category Hub ของหมวดหมู่นั้นๆ
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-start">
           <Link 

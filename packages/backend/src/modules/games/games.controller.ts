@@ -21,7 +21,7 @@ export class GamesController {
   @UseGuards(AuthGuard)
   @Post()
   create(@Body() createGameDto: CreateGameDtoClass, @Request() req) {
-    return this.gamesService.create(createGameDto, req.user.id);
+    return this.gamesService.create(createGameDto, req.user.sub);
   }
 
   @Get()

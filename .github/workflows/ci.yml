@@ -30,7 +30,7 @@ jobs:
       run: cd packages/backend && npx prisma generate
 
     - name: Build Backend (NestJS)
-      run: npm run build:backend
+      run: npm run build:backend:ci
 
     - name: Run Backend Tests
       run: npm run test -w backend

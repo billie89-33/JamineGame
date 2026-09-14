@@ -43,6 +43,7 @@ export const articlesApi = {
     category?: string,
     heroImage?: string,
     articleType?: string,
+    isFeatured?: boolean,
   ) => {
     const params = new URLSearchParams();
     if (page) params.append('page', page.toString());
@@ -51,6 +52,7 @@ export const articlesApi = {
     if (category) params.append('category', category);
     if (heroImage) params.append('heroImage', heroImage);
     if (articleType) params.append('type', articleType);
+    if (isFeatured !== undefined) params.append('isFeatured', isFeatured.toString());
 
     const query = params.toString();
     const url = `${API_URL}/articles${query ? `?${query}` : ''}`;

@@ -3,9 +3,11 @@ import { getAuthHeaders } from '../auth/auth.api';
 import { GameResponseDto, CreateGameDto, UpdateGameDto, PaginatedResponseDto } from '@shared/dto';
 
 export const gamesApi = {
-  getGames: async (page = 1, limit = 10, search?: string): Promise<PaginatedResponseDto<GameResponseDto>> => {
+  getGames: async (page = 1, limit = 10, search?: string, category?: string, isFeatured?: boolean): Promise<PaginatedResponseDto<GameResponseDto>> => {
     let url = `${API_URL}/games?page=${page}&limit=${limit}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (category) url += `&category=${encodeURIComponent(category)}`;
+    if (isFeatured !== undefined) url += `&isFeatured=${isFeatured}`;
     
     const response = await fetch(url, {
       cache: 'no-store'

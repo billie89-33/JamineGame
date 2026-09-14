@@ -15,8 +15,9 @@ const getCategoryName = (category: unknown): string => {
   return String(category);
 };
 
-export default async function CategoryHubPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function CategoryHubPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const slug = decodeURIComponent(resolvedParams.slug);
 
   let category = null;
   let featuredGames = [];

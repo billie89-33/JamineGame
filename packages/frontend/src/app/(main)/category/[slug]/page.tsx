@@ -7,6 +7,7 @@ import { gamesApi } from '@/features/games/games.api';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { Sidebar } from '@/components/common/Sidebar';
 import { Gamepad2, Info } from 'lucide-react';
+import { GameResponseDto, ArticleResponseDto } from '@shared/dto';
 
 const getCategoryName = (category: unknown): string => {
   if (!category) return 'ทั่วไป';
@@ -16,7 +17,7 @@ const getCategoryName = (category: unknown): string => {
   return String(category);
 };
 
-const FullGameDetail = ({ game, badgeText }: { game: any, badgeText: string }) => {
+const FullGameDetail = ({ game, badgeText }: { game: GameResponseDto, badgeText: string }) => {
   if (!game) return null;
 
   return (
@@ -161,7 +162,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              {gridGames.slice(0, 3).map((game: any) => (
+              {gridGames.slice(0, 3).map((game: GameResponseDto) => (
                 <ArticleCard 
                   key={game.id}
                   id={game.id}
@@ -229,7 +230,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
 
             {gridArticles.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {gridArticles.map((article: any) => (
+                {gridArticles.map((article: ArticleResponseDto) => (
                   <ArticleCard 
                     key={article.id}
                     id={article.id}

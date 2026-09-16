@@ -8,17 +8,20 @@ interface ArticleCardProps {
   imageUrl?: string;
   category?: string | { id?: string; name?: string; slug?: string } | null;
   date?: string;
+  viewCount?: number;
+  type?: 'article' | 'game';
 }
 
-export const ArticleCard = ({ id, title, excerpt, imageUrl, category, date }: ArticleCardProps) => {
+export const ArticleCard = ({ id, title, excerpt, imageUrl, category, date, type = 'article' }: ArticleCardProps) => {
   const categoryName: string = typeof category === 'object' && category !== null
     ? ('name' in category && category.name ? category.name : 'ทั่วไป')
     : (typeof category === 'string' && category ? category : 'ทั่วไป');
 
   const formattedDate = date ? new Date(date).toLocaleDateString('th-TH') : '';
+  const href = type === 'game' ? `/games/${id}` : `/article/${id}`;
 
   return (
-    <Link href={`/article/${id}`} className="group relative rounded-2xl bg-[#f7ebc6] border border-[#d4c38d] p-4 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_15px_40px_-10px_rgba(250,214,97,0.25)] flex flex-col h-full block">
+    <Link href={href} className="group relative rounded-2xl bg-[#f7ebc6] border border-[#d4c38d] p-4 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_15px_40px_-10px_rgba(250,214,97,0.25)] flex flex-col h-full block">
       {/* Thumbnail */}
       <div className="w-full aspect-[4/3] rounded-xl bg-[#e8d7a5] mb-4 overflow-hidden relative shadow-inner">
         <div className="absolute inset-0 bg-[#1a241b]/10 mix-blend-overlay z-10 group-hover:opacity-0 transition-opacity"></div>

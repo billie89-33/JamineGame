@@ -66,7 +66,7 @@ const FullGameDetail = ({ game, badgeText }: { game: GameResponseDto, badgeText:
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-4">
           <Link 
-            href={`/article/${game.id}`}
+            href={`/games/${game.id}`}
             className="px-8 py-3.5 bg-lime-400 text-[#1a241b] font-black rounded-xl hover:bg-lime-500 transition-colors shadow-[0_0_20px_rgba(163,230,53,0.3)] hover:scale-105 transform duration-300 flex items-center gap-2"
           >
             <Gamepad2 size={20} />
@@ -171,6 +171,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
                   imageUrl={game.coverImage || ''}
                   category={category}
                   date={game.publishedAt?.toString() || ''}
+                  type="game"
                 />
               ))}
             </div>

@@ -4,10 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { TipTapEditor } from './TipTapEditor';
 import { articlesApi } from '../../articles.api';
 import { categoriesApi, Category } from '../../../categories/categories.api';
-import { gamesApi } from '../../../games/games.api';
-import { CreateArticleDto, ArticleType, GameResponseDto } from '@shared/dto';
+import { CreateArticleDto, ArticleType } from '@shared/dto';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { X, Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2 } from 'lucide-react';
+import { X, Video, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 
 export function AdminArticleForm({ 
@@ -40,11 +39,9 @@ export function AdminArticleForm({
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [games, setGames] = useState<GameResponseDto[]>([]);
 
   useEffect(() => {
     categoriesApi.getCategories().then(setCategories).catch(console.error);
-    gamesApi.getGames(1, 100).then(res => setGames(res.data)).catch(console.error);
   }, []);
 
   const handleMediaUpload = async (file: File) => {
@@ -138,21 +135,6 @@ export function AdminArticleForm({
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2 flex items-center gap-1">
-                <Gamepad2 size={16} /> เกมที่เกี่ยวข้อง (Related Game) - ตัวเลือกเสริม
-              </label>
-              <select
-                value={formData.gameId}
-                onChange={e => setFormData(prev => ({ ...prev, gameId: e.target.value }))}
-                className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400"
-              >
-                <option value="">-- ไม่ระบุเกม --</option>
-                {games.map(g => (
-                  <option key={g.id} value={g.id}>{g.title}</option>
-                ))}
-              </select>
-            </div>
           </div>
         </div>
 

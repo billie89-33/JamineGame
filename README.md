@@ -36,6 +36,21 @@ MyJamine คือโปรเจกต์เว็บแอปพลิเค�
 
 ---
 
+## 🔒 Security & Architecture (ความปลอดภัยและสถาปัตยกรรม)
+
+* **Authentication (JWT & Cookies):** 
+  * ระบบล็อกอินใช้ **JWT (JSON Web Token)** ในการยืนยันตัวตน
+  * เพื่อความปลอดภัยสูงสุด (ป้องกัน XSS) โทเคนจะถูกเก็บไว้ใน **HttpOnly Cookie** ผ่านฝั่ง Backend โดยตรง (ตั้งค่า `secure` ตาม Environment)
+* **Authorization & Roles:**
+  * มีการแบ่งสิทธิ์ผู้ใช้งานผ่านระบบ Role-Based Access Control (RBAC) เช่นสิทธิ์ `USER` และ `ADMIN`
+  * มี Custom Decorator (`@Roles('ADMIN')`) ร่วมกับ `RolesGuard` ฝั่ง NestJS เพื่อป้องกัน API เส้นที่สงวนไว้ให้แอดมินเท่านั้น (เช่น การสร้างบทความ หรือแก้ไขข้อมูลเกม)
+* **Image Management (Cloudinary):**
+  * รูปภาพหน้าปกและรูปที่อัปโหลดผ่าน Editor จะถูกส่งไปเก็บที่ Cloudinary เพื่อลดภาระของเซิร์ฟเวอร์
+* **Database Sync:**
+  * ใช้ Prisma Schema เป็น Single Source of Truth และทำการ `prisma db push` (หรือ migrate) ไปยัง PostgreSQL
+
+---
+
 ## 🚀 Getting Started (การติดตั้งและรันโปรเจกต์)
 
 ### สิ่งที่ต้องมีเบื้องต้น (Prerequisites)

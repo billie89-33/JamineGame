@@ -1,7 +1,7 @@
 import React from 'react';
 import { Article } from '../../articles.api';
 import Link from 'next/link';
-import { API_URL } from '@/lib/config';
+import { serverFetchJson } from '@/lib/server-fetch';
 
 const getCategoryName = (category: unknown): string => {
   if (!category) return 'ทั่วไป';
@@ -12,20 +12,8 @@ const getCategoryName = (category: unknown): string => {
 };
 
 export const HeroArticle = async () => {
-  let articles = [];
-  try {
-    const res = await fetch(`${API_URL}/articles/featured?limit=5`, {
-      cache: 'no-store',
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      articles = data.data || [];
-    }
-  } catch (error: any) {
-    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch articles from API:', error);
-  }
+  const data = await serverFetchJson<{ data?: Article[] }>('/articles/featured?limit=5');
+  const articles = data?.data || [];
 
   if (!articles || articles.length === 0) {
     return null;

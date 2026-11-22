@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { GameResponseDto } from '@shared/dto';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { GameCategoryList } from '@/features/games/components/GameCategoryList';
-import { API_URL } from '@/lib/config';
+import { serverFetchJson } from '@/lib/server-fetch';
 
 type GamesPageProps = {
   searchParams: Promise<{ page?: string }>;
@@ -13,25 +13,13 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
   const resolvedParams = await searchParams;
   const currentPage = resolvedParams.page ? parseInt(resolvedParams.page, 10) : 1;
   const limit = 12; // 12 items per page
-  
-  let games: GameResponseDto[] = [];
-  let totalPages = 1;
-  let hasError = false;
 
-  try {
-    const response = await fetch(`${API_URL}/games?page=${currentPage}&limit=${limit}`, { cache: 'no-store' });
-    if (response.ok) {
-      const data = await response.json();
-      games = data.data || [];
-      totalPages = data.meta?.totalPages || 1;
-    } else {
-      hasError = true;
-    }
-  } catch (error: any) {
-    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch games:', error);
-    hasError = true;
-  }
+  const data = await serverFetchJson<{ data?: GameResponseDto[]; meta?: { totalPages?: number } }>(
+    `/games?page=${currentPage}&limit=${limit}`,
+  );
+  const hasError = data === null;
+  const games: GameResponseDto[] = data?.data || [];
+  const totalPages = data?.meta?.totalPages || 1;
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-16 md:px-8 lg:px-12">
@@ -64,6 +52,7 @@ export default async function GamesPage({ searchParams }: GamesPageProps) {
                 imageUrl={game.coverImage || ''}
                 category={game.category}
                 date={game.publishedAt?.toString() || ''}
+                type="game"
               />
             ))}
           </div>

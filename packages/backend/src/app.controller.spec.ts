@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './modules/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -11,6 +12,10 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         AppService,
+        {
+          provide: JwtService,
+          useValue: { verifyAsync: jest.fn() },
+        },
         {
           provide: PrismaService, // Or the actual class if imported
           useValue: {

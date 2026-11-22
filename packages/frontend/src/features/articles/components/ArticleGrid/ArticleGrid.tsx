@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Article } from '../../articles.api';
 import { ArticleCard } from '../ArticleCard';
-import { API_URL } from '@/lib/config';
+import { serverFetchJson } from '@/lib/server-fetch';
 
 interface ArticleGridProps {
   title?: string;
@@ -17,22 +17,10 @@ export const ArticleGrid = async ({
   limit = 6, 
   href = "/news" 
 }: ArticleGridProps) => {
-  let allArticles = [];
-  try {
-    const res = await fetch(`${API_URL}/articles?page=1&limit=${limit}&type=${type}`, { 
-      cache: 'no-store'
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      allArticles = data.data || [];
-    }
-  } catch (error: any) {
-    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch articles from API:', error);
-  }
-
-  let recentArticles = allArticles;
+  const data = await serverFetchJson<{ data?: Article[] }>(
+    `/articles?page=1&limit=${limit}&type=${type}`,
+  );
+  const recentArticles = data?.data || [];
 
   return (
     <fieldset className="border-4 border-[#B05B27] rounded-xl p-6 sm:p-8 mb-12 relative hover:border-[#f7ebc6] transition-colors duration-300 w-full">

@@ -6,8 +6,9 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
-        "build": "prisma generate && prisma db push --accept-data-loss && nest build",
+        "build": "prisma generate && nest build",
         "build:ci": "prisma generate && nest build",
+        "db:push": "prisma db push",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
         "start:dev": "nest start --watch",

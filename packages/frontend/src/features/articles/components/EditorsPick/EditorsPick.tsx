@@ -1,26 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import { API_URL } from '@/lib/config';
+import { serverFetchJson } from '@/lib/server-fetch';
 import { Article } from '../../articles.api';
 
 export const EditorsPick = async () => {
-  let article: Article | null = null;
-  
-  try {
-    const res = await fetch(`${API_URL}/articles?page=1&limit=1&type=FEATURE`, { 
-      cache: 'no-store'
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      if (data.data && data.data.length > 0) {
-        article = data.data[0];
-      }
-    }
-  } catch (error: any) {
-    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch FEATURE article:', error);
-  }
+  const data = await serverFetchJson<{ data?: Article[] }>('/articles?page=1&limit=1&type=FEATURE');
+  const article: Article | null = data?.data?.[0] ?? null;
 
   // Fallback UI if no FEATURE article is found
   if (!article) {

@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { API_URL } from '@/lib/config';
+import { apiRequest } from '@/lib/api-client';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({ totalArticles: 0, totalUsers: 0 });
 
   useEffect(() => {
-    fetch(`${API_URL}/stats`)
-      .then((res) => res.json())
+    apiRequest<{ totalArticles: number; totalUsers: number }>('/stats')
       .then((data) => setStats(data))
       .catch((err) => console.error('Failed to load stats', err));
   }, []);

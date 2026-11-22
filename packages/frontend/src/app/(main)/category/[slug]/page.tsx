@@ -83,10 +83,10 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
   const slug = decodeURIComponent(resolvedParams.slug);
 
   let category = null;
-  let allFeaturedGames = [];
-  let featuredArticles = [];
-  let spotlightArticle = null;
-  let gridArticles = [];
+  let allFeaturedGames: GameResponseDto[] = [];
+  let featuredArticles: ArticleResponseDto[] = [];
+  let spotlightArticle: ArticleResponseDto | null = null;
+  let gridArticles: ArticleResponseDto[] = [];
 
   try {
     // 1. Fetch data in parallel
@@ -240,7 +240,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
                     imageUrl={article.coverImage || ''}
                     category={category}
                     date={article.publishedAt?.toString() || ''}
-                    viewCount={article.viewCount}
+                    viewCount={(article as ArticleResponseDto & { viewCount?: number }).viewCount}
                   />
                 ))}
               </div>

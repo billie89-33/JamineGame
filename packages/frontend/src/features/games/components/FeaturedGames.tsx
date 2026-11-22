@@ -1,23 +1,11 @@
 import React from 'react';
-import Link from 'next/link';
-import { articlesApi, Article } from '@/features/articles/articles.api';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { GameResponseDto } from '@shared/dto';
-import { API_URL } from '@/lib/config';
+import { serverFetchJson } from '@/lib/server-fetch';
 
 export const FeaturedGames = async () => {
-  let games: GameResponseDto[] = [];
-
-  try {
-    const res = await fetch(`${API_URL}/games?page=1&limit=3`, { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      games = data.data || [];
-    }
-  } catch (error: any) {
-    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch games for featured section:', error);
-  }
+  const data = await serverFetchJson<{ data?: GameResponseDto[] }>('/games?page=1&limit=3');
+  const games: GameResponseDto[] = data?.data || [];
 
   if (games.length === 0) {
     return null;
@@ -41,6 +29,7 @@ export const FeaturedGames = async () => {
             imageUrl={game.coverImage || ''}
             category={game.category}
             date={game.publishedAt?.toString() || ''}
+            type="game"
           />
         ))}
       </div>

@@ -35,6 +35,14 @@ body {
 }
 
 /* Tiptap List & Bullet Visibility */
+.tiptap.prose {
+  --tw-prose-bullets: #1a241b;
+  --tw-prose-counters: #1a241b;
+  --tw-prose-body: #1a241b;
+  --tw-prose-headings: #1a241b;
+  --tw-prose-bold: #1a241b;
+}
+
 .tiptap ul {
   list-style-type: disc;
   padding-left: 1.5rem;
@@ -45,8 +53,10 @@ body {
   padding-left: 1.5rem;
 }
 
+.tiptap.prose ul > li::marker,
+.tiptap.prose ol > li::marker,
 .tiptap li::marker {
-  color: #1a241b;
+  color: #1a241b !important;
 }
 
 /* Responsive Media in Prose */

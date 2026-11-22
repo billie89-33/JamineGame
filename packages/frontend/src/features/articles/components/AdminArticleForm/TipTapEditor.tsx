@@ -51,7 +51,7 @@ export function TipTapEditor({ content, onChange, onImageUpload }: TipTapEditorP
     },
     editorProps: {
       attributes: {
-        class: 'prose max-w-none min-h-[300px] outline-none text-[#1a241b] prose-headings:text-[#1a241b] prose-strong:text-[#1a241b] prose-li:text-[#1a241b] marker:text-[#1a241b] p-4 bg-[#e8d7a5] border-t-0 border border-[#d4c38d] rounded-b-xl',
+        class: 'prose max-w-none min-h-[300px] outline-none text-[#1a241b] prose-headings:text-[#1a241b] prose-strong:text-[#1a241b] prose-li:text-[#1a241b] [&_li::marker]:text-[#1a241b] p-4 bg-[#e8d7a5] border-t-0 border border-[#d4c38d] rounded-b-xl',
       },
     },
   });

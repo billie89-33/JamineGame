@@ -6,7 +6,7 @@ import { getCachedCategoryBySlug } from '@/lib/public-queries';
 import { serverFetchJson } from '@/lib/server-fetch';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { Sidebar } from '@/components/common/Sidebar';
-import { Gamepad2, Info } from 'lucide-react';
+import { BookOpen, Info } from 'lucide-react';
 import { GameResponseDto, ArticleResponseDto } from '@shared/dto';
 import { SITE_NAME, SITE_URL } from '@/lib/config';
 
@@ -105,8 +105,8 @@ const FullGameDetail = ({ game, badgeText }: { game: GameResponseDto, badgeText:
             href={`/games/${game.id}`}
             className="px-8 py-3.5 bg-lime-400 text-[#1a241b] font-black rounded-xl hover:bg-lime-500 transition-colors shadow-[0_0_20px_rgba(163,230,53,0.3)] hover:scale-105 transform duration-300 flex items-center gap-2"
           >
-            <Gamepad2 size={20} />
-            ดาวน์โหลด / ดูข้อมูลฉบับเต็ม
+            <BookOpen size={20} />
+            อ่านต่อ ➔
           </Link>
         </div>
       </div>

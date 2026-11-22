@@ -120,4 +120,30 @@ describe('AuthService', () => {
       ).rejects.toThrow(UnauthorizedException);
     });
   });
+
+  describe('refreshSession()', () => {
+    it('ควรออก access_token ใหม่และคืนค่าข้อมูล user', async () => {
+      (jwtService.signAsync as jest.Mock).mockResolvedValue('new.jwt.token');
+
+      const result = await authService.refreshSession({
+        sub: 'user-1',
+        username: 'admin',
+        role: 'ADMIN',
+      });
+
+      expect(jwtService.signAsync).toHaveBeenCalledWith({
+        sub: 'user-1',
+        username: 'admin',
+        role: 'ADMIN',
+      });
+      expect(result).toEqual({
+        access_token: 'new.jwt.token',
+        user: {
+          id: 'user-1',
+          username: 'admin',
+          role: 'ADMIN',
+        },
+      });
+    });
+  });
 });

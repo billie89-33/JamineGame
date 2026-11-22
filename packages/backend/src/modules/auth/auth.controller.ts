@@ -15,6 +15,18 @@ import { LoginDto, RegisterDto } from './dto/auth.dto';
 import type { Response, Request } from 'express';
 import { AuthGuard } from './auth.guard';
 
+const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
+
+function getAuthCookieOptions(includeMaxAge = true) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true, // ป้องกัน XSS
+    secure: isProduction, // บน Prod ต้องเป็น HTTPS เท่านั้น
+    sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // อนุญาตให้ข้ามโดเมนบน Prod ได้
+    ...(includeMaxAge ? { maxAge: THIRTY_DAYS_MS } : {}),
+  };
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -44,34 +56,38 @@ export class AuthController {
   ) {
     const result = await this.authService.login(loginDto);
 
-    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('access_token', result.access_token, getAuthCookieOptions(true));
 
-    // เซ็ต Cookie ด้วยเงื่อนไข Dev vs Prod
-    res.cookie('access_token', result.access_token, {
-      httpOnly: true, // ป้องกัน XSS
-      secure: isProduction, // บน Prod ต้องเป็น HTTPS เท่านั้น
-      sameSite: isProduction ? 'none' : 'lax', // อนุญาตให้ข้ามโดเมนบน Prod ได้
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 วัน
-    });
-
-    return { 
-      message: 'เข้าสู่ระบบสำเร็จ', 
+    return {
+      message: 'เข้าสู่ระบบสำเร็จ',
       user: result.user,
-      access_token: result.access_token 
+      access_token: result.access_token,
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = (req as Request & { user: { sub: string; username: string; role: string } }).user;
+    const result = await this.authService.refreshSession(user);
+
+    res.cookie('access_token', result.access_token, getAuthCookieOptions(true));
+
+    return {
+      message: 'ต่ออายุเซสชันสำเร็จ',
+      user: result.user,
+      access_token: result.access_token,
     };
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    // ลบ Cookie ทิ้ง
-    res.clearCookie('access_token', {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-    });
+    res.clearCookie('access_token', getAuthCookieOptions(false));
 
     return { message: 'ออกจากระบบสำเร็จ' };
   }

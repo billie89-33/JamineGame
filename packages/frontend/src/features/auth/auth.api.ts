@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/config';
+import { apiRequest } from '@/lib/api-client';
 import { LoginDto, RegisterDto } from '@shared/dto';
 import { User } from '@/contexts/AuthContext';
 
@@ -114,14 +115,23 @@ export const authApi = {
   },
 
   me: async (): Promise<AuthResponse> => {
-    const response = await fetch(`${API_URL}/auth/me`, {
+    return apiRequest<AuthResponse>('/auth/me', {
       method: 'GET',
-      headers: { ...getAuthHeaders() },
-      credentials: 'include',
+      timeoutMs: 8000,
     });
-    
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message || 'Not authenticated');
+  },
+
+  refresh: async (): Promise<AuthResponse> => {
+    const result = await apiRequest<AuthResponse>('/auth/refresh', {
+      method: 'POST',
+      timeoutMs: 8000,
+    });
+    if (result.access_token) {
+      setAuthToken(result.access_token);
+    }
+    if (result.user) {
+      setStoredUser(result.user);
+    }
     return result;
-  }
+  },
 };

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 import { authApi, getStoredUser, setStoredUser, clearAuthStorage, getAuthToken } from "@/features/auth/auth.api";
+import { ApiError } from "@/lib/api-client";
 
 // กำหนดรูปร่างของข้อมูล User
 export interface User {
@@ -25,24 +26,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1. Initial hydration from localStorage to prevent flash of unauthenticated state
+  // 1. Initial hydration from localStorage + background verification
   useEffect(() => {
     const cachedUser = getStoredUser();
     const token = getAuthToken();
-    if (cachedUser && token) {
+    if (cachedUser) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(cachedUser);
     }
-  }, []);
 
-  // 2. Background verification with backend
-  useEffect(() => {
     const fetchUser = async () => {
-      const token = getAuthToken();
-      if (!token) {
-        setIsLoading(false);
-        setUser(null);
-        clearAuthStorage();
+      if (!token && !cachedUser) {
+        // Still try cookie-based session check silently
+        try {
+          const response = await authApi.me();
+          if (response.user) {
+            setUser(response.user);
+            setStoredUser(response.user);
+            authApi.refresh().catch(() => {});
+          }
+        } catch {
+          // Guest user with no cookie/token
+        } finally {
+          setIsLoading(false);
+        }
         return;
       }
 
@@ -51,20 +58,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (response.user) {
           setUser(response.user);
           setStoredUser(response.user);
+          // Sliding session: extend token & cookie lifetime in the background
+          authApi.refresh().catch(() => {});
         } else {
           setUser(null);
           clearAuthStorage();
         }
       } catch (error) {
-        // Token is invalid or expired
-        console.log("Session expired or invalid:", error);
-        setUser(null);
-        clearAuthStorage();
+        // Clear session ONLY when the server explicitly rejects the token (401/403).
+        // Network errors, timeouts, or 5xx (e.g. cold start / sleeping backend) keep the cached session intact.
+        if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+          setUser(null);
+          clearAuthStorage();
+        } else {
+          console.warn("Auth verification skipped due to temporary server/network error:", error);
+        }
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
 

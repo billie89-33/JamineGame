@@ -1,5 +1,15 @@
 import { API_URL } from './config';
 
+export class ApiError extends Error {
+  constructor(
+    public readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 export function getAuthToken(): string | null {
   if (typeof window !== 'undefined') {
     return localStorage.getItem('access_token');
@@ -46,7 +56,7 @@ export async function apiRequest<T>(
     const message = Array.isArray(errData?.message)
       ? errData.message.join(', ')
       : errData?.message;
-    throw new Error(message || `Request failed (${response.status})`);
+    throw new ApiError(response.status, message || `Request failed (${response.status})`);
   }
 
   if (response.status === 204) {

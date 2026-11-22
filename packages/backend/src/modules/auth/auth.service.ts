@@ -41,4 +41,16 @@ export class AuthService {
       },
     };
   }
+
+  async refreshSession(user: { sub: string; username: string; role: string }) {
+    const payload = { sub: user.sub, username: user.username, role: user.role };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      user: {
+        id: user.sub,
+        username: user.username,
+        role: user.role,
+      },
+    };
+  }
 }

@@ -48,7 +48,7 @@ export const ArticleHeader = ({ article }: ArticleHeaderProps) => {
         {formattedDate && (
           <>
             <span className="opacity-50">•</span>
-            <span>{formattedDate}</span>
+            <time dateTime={article.publishedAt}>{formattedDate}</time>
           </>
         )}
         <span className="opacity-50">•</span>

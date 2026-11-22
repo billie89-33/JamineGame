@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/config';
+import { triggerRevalidate } from '@/lib/revalidate';
 import { CreateArticleDto } from '@shared/dto';
 import { getAuthHeaders } from '../auth/auth.api';
 import { Article } from './types';
@@ -33,7 +34,9 @@ export const articlesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to create article');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/news', '/sitemap.xml']);
+    return result;
   },
   
   getArticles: async (
@@ -78,7 +81,9 @@ export const articlesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to update article');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/news', `/article/${id}`, '/sitemap.xml']);
+    return result;
   },
 
   deleteArticle: async (id: string) => {
@@ -88,6 +93,8 @@ export const articlesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to delete article');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/news', `/article/${id}`, '/sitemap.xml']);
+    return result;
   }
 };

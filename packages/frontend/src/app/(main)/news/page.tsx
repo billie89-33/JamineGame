@@ -1,8 +1,18 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
-import { articlesApi } from '@/features/articles/articles.api';
+import { serverFetchJson } from '@/lib/server-fetch';
 import { Article } from '@/features/articles/types';
+import { SITE_URL } from '@/lib/config';
+
+export const metadata: Metadata = {
+  title: 'ข่าวเกมล่าสุด',
+  description: 'อัปเดตข่าวเกม อีสปอร์ต เกมออกใหม่ และความเคลื่อนไหววงการเกมล่าสุด',
+  alternates: {
+    canonical: `${SITE_URL}/news`,
+  },
+};
 
 type NewsPageProps = {
   searchParams: Promise<{ category?: string }>;
@@ -10,17 +20,21 @@ type NewsPageProps = {
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const { category } = await searchParams;
-  let articles: Article[] = [];
-  let hasError = false;
-
-  try {
-    const response = await articlesApi.getArticles(1, 12, undefined, category, undefined, 'NEWS');
-    articles = response.data || [];
-  } catch (error: any) {
-    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Failed to fetch news articles:', error);
-    hasError = true;
+  const params = new URLSearchParams({
+    page: '1',
+    limit: '12',
+    type: 'NEWS',
+  });
+  if (category) {
+    params.set('category', category);
   }
+
+  const response = await serverFetchJson<{ data?: Article[] }>(
+    `/articles?${params.toString()}`,
+    { revalidate: 60 },
+  );
+  const hasError = response === null;
+  const articles: Article[] = response?.data || [];
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16 md:px-8">

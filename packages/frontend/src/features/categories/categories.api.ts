@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/config';
+import { triggerRevalidate } from '@/lib/revalidate';
 import { getAuthHeaders } from '../auth/auth.api';
 
 export interface Category {
@@ -35,7 +36,9 @@ export const categoriesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to create category');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/games', '/news', '/sitemap.xml']);
+    return result;
   },
 
   updateCategory: async (id: string, data: Partial<Category>): Promise<Category> => {
@@ -49,7 +52,9 @@ export const categoriesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to update category');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/games', '/news', '/sitemap.xml']);
+    return result;
   },
 
   deleteCategory: async (id: string): Promise<void> => {
@@ -59,5 +64,6 @@ export const categoriesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to delete category');
+    triggerRevalidate(['/', '/games', '/news', '/sitemap.xml']);
   }
 };

@@ -1,3 +1,14 @@
+import type { Metadata } from 'next';
+import { SITE_NAME, SITE_URL } from '@/lib/config';
+
+export const metadata: Metadata = {
+  title: `เกี่ยวกับ ${SITE_NAME}`,
+  description: 'ชุมชนคนรักเกม ศูนย์รวมข่าวสาร รีวิว และข้อมูลเกมหลากหลายแนว',
+  alternates: {
+    canonical: `${SITE_URL}/about`,
+  },
+};
+
 export default function AboutPage() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-12 md:px-8 text-center">

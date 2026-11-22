@@ -1,13 +1,49 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categoriesApi } from '@/features/categories/categories.api';
-import { articlesApi } from '@/features/articles/articles.api';
-import { gamesApi } from '@/features/games/games.api';
+import { getCachedCategoryBySlug } from '@/lib/public-queries';
+import { serverFetchJson } from '@/lib/server-fetch';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { Sidebar } from '@/components/common/Sidebar';
 import { Gamepad2, Info } from 'lucide-react';
 import { GameResponseDto, ArticleResponseDto } from '@shared/dto';
+import { SITE_NAME, SITE_URL } from '@/lib/config';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = decodeURIComponent(resolvedParams.slug);
+  const category = await getCachedCategoryBySlug(slug);
+
+  if (!category) {
+    return {
+      title: 'ไม่พบหมวดหมู่',
+    };
+  }
+
+  const description =
+    category.description || `รวมข่าวสาร รีวิว และเกมในหมวดหมู่ ${category.name} บน ${SITE_NAME}`;
+  const canonicalUrl = `${SITE_URL}/category/${encodeURIComponent(slug)}`;
+
+  return {
+    title: category.name,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      title: `${category.name} | ${SITE_NAME}`,
+      description,
+      url: canonicalUrl,
+    },
+  };
+}
 
 const getCategoryName = (category: unknown): string => {
   if (!category) return 'ทั่วไป';
@@ -91,26 +127,27 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
   try {
     // 1. Fetch data in parallel
     // We fetch a bit more games (e.g. 8) to make sure we have enough for 2 big + 6 grid
+    const encodedSlug = encodeURIComponent(slug);
     const [categoryRes, gamesRes, articlesRes] = await Promise.all([
-      categoriesApi.getCategoryBySlug(slug).catch(() => null),
-      gamesApi.getGames(1, 8, undefined, slug, true).catch(() => ({ data: [] })),
-      articlesApi.getArticles(1, 7, undefined, slug, undefined, undefined, true).catch(() => ({ data: [] })),
+      getCachedCategoryBySlug(slug),
+      serverFetchJson<{ data?: GameResponseDto[] }>(`/games?page=1&limit=8&category=${encodedSlug}&isFeatured=true`, { revalidate: 60 }),
+      serverFetchJson<{ data?: ArticleResponseDto[] }>(`/articles?page=1&limit=7&category=${encodedSlug}&isFeatured=true`, { revalidate: 60 }),
     ]);
 
     category = categoryRes;
     
     // If games are empty, fallback to non-featured latest games
-    if (gamesRes?.data?.length === 0) {
-      const fallbackGames = await gamesApi.getGames(1, 8, undefined, slug).catch(() => ({ data: [] }));
+    if (!gamesRes?.data || gamesRes.data.length === 0) {
+      const fallbackGames = await serverFetchJson<{ data?: GameResponseDto[] }>(`/games?page=1&limit=8&category=${encodedSlug}`, { revalidate: 60 });
       allFeaturedGames = fallbackGames?.data || [];
     } else {
-      allFeaturedGames = gamesRes?.data || [];
+      allFeaturedGames = gamesRes.data;
     }
 
     // If articles are empty, fallback to non-featured latest articles
     let articles = articlesRes?.data || [];
     if (articles.length === 0) {
-      const fallbackArticles = await articlesApi.getArticles(1, 7, undefined, slug).catch(() => ({ data: [] }));
+      const fallbackArticles = await serverFetchJson<{ data?: ArticleResponseDto[] }>(`/articles?page=1&limit=7&category=${encodedSlug}`, { revalidate: 60 });
       articles = fallbackArticles?.data || [];
     }
 

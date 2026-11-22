@@ -1,4 +1,5 @@
 import { API_URL } from '@/lib/config';
+import { triggerRevalidate } from '@/lib/revalidate';
 import { getAuthHeaders } from '../auth/auth.api';
 import { GameResponseDto, CreateGameDto, UpdateGameDto, PaginatedResponseDto } from '@shared/dto';
 
@@ -35,7 +36,9 @@ export const gamesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to create game');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/games', '/sitemap.xml']);
+    return result;
   },
 
   updateGame: async (id: string, data: UpdateGameDto): Promise<GameResponseDto> => {
@@ -49,7 +52,9 @@ export const gamesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to update game');
-    return response.json();
+    const result = await response.json();
+    triggerRevalidate(['/', '/games', `/games/${id}`, '/sitemap.xml']);
+    return result;
   },
 
   deleteGame: async (id: string): Promise<void> => {
@@ -59,5 +64,6 @@ export const gamesApi = {
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to delete game');
+    triggerRevalidate(['/', '/games', `/games/${id}`, '/sitemap.xml']);
   }
 };

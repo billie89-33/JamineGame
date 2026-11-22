@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Kanit } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/config";
 import "./globals.css";
 
 const outfitFont = Outfit({
@@ -17,8 +18,29 @@ const kanitFont = Kanit({
 
 
 export const metadata: Metadata = {
-  title: "Gameverse - Gaming News",
-  description: "Your ultimate gaming news platform",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} - ข่าวเกม รีวิว และไกด์เกม`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "th_TH",
+    title: `${SITE_NAME} - ข่าวเกม รีวิว และไกด์เกม`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} - ข่าวเกม รีวิว และไกด์เกม`,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfitFont.variable} ${kanitFont.variable} h-full antialiased`}>
+    <html lang="th" className={`${outfitFont.variable} ${kanitFont.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-[#0b0f0c] text-white relative font-sans">
         <AuthProvider>
           <ToastProvider>

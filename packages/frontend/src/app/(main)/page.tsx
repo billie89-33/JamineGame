@@ -2,10 +2,22 @@ import React from 'react';
 import { HeroArticle, ArticleGrid, EditorsPick } from '@/features/articles/components';
 import { FeaturedGames } from '@/features/games/components';
 import { Sidebar } from '@/components/common';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/config';
 
 export default function Home() {
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    inLanguage: 'th',
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-12 md:px-8 lg:px-12 z-10 w-full">
+      <JsonLd data={websiteJsonLd} />
       {/* 1. Hero Images (Featured Articles) */}
       <HeroArticle />
 

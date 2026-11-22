@@ -1,9 +1,19 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GameResponseDto } from '@shared/dto';
 import { ArticleCard } from '@/features/articles/components/ArticleCard';
 import { GameCategoryList } from '@/features/games/components/GameCategoryList';
 import { serverFetchJson } from '@/lib/server-fetch';
+import { SITE_URL } from '@/lib/config';
+
+export const metadata: Metadata = {
+  title: 'สารานุกรมเกมทั้งหมด',
+  description: 'รวมรายชื่อเกม ข้อมูลเกม สเปกความต้องการระบบ และหมวดหมู่เกมยอดนิยม',
+  alternates: {
+    canonical: `${SITE_URL}/games`,
+  },
+};
 
 type GamesPageProps = {
   searchParams: Promise<{ page?: string }>;

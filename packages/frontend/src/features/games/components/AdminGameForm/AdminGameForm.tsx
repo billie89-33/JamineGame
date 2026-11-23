@@ -11,8 +11,13 @@ import { Video, Image as ImageIcon, Sparkles, Loader2, Gamepad2, Monitor, Downlo
 import { useToast } from '@/contexts/ToastContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-const DEFAULT_SYS_REQ = `**แนะนำ (Recommended):**\n`;
+import {
+  SPEC_FIELDS,
+  SpecFieldKey,
+  StructuredSystemRequirements,
+  parseSystemRequirements,
+  serializeSystemRequirements,
+} from '../../system-requirements';
 
 export function AdminGameForm({ 
   initialData, 
@@ -35,10 +40,14 @@ export function AdminGameForm({
     publisher: initialData?.publisher || '',
     releaseDate: initialData?.releaseDate ? new Date(initialData.releaseDate).toISOString().split('T')[0] : '',
     downloadLinks: initialData?.downloadLinks || '',
-    systemRequirements: initialData?.systemRequirements || DEFAULT_SYS_REQ,
+    systemRequirements: initialData?.systemRequirements || '',
     rating: initialData?.rating || undefined,
     isFeatured: initialData?.isFeatured || false,
   });
+
+  const [sysReq, setSysReq] = useState<StructuredSystemRequirements>(() =>
+    parseSystemRequirements(initialData?.systemRequirements),
+  );
   
   const [tagsInput, setTagsInput] = useState(initialData?.tags?.join(', ') || '');
   const [platformsInput, setPlatformsInput] = useState(initialData?.platforms?.join(', ') || '');
@@ -58,6 +67,20 @@ export function AdminGameForm({
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
+
+  const handleSpecChange = (
+    tier: 'minimum' | 'recommended',
+    field: SpecFieldKey,
+    value: string,
+  ) => {
+    setSysReq((prev) => ({
+      ...prev,
+      [tier]: {
+        ...prev[tier],
+        [field]: value,
+      },
     }));
   };
 
@@ -90,7 +113,7 @@ export function AdminGameForm({
         releaseDate: formData.releaseDate ? new Date(formData.releaseDate) : undefined,
         tags,
         platforms,
-        systemRequirements: formData.systemRequirements,
+        systemRequirements: serializeSystemRequirements(sysReq),
         categoryId: formData.categoryId || undefined,
         rating: formData.rating ? Number(formData.rating) : undefined,
       };
@@ -188,15 +211,66 @@ export function AdminGameForm({
         </div>
         
         <div className="bg-[#141c15] border border-[#202d21] rounded-2xl p-6 md:p-8 shadow-xl">
-           <h3 className="text-xl font-bold text-[#f7ebc6] mb-4 border-b border-[#202d21] pb-2">ความต้องการระบบ (System Requirements)</h3>
-           <textarea
-            name="systemRequirements"
-            value={formData.systemRequirements}
-            onChange={handleChange}
-            placeholder="Minimum & Recommended Specs..."
-            rows={10}
-            className="w-full bg-[#1a241b] border border-[#2e3b2c] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 transition-colors"
-          />
+          <div className="mb-6 border-b border-[#202d21] pb-4">
+            <h3 className="text-xl font-bold text-[#f7ebc6] flex items-center gap-2">
+              <Monitor size={20} className="text-lime-400" />
+              ความต้องการระบบ (System Requirements)
+            </h3>
+            <p className="text-xs text-gray-400 mt-1">
+              กรอกแยกตามหัวข้อ (ช่องไหนไม่มีข้อมูลให้เว้นว่างไว้ ระบบจะซ่อนอัตโนมัติ)
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {([
+              {
+                key: 'minimum' as const,
+                title: 'ขั้นต่ำ (Minimum)',
+                badgeClass: 'text-amber-300 bg-amber-400/10 border-amber-400/30',
+              },
+              {
+                key: 'recommended' as const,
+                title: 'แนะนำ (Recommended)',
+                badgeClass: 'text-lime-300 bg-lime-400/10 border-lime-400/30',
+              },
+            ]).map((tierMeta) => (
+              <div
+                key={tierMeta.key}
+                className="bg-[#1a241b] border border-[#2e3b2c] rounded-xl p-5 flex flex-col gap-4"
+              >
+                <div className="flex items-center justify-between border-b border-[#2e3b2c] pb-3">
+                  <span className={`text-xs font-black px-3 py-1 rounded-full border ${tierMeta.badgeClass}`}>
+                    {tierMeta.title}
+                  </span>
+                </div>
+
+                {SPEC_FIELDS.map((field) => (
+                  <div key={field.key}>
+                    <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                      {field.label}
+                    </label>
+                    {field.key === 'notes' ? (
+                      <textarea
+                        rows={2}
+                        value={sysReq[tierMeta.key][field.key]}
+                        onChange={(e) => handleSpecChange(tierMeta.key, field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        className="w-full bg-[#141c15] border border-[#2e3b2c] rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-lime-400 transition-colors"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={sysReq[tierMeta.key][field.key]}
+                        onChange={(e) => handleSpecChange(tierMeta.key, field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        className="w-full bg-[#141c15] border border-[#2e3b2c] rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-lime-400 transition-colors"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

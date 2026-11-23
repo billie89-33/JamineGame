@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getCachedGameById } from '@/lib/public-queries';
-import { Monitor } from 'lucide-react';
+import { SystemRequirementsCard } from '@/features/games/components/SystemRequirementsCard';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SITE_NAME, SITE_URL } from '@/lib/config';
 
@@ -97,12 +97,6 @@ export default async function GameDetailPage({ params }: { params: Promise<{ id:
     ],
   };
 
-  // Check if system requirements actually has useful content
-  // Not just the default "**แนะนำ (Recommended):**\n" or empty spaces
-  const hasSystemRequirements = game.systemRequirements && 
-    game.systemRequirements.trim().length > 0 &&
-    game.systemRequirements.trim() !== '**แนะนำ (Recommended):**';
-
   return (
     <main className="w-full px-4 md:px-8 lg:px-12 py-12">
       <JsonLd data={gameJsonLd} />
@@ -122,18 +116,7 @@ export default async function GameDetailPage({ params }: { params: Promise<{ id:
         />
         
         {/* System Requirements Section */}
-        {hasSystemRequirements && (
-          <div className="mt-12">
-            <hr className="border-[#2e3b2c] mb-8" />
-            <h3 className="text-2xl font-bold text-[#f7ebc6] mb-6 flex items-center gap-3">
-              <Monitor className="w-6 h-6 text-lime-400" />
-              ความต้องการระบบ (System Requirements)
-            </h3>
-            <div className="bg-[#141c15] p-6 rounded-xl border border-[#2e3b2c] text-[#a4b5a6] whitespace-pre-wrap leading-relaxed">
-              {game.systemRequirements}
-            </div>
-          </div>
-        )}
+        <SystemRequirementsCard raw={game.systemRequirements} />
       </div>
     </main>
   );
